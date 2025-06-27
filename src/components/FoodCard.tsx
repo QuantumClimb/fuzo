@@ -29,7 +29,12 @@ interface RestaurantInfo {
   businessStatus?: string;
   openingHours?: {
     open_now?: boolean;
+    isOpen?: boolean;
     weekday_text?: string[];
+    periods?: Array<{
+      open: { day: number; time: string };
+      close: { day: number; time: string };
+    }>;
   };
 }
 
@@ -95,7 +100,7 @@ const FoodCard = ({
   ].filter((photo, index, arr) => photo && arr.indexOf(photo) === index);
 
   const currentPhoto = allPhotos[currentPhotoIndex] || card.image;
-  const isOpenNow = enhancedRestaurant.openingHours?.open_now;
+  const isOpenNow = (enhancedRestaurant.openingHours as any)?.isOpen ?? (enhancedRestaurant.openingHours as any)?.open_now;
   const hasEnhancedData = enhancedRestaurant.detailedPhotos && enhancedRestaurant.detailedPhotos.length > 0;
 
   const handlePhotoNavigation = (direction: 'prev' | 'next', e: React.MouseEvent) => {

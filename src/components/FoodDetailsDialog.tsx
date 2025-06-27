@@ -53,7 +53,7 @@ const FoodDetailsDialog = ({
     coordinates: food.coordinates || { lat: 28.6139, lng: 77.2090 },
     businessStatus: 'OPERATIONAL',
     openingHours: {
-      open_now: true,
+      isOpen: true,
       periods: [
         { open: '11:00', close: '23:00', day: 'Monday' },
         { open: '11:00', close: '23:00', day: 'Tuesday' },
@@ -252,7 +252,7 @@ const FoodDetailsDialog = ({
             </Badge>
             {enhancedData.businessStatus === 'OPERATIONAL' && (
               <Badge className="bg-green-500 text-white">
-                {enhancedData.openingHours.open_now ? 'Open Now' : 'Closed'}
+                {enhancedData.openingHours.isOpen ? 'Open Now' : 'Closed'}
               </Badge>
             )}
           </div>
@@ -496,7 +496,7 @@ const FoodDetailsDialog = ({
                     <div className="flex items-center text-green-800">
                       <Clock size={16} className="mr-2" />
                       <span className="font-medium">
-                        {enhancedData.openingHours.open_now ? 'Open Now' : 'Currently Closed'}
+                        {enhancedData.openingHours.isOpen ? 'Open Now' : 'Currently Closed'}
                       </span>
                     </div>
                   </div>

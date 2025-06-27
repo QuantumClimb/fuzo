@@ -123,7 +123,7 @@ const SwipeFeed = () => {
   ];
 
   const currentCard = swipeCards[currentCardIndex];
-  const isOpenNow = currentCard?.openingHours?.open_now;
+  const isOpenNow = (currentCard?.openingHours as any)?.isOpen ?? (currentCard?.openingHours as any)?.open_now;
 
   const handleSwipe = (direction: 'left' | 'right') => {
     if (isAnimating || !currentCard) return;
