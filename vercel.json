@@ -10,8 +10,5 @@
       "dest": "/",
       "status": 200
     }
-  ],
-  "env": {
-    "VITE_GOOGLE_MAPS_API_KEY": "@google_maps_api_key"
-  }
+  ]
 } 
