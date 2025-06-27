@@ -125,3 +125,33 @@ supabase/.temp
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# =====================================
+# 🔒 SENSITIVE FILES & DOCUMENTATION
+# =====================================
+
+# Environment files (all variations)
+.env*
+!.env.example
+env_example.txt
+env.production.example
+*.env
+
+# Internal documentation
+API_KEYS_REQUIREMENTS.txt
+SAAS_VARIABLES_CHECKLIST.md
+SUPABASE_SETUP_GUIDE.md
+MIGRATION_STRATEGY.md
+DEPLOYMENT_STATUS.md
+VERCEL_DEPLOYMENT_GUIDE.md
+
+# Company-specific deployment guides
+*DEPLOYMENT_GUIDE.md
+*_GUIDE.md
+*_STRATEGY.md
+*_CHECKLIST.md
+
+# API keys and secrets
+api-keys.json
+secrets.json
+credentials.json
