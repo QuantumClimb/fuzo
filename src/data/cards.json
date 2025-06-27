@@ -1,0 +1,203 @@
+
+[
+  {
+    "id": "card_1",
+    "name": "Truffle Pasta Carbonara",
+    "type": "pasta",
+    "cuisine": "Italian",
+    "image": "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=500",
+    "tags": ["creamy", "truffle", "comfort"],
+    "user": {
+      "id": "user_1",
+      "name": "Marco Rossi",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
+      "location": "Little Italy, NYC"
+    },
+    "restaurant": {
+      "id": "rest_1",
+      "name": "Nonna's Kitchen"
+    },
+    "ingredients": ["pasta", "eggs", "parmesan", "black truffle", "pancetta"],
+    "description": "Silky carbonara elevated with shaved black truffle"
+  },
+  {
+    "id": "card_2",
+    "name": "Spicy Tuna Roll",
+    "type": "sushi",
+    "cuisine": "Japanese",
+    "image": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500",
+    "tags": ["spicy", "fresh", "raw"],
+    "user": {
+      "id": "user_2",
+      "name": "Yuki Tanaka",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100",
+      "location": "SoHo, NYC"
+    },
+    "restaurant": {
+      "id": "rest_2",
+      "name": "Sakura Sushi"
+    },
+    "ingredients": ["tuna", "rice", "nori", "spicy mayo", "cucumber"],
+    "description": "Fresh tuna with a kick of spice, perfectly balanced"
+  },
+  {
+    "id": "card_3",
+    "name": "BBQ Brisket Sandwich",
+    "type": "sandwich",
+    "cuisine": "American",
+    "image": "https://images.unsplash.com/photo-1558030006-450675393462?w=500",
+    "tags": ["smoky", "hearty", "comfort"],
+    "user": {
+      "id": "user_3",
+      "name": "Jake Thompson",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
+      "location": "Brooklyn, NYC"
+    },
+    "restaurant": {
+      "id": "rest_3",
+      "name": "Smoke & Bones BBQ"
+    },
+    "ingredients": ["brisket", "brioche bun", "coleslaw", "pickles", "bbq sauce"],
+    "description": "12-hour smoked brisket piled high on fresh brioche"
+  },
+  {
+    "id": "card_4",
+    "name": "Pad Thai Noodles",
+    "type": "noodles",
+    "cuisine": "Thai",
+    "image": "https://images.unsplash.com/photo-1559314809-0f31657e3e8d?w=500",
+    "tags": ["sweet", "tangy", "authentic"],
+    "user": {
+      "id": "user_4",
+      "name": "Siriporn Chen",
+      "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
+      "location": "Chinatown, NYC"
+    },
+    "restaurant": {
+      "id": "rest_4",
+      "name": "Bangkok Street"
+    },
+    "ingredients": ["rice noodles", "shrimp", "peanuts", "bean sprouts", "lime"],
+    "description": "Traditional Pad Thai with the perfect sweet-sour balance"
+  },
+  {
+    "id": "card_5",
+    "name": "Margherita Pizza",
+    "type": "pizza",
+    "cuisine": "Italian",
+    "image": "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500",
+    "tags": ["classic", "fresh", "simple"],
+    "user": {
+      "id": "user_1",
+      "name": "Marco Rossi",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
+      "location": "Little Italy, NYC"
+    },
+    "restaurant": {
+      "id": "rest_5",
+      "name": "Pizzeria Bella"
+    },
+    "ingredients": ["tomato sauce", "mozzarella", "basil", "olive oil", "dough"],
+    "description": "Wood-fired perfection with San Marzano tomatoes"
+  },
+  {
+    "id": "card_6",
+    "name": "Chicken Tikka Masala",
+    "type": "curry",
+    "cuisine": "Indian",
+    "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500",
+    "tags": ["spicy", "creamy", "aromatic"],
+    "user": {
+      "id": "user_5",
+      "name": "Priya Sharma",
+      "avatar": "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=100",
+      "location": "Curry Hill, NYC"
+    },
+    "restaurant": {
+      "id": "rest_6",
+      "name": "Spice Garden"
+    },
+    "ingredients": ["chicken", "tomato sauce", "cream", "garam masala", "rice"],
+    "description": "Tender chicken in rich, aromatic tomato cream sauce"
+  },
+  {
+    "id": "card_7",
+    "name": "Fish Tacos",
+    "type": "tacos",
+    "cuisine": "Mexican",
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500",
+    "tags": ["fresh", "light", "zesty"],
+    "user": {
+      "id": "user_3",
+      "name": "Jake Thompson",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
+      "location": "Brooklyn, NYC"
+    },
+    "restaurant": {
+      "id": "rest_7",
+      "name": "Taco Libre"
+    },
+    "ingredients": ["white fish", "corn tortillas", "cabbage slaw", "lime", "chipotle"],
+    "description": "Grilled fish with crispy slaw and zesty lime crema"
+  },
+  {
+    "id": "card_8",
+    "name": "Chocolate Lava Cake",
+    "type": "dessert",
+    "cuisine": "French",
+    "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500",
+    "tags": ["rich", "decadent", "warm"],
+    "user": {
+      "id": "user_2",
+      "name": "Yuki Tanaka",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100",
+      "location": "SoHo, NYC"
+    },
+    "restaurant": {
+      "id": "rest_8",
+      "name": "Le Petit Cafe"
+    },
+    "ingredients": ["dark chocolate", "butter", "eggs", "flour", "vanilla ice cream"],
+    "description": "Warm chocolate cake with molten center and vanilla ice cream"
+  },
+  {
+    "id": "card_9",
+    "name": "Caesar Salad",
+    "type": "salad",
+    "cuisine": "American",
+    "image": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=500",
+    "tags": ["fresh", "crisp", "classic"],
+    "user": {
+      "id": "user_4",
+      "name": "Siriporn Chen",
+      "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
+      "location": "Chinatown, NYC"
+    },
+    "restaurant": {
+      "id": "rest_9",
+      "name": "Garden Bistro"
+    },
+    "ingredients": ["romaine lettuce", "parmesan", "croutons", "caesar dressing", "anchovies"],
+    "description": "Crisp romaine with house-made dressing and fresh parmesan"
+  },
+  {
+    "id": "card_10",
+    "name": "Ramen Bowl",
+    "type": "soup",
+    "cuisine": "Japanese",
+    "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500",
+    "tags": ["comforting", "umami", "warming"],
+    "user": {
+      "id": "user_5",
+      "name": "Priya Sharma",
+      "avatar": "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=100",
+      "location": "Curry Hill, NYC"
+    },
+    "restaurant": {
+      "id": "rest_10",
+      "name": "Ramen-ya"
+    },
+    "ingredients": ["ramen noodles", "pork broth", "chashu pork", "soft egg", "scallions"],
+    "description": "Rich tonkotsu broth with tender chashu and perfect soft egg"
+  }
+]

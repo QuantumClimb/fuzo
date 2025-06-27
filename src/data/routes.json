@@ -1,0 +1,42 @@
+
+[
+  {
+    "id": "route_1",
+    "name": "Downtown Food Crawl",
+    "startPoint": {
+      "name": "Times Square",
+      "coordinates": { "lat": 40.7580, "lng": -73.9855 }
+    },
+    "endPoint": {
+      "name": "Brooklyn Bridge",
+      "coordinates": { "lat": 40.7061, "lng": -73.9969 }
+    },
+    "waypoints": [
+      { "lat": 40.7505, "lng": -73.9934 },
+      { "lat": 40.7282, "lng": -73.9942 },
+      { "lat": 40.7128, "lng": -74.0060 }
+    ],
+    "restaurants": ["rest_2", "rest_10", "rest_1"],
+    "estimatedTime": "2 hours",
+    "totalDistance": "3.2 miles"
+  },
+  {
+    "id": "route_2",
+    "name": "Brooklyn Eats Tour",
+    "startPoint": {
+      "name": "Williamsburg",
+      "coordinates": { "lat": 40.7081, "lng": -73.9571 }
+    },
+    "endPoint": {
+      "name": "DUMBO",
+      "coordinates": { "lat": 40.7033, "lng": -73.9885 }
+    },
+    "waypoints": [
+      { "lat": 40.6892, "lng": -73.9442 },
+      { "lat": 40.6782, "lng": -73.9442 }
+    ],
+    "restaurants": ["rest_3", "rest_7"],
+    "estimatedTime": "1.5 hours",
+    "totalDistance": "2.8 miles"
+  }
+]

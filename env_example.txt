@@ -1,0 +1,192 @@
+# ================================================================================
+# 🍜 FUZO - Food Discovery App - Environment Variables Template
+# ================================================================================
+# 
+# Instructions:
+# 1. Copy this file to .env.local in your project root
+# 2. Replace all placeholder values with your actual API keys
+# 3. Remove any services you're not using
+# 4. Restart your development server after making changes
+#
+# Security Note: 
+# - Never commit .env files to version control
+# - Use VITE_ prefix for client-side variables in Vite projects
+# - Keep sensitive keys server-side only when possible
+#
+# Author: Onomatix (juncando@gmail.com)
+# ================================================================================
+
+# ================================================================================
+# 🔑 PRIORITY 1: ESSENTIAL APIs - START HERE
+# ================================================================================
+
+# 🗺️ Google Maps Platform (Primary mapping service)
+# Get your keys at: https://console.cloud.google.com/google/maps-apis
+VITE_GOOGLE_MAPS_API_KEY=AIzaSyAiwdvjMrC6-BjYRBaERbGhwFB6GXdQJu4
+VITE_GOOGLE_PLACES_API_KEY=AIzaSyAiwdvjMrC6-BjYRBaERbGhwFB6GXdQJu4
+VITE_GOOGLE_GEOCODING_API_KEY=AIzaSyAiwdvjMrC6-BjYRBaERbGhwFB6GXdQJu4
+VITE_GOOGLE_DIRECTIONS_API_KEY=AIzaSyAiwdvjMrC6-BjYRBaERbGhwFB6GXdQJu4
+
+# 🗺️ Mapbox (Alternative mapping service)
+# Get your token at: https://account.mapbox.com/
+# VITE_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoieW91ci11c2VybmFtZSIsImEiOiJyZXBsYWNlLXdpdGgteW91ci1tYXBib3gtdG9rZW4ifQ.replace-with-rest-of-token
+
+# 🍽️ Yelp Fusion API (Primary restaurant data)
+# Get your key at: https://www.yelp.com/developers/v3/manage_app
+VITE_YELP_API_KEY=Bearer replace-with-your-yelp-api-key
+
+# 🍽️ Foursquare Places API (Alternative restaurant data)
+# Get your key at: https://developer.foursquare.com/
+# VITE_FOURSQUARE_API_KEY=fsq3replace_with_your_foursquare_api_key
+
+# 🍽️ Zomato API (International restaurant coverage)
+# Get your key at: https://developers.zomato.com/api
+# VITE_ZOMATO_API_KEY=replace-with-your-zomato-api-key
+
+# ================================================================================
+# 🔑 PRIORITY 2: CORE FUNCTIONALITY
+# ================================================================================
+
+# 🔐 Firebase (Authentication, Database, Storage)
+# Get your config at: https://console.firebase.google.com/
+VITE_FIREBASE_API_KEY=AIzaSyG-replace-with-your-firebase-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
+VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef123456789
+VITE_FIREBASE_DATABASE_URL=https://your-project-id-default-rtdb.firebaseio.com/
+
+# 🔐 Auth0 (Alternative authentication)
+# Get your config at: https://manage.auth0.com/
+# VITE_AUTH0_DOMAIN=your-tenant.auth0.com
+# VITE_AUTH0_CLIENT_ID=replace_with_your_auth0_client_id
+
+# 🔐 Supabase (Alternative backend)
+# Get your config at: https://app.supabase.com/
+# VITE_SUPABASE_URL=https://your-project-id.supabase.co
+# VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.replace-with-your-supabase-anon-key
+
+# 💬 Pusher (Alternative real-time messaging)
+# Get your config at: https://dashboard.pusher.com/
+# VITE_PUSHER_APP_ID=123456
+# VITE_PUSHER_KEY=replace_with_your_pusher_key
+# VITE_PUSHER_SECRET=replace_with_your_pusher_secret
+# VITE_PUSHER_CLUSTER=mt1
+
+# 💬 Socket.io Server (Alternative real-time messaging)
+# VITE_SOCKET_SERVER_URL=http://localhost:3001
+
+# ================================================================================
+# 🔑 PRIORITY 3: ENHANCED FEATURES
+# ================================================================================
+
+# 🤖 OpenAI API (AI Assistant features)
+# Get your key at: https://platform.openai.com/api-keys
+VITE_OPENAI_API_KEY=sk-replace-with-your-openai-api-key
+
+# 🤖 Google AI/Gemini (Alternative AI service)
+# Get your key at: https://makersuite.google.com/app/apikey
+# VITE_GOOGLE_AI_API_KEY=AIzaSyH-replace-with-your-google-ai-api-key
+
+# 📸 Cloudinary (Image storage and processing)
+# Get your config at: https://cloudinary.com/console
+VITE_CLOUDINARY_CLOUD_NAME=your-cloud-name
+VITE_CLOUDINARY_API_KEY=123456789012345
+VITE_CLOUDINARY_API_SECRET=replace-with-your-cloudinary-api-secret
+
+# 📸 AWS S3 (Alternative image storage)
+# Get your credentials at: https://console.aws.amazon.com/iam/
+# VITE_AWS_S3_BUCKET_NAME=your-s3-bucket-name
+# VITE_AWS_S3_REGION=us-east-1
+# AWS_ACCESS_KEY_ID=AKIA replace with your access key id
+# AWS_SECRET_ACCESS_KEY=replace/with/your/secret/access/key
+
+# 🤖 Azure Cognitive Services (Image recognition)
+# Get your config at: https://portal.azure.com/
+# VITE_AZURE_COMPUTER_VISION_KEY=replace_with_your_azure_vision_key
+# VITE_AZURE_COMPUTER_VISION_ENDPOINT=https://your-resource.cognitiveservices.azure.com/
+
+# 🤖 AWS Rekognition (Food image analysis)
+# Uses same AWS credentials as S3 above
+# VITE_AWS_REGION=us-east-1
+
+# ================================================================================
+# 🔑 PRIORITY 4: ANALYTICS & MONITORING
+# ================================================================================
+
+# 📊 Google Analytics 4
+# Get your ID at: https://analytics.google.com/
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# 📊 Mixpanel (User behavior analytics)
+# Get your token at: https://mixpanel.com/
+# VITE_MIXPANEL_TOKEN=replace_with_your_mixpanel_token
+
+# 🐛 Sentry (Error tracking)
+# Get your DSN at: https://sentry.io/
+# VITE_SENTRY_DSN=https://replace@with.your.sentry.dsn/123456
+
+# 📧 SendGrid (Email notifications)
+# Get your key at: https://app.sendgrid.com/
+# VITE_SENDGRID_API_KEY=SG.replace_with_your_sendgrid_api_key
+
+# 📱 Twilio (SMS notifications)
+# Get your config at: https://console.twilio.com/
+# VITE_TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# VITE_TWILIO_AUTH_TOKEN=replace_with_your_twilio_auth_token
+
+# 📱 Firebase Cloud Messaging (Push notifications)
+# Get your key at: https://console.firebase.google.com/project/your-project/settings/cloudmessaging
+# VITE_FCM_VAPID_KEY=BHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# ================================================================================
+# 🔧 DEVELOPMENT & TESTING CONFIGURATION
+# ================================================================================
+
+# Application Environment
+NODE_ENV=development
+VITE_APP_ENV=development
+
+# API Base URLs (customize if using your own backend)
+# VITE_API_BASE_URL=http://localhost:3000/api
+# VITE_BACKEND_URL=http://localhost:3000
+
+# Debug Settings
+VITE_DEBUG_MODE=true
+# VITE_ENABLE_LOGGING=true
+
+# Feature Flags (enable/disable features during development)
+VITE_ENABLE_AI_FEATURES=true
+VITE_ENABLE_SOCIAL_FEATURES=true
+VITE_ENABLE_MAP_FEATURES=true
+VITE_ENABLE_ANALYTICS=false
+
+# ================================================================================
+# 📝 USAGE NOTES
+# ================================================================================
+#
+# Quick Setup Guide:
+# 1. Copy this file: cp env_example.txt .env.local
+# 2. Get Google Maps API key (essential for maps)
+# 3. Get Yelp API key (essential for restaurant data)
+# 4. Optional: Set up Firebase for authentication
+# 5. Restart dev server: npm run dev
+#
+# Testing with minimal setup:
+# - Just Google Maps + Yelp APIs will enable core functionality
+# - App will work with mock data for users/chat initially
+# - Add other services incrementally as needed
+#
+# Cost-effective development:
+# - Most services have generous free tiers
+# - Start with free tiers and upgrade only when needed
+# - Monitor usage to avoid unexpected charges
+#
+# Security reminders:
+# - Add .env.local to .gitignore
+# - Never commit API keys to version control
+# - Use different keys for dev/staging/production
+# - Set up API key restrictions in service dashboards
+#
+# ================================================================================ 

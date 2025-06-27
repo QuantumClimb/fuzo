@@ -1,0 +1,117 @@
+
+[
+  {
+    "chatId": "chat_1",
+    "type": "direct",
+    "participants": ["user_1", "user_2"],
+    "title": "Marco & Yuki",
+    "lastMessage": "That ramen place was incredible!",
+    "lastMessageTime": "2024-05-30T18:30:00Z",
+    "messages": [
+      {
+        "id": "msg_1",
+        "senderId": "user_1",
+        "text": "Hey! Have you tried the new Italian place on Mulberry?",
+        "timestamp": "2024-05-30T17:15:00Z"
+      },
+      {
+        "id": "msg_2",
+        "senderId": "user_2",
+        "text": "Not yet! Is it good? I'm always looking for authentic Italian",
+        "timestamp": "2024-05-30T17:18:00Z"
+      },
+      {
+        "id": "msg_3",
+        "senderId": "user_1",
+        "text": "Amazing! Their carbonara is just like my nonna used to make",
+        "timestamp": "2024-05-30T17:20:00Z"
+      },
+      {
+        "id": "msg_4",
+        "senderId": "user_2",
+        "text": "Perfect! Want to check out that ramen place I mentioned?",
+        "timestamp": "2024-05-30T18:25:00Z"
+      },
+      {
+        "id": "msg_5",
+        "senderId": "user_1",
+        "text": "That ramen place was incredible!",
+        "timestamp": "2024-05-30T18:30:00Z"
+      }
+    ]
+  },
+  {
+    "chatId": "chat_2",
+    "type": "group",
+    "participants": ["user_1", "user_3", "user_4", "user_5"],
+    "title": "NYC Food Explorers",
+    "lastMessage": "Who's up for BBQ this weekend?",
+    "lastMessageTime": "2024-05-31T12:45:00Z",
+    "messages": [
+      {
+        "id": "msg_6",
+        "senderId": "user_3",
+        "text": "Just discovered this amazing BBQ spot in Brooklyn!",
+        "timestamp": "2024-05-31T10:30:00Z"
+      },
+      {
+        "id": "msg_7",
+        "senderId": "user_1",
+        "text": "Ooh, tell us more! Always down for good BBQ",
+        "timestamp": "2024-05-31T10:32:00Z"
+      },
+      {
+        "id": "msg_8",
+        "senderId": "user_4",
+        "text": "Is it very spicy? I love heat in my food 🌶️",
+        "timestamp": "2024-05-31T11:15:00Z"
+      },
+      {
+        "id": "msg_9",
+        "senderId": "user_5",
+        "text": "Count me in! Need a break from curry this week 😄",
+        "timestamp": "2024-05-31T12:20:00Z"
+      },
+      {
+        "id": "msg_10",
+        "senderId": "user_3",
+        "text": "Who's up for BBQ this weekend?",
+        "timestamp": "2024-05-31T12:45:00Z"
+      }
+    ]
+  },
+  {
+    "chatId": "chat_3",
+    "type": "group",
+    "participants": ["user_2", "user_4", "user_5"],
+    "title": "Asian Food Squad",
+    "lastMessage": "Found the best dim sum place!",
+    "lastMessageTime": "2024-05-31T14:20:00Z",
+    "messages": [
+      {
+        "id": "msg_11",
+        "senderId": "user_2",
+        "text": "Anyone tried the new sushi place in SoHo?",
+        "timestamp": "2024-05-31T13:00:00Z"
+      },
+      {
+        "id": "msg_12",
+        "senderId": "user_4",
+        "text": "Not yet, but I heard their omakase is amazing",
+        "timestamp": "2024-05-31T13:15:00Z"
+      },
+      {
+        "id": "msg_13",
+        "senderId": "user_5",
+        "text": "We should do a group dinner there!",
+        "timestamp": "2024-05-31T13:45:00Z"
+      },
+      {
+        "id": "msg_14",
+        "senderId": "user_4",
+        "text": "Found the best dim sum place!",
+        "timestamp": "2024-05-31T14:20:00Z"
+      }
+    ]
+  }
+]

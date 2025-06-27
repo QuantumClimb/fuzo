@@ -1,0 +1,273 @@
+================================================================================
+🍜 FUZO - Food Discovery App - API Keys Requirements
+================================================================================
+
+Author: Onomatix (juncando@gmail.com)
+Created: $(date)
+Purpose: Complete list of API keys needed for local development and testing
+
+================================================================================
+🔑 ESSENTIAL API KEYS (PRIORITY 1) - Start Here
+================================================================================
+
+🗺️ MAPPING & LOCATION SERVICES
+----------------------------------------
+Google Maps Platform (Recommended Primary Choice):
+- VITE_GOOGLE_MAPS_API_KEY=your_google_maps_key
+- VITE_GOOGLE_PLACES_API_KEY=your_google_places_key  
+- VITE_GOOGLE_GEOCODING_API_KEY=your_geocoding_key
+- VITE_GOOGLE_DIRECTIONS_API_KEY=your_directions_key
+- Cost: $200/month free credit
+- APIs needed: Maps JavaScript API, Places API, Geocoding API, Directions API
+
+Alternative - Mapbox (if preferring over Google):
+- VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+- Cost: 50,000 map loads/month free
+
+🍽️ RESTAURANT & FOOD DATA
+----------------------------------------
+Yelp Fusion API (Primary restaurant data source):
+- VITE_YELP_API_KEY=your_yelp_api_key
+- Cost: 5,000 calls/day free
+- Provides: Restaurant info, reviews, photos, hours
+
+Foursquare Places API (Alternative/backup):
+- VITE_FOURSQUARE_API_KEY=your_foursquare_key
+- Cost: 1,000 calls/day free
+
+Zomato API (International coverage):
+- VITE_ZOMATO_API_KEY=your_zomato_key
+- Cost: 1,000 calls/day free
+
+================================================================================
+🔑 CORE FUNCTIONALITY API KEYS (PRIORITY 2)
+================================================================================
+
+🔐 AUTHENTICATION & USER MANAGEMENT
+----------------------------------------
+Firebase Authentication (Recommended):
+- VITE_FIREBASE_API_KEY=your_firebase_key
+- VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+- VITE_FIREBASE_PROJECT_ID=your_project_id
+- VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+- VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+- VITE_FIREBASE_APP_ID=your_app_id
+- Cost: Generous free tier (50,000 MAU)
+
+Alternative - Auth0:
+- VITE_AUTH0_DOMAIN=your_auth0_domain
+- VITE_AUTH0_CLIENT_ID=your_auth0_client_id
+- Cost: 7,000 MAU free
+
+Alternative - Supabase:
+- VITE_SUPABASE_URL=your_supabase_url
+- VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+- Cost: 50,000 MAU free
+
+💬 REAL-TIME CHAT & MESSAGING
+----------------------------------------
+Firebase Realtime Database (if using Firebase):
+- VITE_FIREBASE_DATABASE_URL=your_database_url
+- Cost: 1GB storage, 10GB transfer/month free
+
+Alternative - Socket.io Server:
+- VITE_SOCKET_SERVER_URL=your_socket_server_url
+- Cost: Depends on hosting
+
+Alternative - Pusher:
+- VITE_PUSHER_APP_ID=your_pusher_app_id
+- VITE_PUSHER_KEY=your_pusher_key
+- VITE_PUSHER_SECRET=your_pusher_secret
+- VITE_PUSHER_CLUSTER=your_pusher_cluster
+- Cost: 100 connections, 200k messages/day free
+
+================================================================================
+🔑 ENHANCED FEATURES API KEYS (PRIORITY 3)
+================================================================================
+
+🤖 AI & MACHINE LEARNING
+----------------------------------------
+OpenAI API (for AI Assistant features):
+- VITE_OPENAI_API_KEY=your_openai_key
+- Cost: $5 free credit for new accounts, then pay-per-use
+- Models: GPT-4, GPT-3.5-turbo for chat features
+
+Google AI/Gemini (Alternative):
+- VITE_GOOGLE_AI_API_KEY=your_google_ai_key
+- Cost: Free tier available
+
+Azure Cognitive Services (Image recognition):
+- VITE_AZURE_COMPUTER_VISION_KEY=your_azure_vision_key
+- VITE_AZURE_COMPUTER_VISION_ENDPOINT=your_azure_endpoint
+- Cost: 5,000 transactions/month free
+
+AWS Rekognition (Food image analysis):
+- VITE_AWS_ACCESS_KEY_ID=your_aws_access_key
+- VITE_AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+- VITE_AWS_REGION=your_aws_region
+- Cost: 5,000 images/month free first year
+
+📸 IMAGE STORAGE & PROCESSING
+----------------------------------------
+Cloudinary (Recommended for image management):
+- VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
+- VITE_CLOUDINARY_API_KEY=your_cloudinary_key
+- VITE_CLOUDINARY_API_SECRET=your_cloudinary_secret
+- Cost: 25 credits/month free (25GB storage, 25GB bandwidth)
+
+Alternative - AWS S3:
+- VITE_AWS_S3_BUCKET_NAME=your_s3_bucket
+- VITE_AWS_S3_REGION=your_s3_region
+- Cost: 5GB storage, 20,000 GET requests/month free
+
+Alternative - Firebase Storage (if using Firebase):
+- Uses same Firebase config as authentication
+- Cost: 1GB storage, 1GB transfer/day free
+
+================================================================================
+🔑 ANALYTICS & MONITORING (PRIORITY 4)
+================================================================================
+
+📊 ANALYTICS & TRACKING
+----------------------------------------
+Google Analytics 4:
+- VITE_GA_MEASUREMENT_ID=your_ga_id
+- Cost: Free with generous limits
+
+Mixpanel (User behavior analytics):
+- VITE_MIXPANEL_TOKEN=your_mixpanel_token
+- Cost: 100,000 events/month free
+
+Sentry (Error tracking & monitoring):
+- VITE_SENTRY_DSN=your_sentry_dsn
+- Cost: 5,000 errors/month free
+
+📧 COMMUNICATION & NOTIFICATIONS
+----------------------------------------
+SendGrid (Email notifications):
+- VITE_SENDGRID_API_KEY=your_sendgrid_key
+- Cost: 100 emails/day free
+
+Twilio (SMS notifications):
+- VITE_TWILIO_ACCOUNT_SID=your_twilio_sid
+- VITE_TWILIO_AUTH_TOKEN=your_twilio_token
+- Cost: $15 free trial credit
+
+Firebase Cloud Messaging (Push notifications):
+- VITE_FCM_VAPID_KEY=your_fcm_vapid_key
+- Cost: Unlimited free
+
+================================================================================
+📋 SETUP PRIORITY RECOMMENDATIONS
+================================================================================
+
+🚀 PHASE 1: IMMEDIATE SETUP (Day 1)
+- Google Maps API (maps, places, geocoding, directions)
+- Yelp API (restaurant data)
+- Keep using mock data for users/chat initially
+
+🔧 PHASE 2: CORE FEATURES (Week 1) 
+- Firebase (authentication, realtime database, storage)
+- Cloudinary (image storage and processing)
+- OpenAI API (AI assistant features)
+
+📈 PHASE 3: ADVANCED FEATURES (Week 2+)
+- Analytics (Google Analytics, Mixpanel)
+- Error tracking (Sentry)
+- Notifications (SendGrid, FCM)
+- Advanced AI features (Azure Computer Vision)
+
+================================================================================
+⚙️ ENVIRONMENT SETUP INSTRUCTIONS
+================================================================================
+
+1. CREATE ENVIRONMENT FILE:
+   touch .env.local
+
+2. ADD VARIABLES (example format):
+   VITE_GOOGLE_MAPS_API_KEY=AIzaSyC-your-actual-key-here
+   VITE_YELP_API_KEY=Bearer your-yelp-key-here
+   VITE_FIREBASE_API_KEY=AIzaSyD-your-firebase-key-here
+
+3. ENSURE .GITIGNORE INCLUDES:
+   .env.local
+   .env
+   .env.production
+
+4. RESTART DEVELOPMENT SERVER:
+   npm run dev
+
+================================================================================
+🛡️ SECURITY BEST PRACTICES
+================================================================================
+
+✅ DO:
+- Use VITE_ prefix for client-side environment variables
+- Keep sensitive keys on server-side only
+- Rotate API keys regularly
+- Set up API key restrictions (HTTP referrers, IP addresses)
+- Monitor API usage and set up billing alerts
+- Use different keys for development/staging/production
+
+❌ DON'T:
+- Commit API keys to version control
+- Share API keys in chat/email
+- Use production keys in development
+- Expose server-side keys to client
+- Use keys without restrictions
+
+================================================================================
+💰 COST ESTIMATES (Monthly)
+================================================================================
+
+Development/Testing (Free Tiers):
+- Google Maps: Free ($200 credit)
+- Yelp API: Free (5,000 calls/day)
+- Firebase: Free (generous limits)
+- Cloudinary: Free (25 credits)
+- OpenAI: ~$5-20 depending on usage
+- Total: ~$5-25/month
+
+Small Production App (Low traffic):
+- Google Maps: $50-100
+- Yelp API: $0-50
+- Firebase: $25-50
+- Cloudinary: $25-50
+- OpenAI: $50-100
+- Other services: $25-50
+- Total: ~$175-400/month
+
+================================================================================
+🔗 USEFUL LINKS FOR API SETUP
+================================================================================
+
+Google Maps Platform: https://console.cloud.google.com/google/maps-apis
+Yelp Fusion API: https://www.yelp.com/developers/v3/manage_app
+Firebase Console: https://console.firebase.google.com/
+Cloudinary Console: https://cloudinary.com/console
+OpenAI API: https://platform.openai.com/api-keys
+Auth0 Dashboard: https://manage.auth0.com/
+Supabase Dashboard: https://app.supabase.com/
+Mapbox Account: https://account.mapbox.com/
+Pusher Dashboard: https://dashboard.pusher.com/
+Sentry Dashboard: https://sentry.io/
+Mixpanel Dashboard: https://mixpanel.com/
+SendGrid Dashboard: https://app.sendgrid.com/
+Twilio Console: https://console.twilio.com/
+
+================================================================================
+📞 SUPPORT & TROUBLESHOOTING
+================================================================================
+
+Common Issues:
+1. CORS errors: Check API key restrictions and allowed domains
+2. 401 Unauthorized: Verify API key format and permissions
+3. Rate limiting: Check free tier limits and usage
+4. Missing environment variables: Ensure VITE_ prefix for client-side vars
+5. Build errors: Restart dev server after adding new env vars
+
+For help: juncando@gmail.com
+
+================================================================================
+END OF API KEYS REQUIREMENTS
+================================================================================ 

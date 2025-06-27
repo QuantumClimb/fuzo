@@ -1,0 +1,106 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 9 100% 69%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 42 100% 68%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 250 100% 69%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  html, body {
+    @apply h-full w-full;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-poppins antialiased;
+  }
+}
+
+@layer components {
+  .fuzo-container {
+    @apply px-4 max-w-md mx-auto w-full;
+  }
+  
+  .fuzo-page {
+    @apply min-h-[calc(100vh-4rem)] pt-4 pb-20;
+  }
+  
+  .fuzo-card {
+    @apply rounded-2xl shadow-lg overflow-hidden bg-white;
+  }
+  
+  .fuzo-tag {
+    @apply bg-fuzo-yellow text-fuzo-dark text-sm font-medium py-1 px-3 rounded-full;
+  }
+  
+  .fuzo-btn {
+    @apply rounded-full font-medium;
+  }
+  
+  .fuzo-btn-primary {
+    @apply bg-fuzo-coral text-white hover:bg-opacity-90 transition-all;
+  }
+  
+  .fuzo-btn-secondary {
+    @apply bg-fuzo-teal text-white hover:bg-opacity-90 transition-all;
+  }
+  
+  .fuzo-btn-outline {
+    @apply border-2 border-fuzo-coral text-fuzo-coral hover:bg-fuzo-coral hover:text-white transition-all;
+  }
+  
+  .fuzo-input {
+    @apply rounded-lg border border-gray-200 px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-fuzo-purple;
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Camera flash animation */
+@keyframes flash {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animate-flash {
+  animation: flash 0.3s ease-out;
+}
+

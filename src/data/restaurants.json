@@ -1,0 +1,333 @@
+
+[
+  {
+    "id": "rest_1",
+    "name": "Nonna's Kitchen",
+    "cuisine": "Italian",
+    "rating": 4.8,
+    "priceRange": "$$$",
+    "coordinates": { "lat": 40.7589, "lng": -73.9851 },
+    "address": "245 Mulberry St, New York, NY",
+    "hours": "11:00 AM – 10:00 PM",
+    "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500",
+    "description": "Authentic Italian cuisine in the heart of Little Italy",
+    "visitCount": 145,
+    "phoneNumber": "+1 (212) 555-0123",
+    "website": "www.nonnaskitchen.com",
+    "features": ["Outdoor seating", "Takeout", "Reservations"],
+    "reviewCount": 142,
+    "travelTimeMin": 12,
+    "reviews": [
+      {
+        "userId": "user_1",
+        "rating": 5,
+        "text": "Absolutely incredible pasta! The carbonara was perfect.",
+        "date": "2024-05-15"
+      },
+      {
+        "userId": "user_2", 
+        "rating": 4,
+        "text": "Great atmosphere and authentic flavors. Will definitely return!",
+        "date": "2024-05-10"
+      }
+    ],
+    "visitedByFriends": ["user_1", "user_3", "user_5"]
+  },
+  {
+    "id": "rest_2",
+    "name": "Sakura Sushi",
+    "cuisine": "Japanese",
+    "rating": 4.6,
+    "priceRange": "$$$$",
+    "coordinates": { "lat": 40.7505, "lng": -73.9934 },
+    "address": "123 Spring St, New York, NY",
+    "hours": "5:00 PM – 12:00 AM",
+    "image": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500",
+    "description": "Premium sushi experience with fresh daily catches",
+    "visitCount": 89,
+    "phoneNumber": "+1 (212) 555-0456",
+    "website": "www.sakurasushi.com",
+    "features": ["Sushi bar", "Sake selection", "Omakase"],
+    "reviewCount": 98,
+    "travelTimeMin": 8,
+    "reviews": [
+      {
+        "userId": "user_2",
+        "rating": 5,
+        "text": "Best omakase in the city! Fresh fish and skilled preparation.",
+        "date": "2024-05-12"
+      },
+      {
+        "userId": "user_4",
+        "rating": 4,
+        "text": "Expensive but worth it for special occasions.",
+        "date": "2024-05-08"
+      }
+    ],
+    "visitedByFriends": ["user_2", "user_4"]
+  },
+  {
+    "id": "rest_3",
+    "name": "Smoke & Bones BBQ",
+    "cuisine": "American",
+    "rating": 4.7,
+    "priceRange": "$$",
+    "coordinates": { "lat": 40.6892, "lng": -73.9442 },
+    "address": "456 Atlantic Ave, Brooklyn, NY",
+    "hours": "12:00 PM – 10:00 PM",
+    "image": "https://images.unsplash.com/photo-1558030006-450675393462?w=500",
+    "description": "Low and slow BBQ with house-made sauces",
+    "visitCount": 203,
+    "phoneNumber": "+1 (718) 555-0789",
+    "website": "www.smokeandbones.com",
+    "features": ["Outdoor seating", "Live music", "Craft beer"],
+    "reviewCount": 187,
+    "travelTimeMin": 22,
+    "reviews": [
+      {
+        "userId": "user_3",
+        "rating": 5,
+        "text": "The brisket melts in your mouth! Great beer selection too.",
+        "date": "2024-05-14"
+      },
+      {
+        "userId": "user_1",
+        "rating": 4,
+        "text": "Solid BBQ with generous portions. The ribs are excellent.",
+        "date": "2024-05-09"
+      }
+    ],
+    "visitedByFriends": ["user_1", "user_3"]
+  },
+  {
+    "id": "rest_4",
+    "name": "Bangkok Street",
+    "cuisine": "Thai",
+    "rating": 4.5,
+    "priceRange": "$$",
+    "coordinates": { "lat": 40.7831, "lng": -73.9712 },
+    "address": "789 Amsterdam Ave, New York, NY",
+    "hours": "11:30 AM – 10:30 PM",
+    "image": "https://images.unsplash.com/photo-1559314809-0f31657e3e8d?w=500",
+    "description": "Authentic Thai street food flavors",
+    "visitCount": 167,
+    "phoneNumber": "+1 (212) 555-0321",
+    "website": "www.bangkokstreet.com",
+    "features": ["Spicy options", "Vegetarian friendly", "Quick service"],
+    "reviewCount": 156,
+    "travelTimeMin": 18,
+    "reviews": [
+      {
+        "userId": "user_4",
+        "rating": 5,
+        "text": "Best pad thai in the neighborhood! Perfect spice level.",
+        "date": "2024-05-11"
+      },
+      {
+        "userId": "user_5",
+        "rating": 4,
+        "text": "Great flavors and reasonable prices. Love the green curry.",
+        "date": "2024-05-07"
+      }
+    ],
+    "visitedByFriends": ["user_4", "user_5"]
+  },
+  {
+    "id": "rest_5",
+    "name": "Pizzeria Bella",
+    "cuisine": "Italian",
+    "rating": 4.4,
+    "priceRange": "$$",
+    "coordinates": { "lat": 40.7614, "lng": -73.9776 },
+    "address": "321 Broadway, New York, NY",
+    "hours": "11:00 AM – 11:00 PM",
+    "image": "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500",
+    "description": "Wood-fired pizza with traditional recipes",
+    "visitCount": 312,
+    "phoneNumber": "+1 (212) 555-0654",
+    "website": "www.pizzeriabella.com",
+    "features": ["Wood-fired oven", "Delivery", "Catering"],
+    "reviewCount": 298,
+    "travelTimeMin": 15,
+    "reviews": [
+      {
+        "userId": "user_1",
+        "rating": 4,
+        "text": "Classic NYC pizza. Thin crust and great cheese blend.",
+        "date": "2024-05-13"
+      },
+      {
+        "userId": "user_3",
+        "rating": 5,
+        "text": "My go-to pizza place! Fast delivery and consistent quality.",
+        "date": "2024-05-06"
+      }
+    ],
+    "visitedByFriends": ["user_1", "user_3", "user_2"]
+  },
+  {
+    "id": "rest_6",
+    "name": "Spice Garden",
+    "cuisine": "Indian",
+    "rating": 4.6,
+    "priceRange": "$$$",
+    "coordinates": { "lat": 40.7505, "lng": -73.9842 },
+    "address": "654 Lexington Ave, New York, NY",
+    "hours": "5:00 PM – 10:00 PM",
+    "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500",
+    "description": "Modern Indian cuisine with traditional spices",
+    "visitCount": 128,
+    "phoneNumber": "+1 (212) 555-0987",
+    "website": "www.spicegarden.com",
+    "features": ["Vegetarian options", "Wine pairing", "Private dining"],
+    "reviewCount": 134,
+    "travelTimeMin": 9,
+    "reviews": [
+      {
+        "userId": "user_5",
+        "rating": 5,
+        "text": "Exceptional tikka masala and naan. Elegant atmosphere.",
+        "date": "2024-05-09"
+      },
+      {
+        "userId": "user_2",
+        "rating": 4,
+        "text": "Great variety of vegetarian dishes. A bit pricey but worth it.",
+        "date": "2024-05-05"
+      }
+    ],
+    "visitedByFriends": ["user_2", "user_5"]
+  },
+  {
+    "id": "rest_7",
+    "name": "Taco Libre",
+    "cuisine": "Mexican",
+    "rating": 4.3,
+    "priceRange": "$",
+    "coordinates": { "lat": 40.6782, "lng": -73.9442 },
+    "address": "987 5th Ave, Brooklyn, NY",
+    "hours": "11:00 AM – 12:00 AM",
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500",
+    "description": "Fresh Mexican street tacos and burritos",
+    "visitCount": 245,
+    "phoneNumber": "+1 (718) 555-0147",
+    "website": "www.tacolibre.com",
+    "features": ["Late night", "Catering", "Margaritas"],
+    "reviewCount": 211,
+    "travelTimeMin": 25,
+    "reviews": [
+      {
+        "userId": "user_3",
+        "rating": 4,
+        "text": "Great late night spot! Fish tacos are amazing.",
+        "date": "2024-05-12"
+      },
+      {
+        "userId": "user_4",
+        "rating": 5,
+        "text": "Authentic flavors and generous portions. Love the salsa verde.",
+        "date": "2024-05-08"
+      }
+    ],
+    "visitedByFriends": ["user_3", "user_4", "user_1"]
+  },
+  {
+    "id": "rest_8",
+    "name": "Le Petit Cafe",
+    "cuisine": "French",
+    "rating": 4.9,
+    "priceRange": "$$$",
+    "coordinates": { "lat": 40.7505, "lng": -73.9934 },
+    "address": "147 West 4th St, New York, NY",
+    "hours": "7:00 AM – 9:00 PM",
+    "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500",
+    "description": "Charming French bistro with classic desserts",
+    "visitCount": 92,
+    "phoneNumber": "+1 (212) 555-0258",
+    "website": "www.lepetitcafe.com",
+    "features": ["Breakfast", "Pastries", "Wine selection"],
+    "reviewCount": 87,
+    "travelTimeMin": 7,
+    "reviews": [
+      {
+        "userId": "user_2",
+        "rating": 5,
+        "text": "Perfect croissants and coffee. Feels like being in Paris!",
+        "date": "2024-05-14"
+      },
+      {
+        "userId": "user_1",
+        "rating": 5,
+        "text": "Excellent brunch spot. The croque monsieur is divine.",
+        "date": "2024-05-10"
+      }
+    ],
+    "visitedByFriends": ["user_1", "user_2"]
+  },
+  {
+    "id": "rest_9",
+    "name": "Garden Bistro",
+    "cuisine": "American",
+    "rating": 4.2,
+    "priceRange": "$$",
+    "coordinates": { "lat": 40.7831, "lng": -73.9712 },
+    "address": "258 Columbus Ave, New York, NY",
+    "hours": "8:00 AM – 10:00 PM",
+    "image": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=500",
+    "description": "Farm-to-table dining with seasonal ingredients",
+    "visitCount": 156,
+    "phoneNumber": "+1 (212) 555-0369",
+    "website": "www.gardenbistro.com",
+    "features": ["Outdoor seating", "Brunch", "Local ingredients"],
+    "reviewCount": 143,
+    "travelTimeMin": 19,
+    "reviews": [
+      {
+        "userId": "user_5",
+        "rating": 4,
+        "text": "Fresh ingredients and creative dishes. Love the garden patio.",
+        "date": "2024-05-11"
+      },
+      {
+        "userId": "user_3",
+        "rating": 4,
+        "text": "Good brunch options. The avocado toast is excellent.",
+        "date": "2024-05-07"
+      }
+    ],
+    "visitedByFriends": ["user_3", "user_5"]
+  },
+  {
+    "id": "rest_10",
+    "name": "Ramen-ya",
+    "cuisine": "Japanese",
+    "rating": 4.5,
+    "priceRange": "$$",
+    "coordinates": { "lat": 40.7282, "lng": -73.9942 },
+    "address": "369 Canal St, New York, NY",
+    "hours": "12:00 PM – 11:00 PM",
+    "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500",
+    "description": "Authentic ramen with rich, flavorful broths",
+    "visitCount": 189,
+    "phoneNumber": "+1 (212) 555-0741",
+    "website": "www.ramenya.com",
+    "features": ["Counter seating", "Authentic ramen", "Quick service"],
+    "reviewCount": 176,
+    "travelTimeMin": 13,
+    "reviews": [
+      {
+        "userId": "user_4",
+        "rating": 5,
+        "text": "Best tonkotsu ramen in Chinatown! Rich and creamy broth.",
+        "date": "2024-05-13"
+      },
+      {
+        "userId": "user_1",
+        "rating": 4,
+        "text": "Great ramen spot. The gyoza are also excellent.",
+        "date": "2024-05-09"
+      }
+    ],
+    "visitedByFriends": ["user_1", "user_4"]
+  }
+]
