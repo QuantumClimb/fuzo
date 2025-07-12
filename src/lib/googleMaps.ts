@@ -524,7 +524,7 @@ export function getPlacePhotoUrl(
   maxWidth: number = 800,
   maxHeight: number = 600
 ): string {
-  if (!GOOGLE_MAPS_API_KEY) {
+  if (!GOOGLE_MAPS_API_KEY || !photoReference) {
     return '/placeholder.svg';
   }
 
