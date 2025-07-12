@@ -339,7 +339,20 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
     if (window.google.maps.places.Place && (window.google.maps.places.Place as any).fetchFields) {
       const request = {
         place_id: placeId,
-        fields: ['place_id', 'displayName', 'formattedAddress', 'nationalPhoneNumber', 'websiteURI', 'rating', 'photos', 'currentOpeningHours', 'location', 'types', 'priceLevel'],
+        // Use only valid fields for the new Place API
+        fields: [
+          'id',
+          'displayName',
+          'formattedAddress',
+          'nationalPhoneNumber',
+          'websiteUri',
+          'rating',
+          'photos',
+          'currentOpeningHours',
+          'location',
+          'types',
+          'priceLevel',
+        ],
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -348,28 +361,30 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
       await (place as any).fetchFields();
 
       const details: RestaurantDetails = {
-        place_id: place.place_id || placeId,
+        place_id: place.place_id || place.id || placeId,
         name: place.displayName?.text || place.name || 'Unknown Restaurant',
         formatted_address: place.formattedAddress || '',
         formatted_phone_number: place.nationalPhoneNumber,
-        website: place.websiteURI,
+        website: place.websiteUri || place.websiteURI,
         rating: place.rating || 0,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        photos: place.photos?.map((photo: any) => ({
-          photo_reference: photo.name,
-          width: photo.widthPx,
-          height: photo.heightPx,
-          attributions: photo.authorAttributions || [],
-        })),
+        photos: place.photos?.map((photo: unknown) => {
+          type PlacePhoto = { name?: string; widthPx?: number; heightPx?: number; authorAttributions?: unknown[] };
+          const p = photo as PlacePhoto;
+          return {
+            photo_reference: p.name,
+            width: p.widthPx,
+            height: p.heightPx,
+            attributions: p.authorAttributions || [],
+          };
+        }),
         opening_hours: place.currentOpeningHours,
         geometry: {
           location: {
-            lat: place.location.lat(),
-            lng: place.location.lng(),
+            lat: place.location?.lat ? place.location.lat() : 0,
+            lng: place.location?.lng ? place.location.lng() : 0,
           },
         },
       };
-      
       return details;
     }
   } catch (error) {
@@ -380,7 +395,20 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
   return new Promise((resolve, reject) => {
     const request = {
       placeId: placeId,
-      fields: ['place_id', 'name', 'formatted_address', 'formatted_phone_number', 'website', 'rating', 'photos', 'opening_hours', 'geometry', 'types', 'price_level'],
+      // Use only valid fields for legacy API
+      fields: [
+        'place_id',
+        'name',
+        'formatted_address',
+        'formatted_phone_number',
+        'website',
+        'rating',
+        'photos',
+        'opening_hours',
+        'geometry',
+        'types',
+        'price_level',
+      ],
     };
 
     placesService.getDetails(request, (place: GooglePlaceResult, status: string) => {
