@@ -184,7 +184,7 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-2">
-                  {restaurant.photos.slice(0, 4).map((photo, index) => (
+                  {restaurant.photos.slice(0, 4).filter(photo => photo.photo_reference).map((photo, index) => (
                     <img
                       key={index}
                       src={getPlacePhotoUrl(photo.photo_reference, 400, 300)}

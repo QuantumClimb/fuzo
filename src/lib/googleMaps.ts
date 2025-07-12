@@ -249,7 +249,8 @@ export async function searchNearbyRestaurants(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (window.google.maps.places.Place && (window.google.maps.places.Place as any).searchNearby) {
       const request = {
-        fields: ['place_id', 'displayName', 'formattedAddress', 'location', 'rating', 'priceLevel', 'types', 'photos', 'currentOpeningHours'],
+        // Only use valid fields for the new Place API
+        fields: ['id', 'displayName', 'formattedAddress', 'location', 'rating', 'priceLevel', 'types', 'photos'],
         locationRestriction: {
           center: { lat: location.lat, lng: location.lng },
           radius: radius,
@@ -263,26 +264,43 @@ export async function searchNearbyRestaurants(
       const places = response.places || [];
       
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const restaurants = places.map((place: any): Restaurant => ({
-        id: place.place_id || place.id,
-        name: place.displayName?.text || place.name || 'Unknown Restaurant',
-        rating: place.rating || 0,
-        address: place.formattedAddress || place.vicinity || '',
-        coordinates: {
-          lat: place.location.lat(),
-          lng: place.location.lng(),
-        },
-        cuisine: mapCuisineType(place.types || []),
-        priceLevel: place.priceLevel || 2,
-        image: getBestRestaurantImage(place.photos),
-        distance: calculateDistance(
-          location.lat,
-          location.lng,
-          place.location.lat(),
-          place.location.lng()
-        ),
-        photoAttributions: (place.photos && place.photos[0] && place.photos[0].authorAttributions) ? place.photos[0].authorAttributions : [],
-      }));
+      const restaurants = places.map((place: any): Restaurant => {
+        // Log the raw place object for debugging
+        console.log('Place object:', place);
+        console.log('Place.Dg:', place.Dg);
+        console.log('Place.Mg:', place.Mg);
+        // Robustly extract the name
+        let restaurantName = '';
+        if (place.Dg && typeof place.Dg.displayName === 'string' && place.Dg.displayName.trim().length > 0) {
+          restaurantName = place.Dg.displayName;
+        } else if (place.displayName && typeof place.displayName.text === 'string' && place.displayName.text.trim().length > 0) {
+          restaurantName = place.displayName.text;
+        } else if (typeof place.name === 'string' && place.name.trim().length > 0) {
+          restaurantName = place.name;
+        } else if (typeof place.title === 'string' && place.title.trim().length > 0) {
+          restaurantName = place.title;
+        }
+        return {
+          id: place.place_id || place.id,
+          name: restaurantName || 'Unknown Restaurant',
+          rating: place.rating || 0,
+          address: place.formattedAddress || place.vicinity || '',
+          coordinates: {
+            lat: place.location.lat(),
+            lng: place.location.lng(),
+          },
+          cuisine: mapCuisineType(place.types || []),
+          priceLevel: place.priceLevel || 2,
+          image: getBestRestaurantImage(place.photos),
+          distance: calculateDistance(
+            location.lat,
+            location.lng,
+            place.location.lat(),
+            place.location.lng()
+          ),
+          photoAttributions: (place.photos && place.photos[0] && place.photos[0].authorAttributions) ? place.photos[0].authorAttributions : [],
+        };
+      });
       
       return restaurants;
     }
@@ -339,7 +357,7 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
     if (window.google.maps.places.Place && (window.google.maps.places.Place as any).fetchFields) {
       const request = {
         place_id: placeId,
-        // Use only valid fields for the new Place API
+        // Only use valid fields for the new Place API
         fields: [
           'id',
           'displayName',
@@ -348,7 +366,6 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
           'websiteUri',
           'rating',
           'photos',
-          'currentOpeningHours',
           'location',
           'types',
           'priceLevel',
@@ -360,28 +377,35 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (place as any).fetchFields();
 
+      // Log the raw place object and Dg for debugging
+      console.log('Place details object:', place);
+      console.log('Place details Dg:', place.Dg);
+
+      const dg = place.Dg || {};
+      // Define PlacePhoto type for type safety
+      interface PlacePhoto { name?: string; widthPx?: number; heightPx?: number; authorAttributions?: unknown[] }
       const details: RestaurantDetails = {
-        place_id: place.place_id || place.id || placeId,
-        name: place.displayName?.text || place.name || 'Unknown Restaurant',
-        formatted_address: place.formattedAddress || '',
-        formatted_phone_number: place.nationalPhoneNumber,
-        website: place.websiteUri || place.websiteURI,
-        rating: place.rating || 0,
-        photos: place.photos?.map((photo: unknown) => {
-          type PlacePhoto = { name?: string; widthPx?: number; heightPx?: number; authorAttributions?: unknown[] };
-          const p = photo as PlacePhoto;
-          return {
-            photo_reference: p.name,
-            width: p.widthPx,
-            height: p.heightPx,
-            attributions: p.authorAttributions || [],
-          };
-        }),
-        opening_hours: place.currentOpeningHours,
+        place_id: dg.id || place.place_id || place.id || placeId,
+        name: dg.displayName || 'Unknown Restaurant',
+        formatted_address: dg.formattedAddress || '',
+        formatted_phone_number: dg.nationalPhoneNumber,
+        website: dg.websiteUri || dg.websiteURI,
+        rating: dg.rating || 0,
+        photos: dg.photos
+          ? dg.photos
+              .filter((photo: PlacePhoto) => typeof photo.name === 'string' && photo.name.trim().length > 0)
+              .map((photo: PlacePhoto) => ({
+                photo_reference: photo.name,
+                width: photo.widthPx,
+                height: photo.heightPx,
+                attributions: photo.authorAttributions || [],
+              }))
+          : [],
+        opening_hours: dg.currentOpeningHours,
         geometry: {
           location: {
-            lat: place.location?.lat ? place.location.lat() : 0,
-            lng: place.location?.lng ? place.location.lng() : 0,
+            lat: dg.location?.lat ? dg.location.lat() : 0,
+            lng: dg.location?.lng ? dg.location.lng() : 0,
           },
         },
       };
@@ -524,7 +548,7 @@ export function getPlacePhotoUrl(
   maxWidth: number = 800,
   maxHeight: number = 600
 ): string {
-  if (!GOOGLE_MAPS_API_KEY || !photoReference) {
+  if (!GOOGLE_MAPS_API_KEY) {
     return '/placeholder.svg';
   }
 
@@ -696,8 +720,9 @@ export async function searchPlacesByText(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (window.google.maps.places.Place && (window.google.maps.places.Place as any).searchByText) {
       const request = {
+        // Only use valid fields for the new Place API
         textQuery: query,
-        fields: ['place_id', 'displayName', 'formattedAddress', 'location', 'rating', 'priceLevel', 'types', 'photos', 'currentOpeningHours'],
+        fields: ['id', 'displayName', 'formattedAddress', 'location', 'rating', 'priceLevel', 'types', 'photos'],
         locationRestriction: location ? {
           center: { lat: location.lat, lng: location.lng },
           radius: radius || 50000, // 50km default if not specified

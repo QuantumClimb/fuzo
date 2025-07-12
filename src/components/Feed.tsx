@@ -105,6 +105,17 @@ const Feed: React.FC = () => {
     };
   };
 
+  // Filter restaurants to only those with a valid name and image
+  const validRestaurants = restaurants.filter((restaurant) => {
+    const hasValidName = typeof restaurant.name === 'string' && restaurant.name.trim().length > 0;
+    const hasValidImage = typeof restaurant.image === 'string' && restaurant.image.trim().length > 0 && !restaurant.image.includes('placeholder');
+    if (!hasValidName || !hasValidImage) {
+      // Optional: log skipped restaurants for debugging
+      // console.warn('Skipping invalid restaurant:', restaurant);
+    }
+    return hasValidName && hasValidImage;
+  });
+
   if (selectedRestaurant) {
     return (
       <RestaurantDetail 
@@ -277,9 +288,9 @@ const Feed: React.FC = () => {
         )}
 
         {/* Restaurants Feed */}
-        {activeLocation && restaurants.length > 0 && (
+        {activeLocation && validRestaurants.length > 0 && (
           <div className="space-y-6">
-            {restaurants.map((restaurant, index) => {
+            {validRestaurants.map((restaurant, index) => {
               const post = createPostFromRestaurant(restaurant, index);
               return (
                 <Card key={restaurant.id} className="overflow-hidden">
@@ -383,7 +394,7 @@ const Feed: React.FC = () => {
         )}
 
         {/* No Restaurants Found */}
-        {activeLocation && restaurants.length === 0 && !restaurantsLoading && (
+        {activeLocation && validRestaurants.length === 0 && !restaurantsLoading && (
           <div className="text-center py-8 space-y-4">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
               <Utensils className="h-12 w-12 text-gray-400" />

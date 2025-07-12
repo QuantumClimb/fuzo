@@ -1,15 +1,25 @@
-# newBuzo - Food Discovery & Social Sharing
+# QuantumClimb - Social Food Discovery & Location Sharing
+
+## 🚨 2024 Update: Google Maps Place API Migration & Robustness Improvements
+
+- **Full migration to the new Google Maps Place API**: The app now exclusively uses the new Place API for all restaurant search and details, ensuring future compatibility and compliance with Google’s deprecation of legacy PlacesService.
+- **Robust feed and details handling**: Restaurant names and images are now always shown in the feed, and the details page is resilient to missing or malformed data.
+- **Error handling**: Defensive checks and filtering prevent crashes from undefined or missing fields (e.g., photos, names). The UI only displays valid data, and logs are added for easier debugging.
+- **.env setup required**: Ensure your `.env` file contains a valid `VITE_GOOGLE_MAPS_API_KEY` for full functionality.
 
 A modern mobile-first React application that combines social media with location-based restaurant discovery. Share your dining experiences, discover new restaurants, and connect with fellow food enthusiasts.
 
 ## 🚀 Features
 
 - **📱 Social Feed**: Instagram-style feed for sharing food and dining experiences
-- **🎯 Restaurant Radar**: Location-based restaurant discovery with filtering
+- **🎯 Restaurant Radar**: Location-based restaurant discovery with filtering and live map
 - **📸 Camera Integration**: Capture and share photos with geolocation
 - **🗺️ Location Services**: Real-time geolocation for restaurant recommendations
 - **🏷️ Smart Filtering**: Filter restaurants by cuisine, price, and rating
 - **📍 Toronto Focus**: Curated content and restaurants in the Toronto area
+- **🔎 Location-First Search**: Search for locations first, then view restaurants in the selected area (Google Places API)
+- **🖼️ Google Places Photo Attribution**: Restaurant images display required attributions per Google’s policy
+- **🗺️ Enhanced Radar**: Interactive map with "Detect My Location" and a distance slider (50m–5000m) to filter nearby restaurants
 
 ## 🛠️ Technology Stack
 
@@ -31,7 +41,7 @@ A modern mobile-first React application that combines social media with location
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/QuantumClimb/fuzo.git
    cd newBuzo
    ```
 
@@ -59,7 +69,7 @@ src/
 ├── components/          # React components
 │   ├── ui/             # shadcn/ui components
 │   ├── Feed.tsx        # Social media feed
-│   ├── Radar.tsx       # Restaurant discovery
+│   ├── RadarWithGoogleMaps.tsx # Enhanced radar with map & filters
 │   ├── Camera.tsx      # Photo capture
 │   └── ...
 ├── hooks/              # Custom React hooks
@@ -76,10 +86,14 @@ src/
 - Interactive like, comment, and share buttons
 - Restaurant post integration with detailed views
 - Time-based post sorting
+- **Location-first search**: Search for a location, then view restaurants in that area
+- **Google Places photo attribution**: Attributions shown under restaurant images
 
-### Radar Component
+### RadarWithGoogleMaps Component
 - Real-time location-based restaurant discovery
+- Interactive map with "Detect My Location"
 - Cuisine filtering (Steakhouse, Thai, Japanese, Canadian)
+- **Distance slider**: Filter restaurants by adjustable radius (50m–5000m)
 - Restaurant cards with ratings, prices, and distances
 - Geolocation permission handling
 
@@ -98,6 +112,22 @@ src/
 - `npm run preview` - Preview production build
 
 ## 🌐 Deployment
+
+### Git Configuration for CI/CD
+This project includes a `prepare` script and config section in `package.json` to ensure all git commits use the correct identity for QuantumClimb:
+
+```json
+"scripts": {
+  ...
+  "prepare": "git config user.name 'Quantum Climb' && git config user.email 'quantumclimb@users.noreply.github.com'"
+},
+"config": {
+  "gitUser": "Quantum Climb",
+  "gitEmail": "quantumclimb@users.noreply.github.com"
+}
+```
+
+This prevents permission and email privacy issues during deployment.
 
 ### Vercel (Recommended)
 1. Connect your GitHub repository to Vercel
@@ -152,15 +182,16 @@ VITE_APP_ENV=development
 3. **Required Google Maps APIs:**
    - **Places API** - Restaurant search and details
    - **Geocoding API** - Address resolution
-   - **Maps JavaScript API** - Interactive maps (future feature)
+   - **Maps JavaScript API** - Interactive maps
    - **Maps Static API** - Static map images
 
 ### 📊 **Google Maps API Usage:**
 
+- **Location-First Search**: Search for a location, then view restaurants in that area
 - **Restaurant Discovery**: Real-time nearby restaurant search
 - **Place Details**: Complete restaurant information (hours, photos, contact)
 - **Reverse Geocoding**: Convert coordinates to readable addresses
-- **Place Photos**: High-quality restaurant images
+- **Place Photos**: High-quality restaurant images with required attributions
 - **Static Maps**: Location visualization
 
 **Without API Key**: App falls back to mock data for development.
@@ -191,3 +222,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Unsplash](https://unsplash.com/) for placeholder images
 - [Lucide](https://lucide.dev/) for the icon set
 - Toronto restaurant community for inspiration
+- Google Maps Platform for location and places APIs
