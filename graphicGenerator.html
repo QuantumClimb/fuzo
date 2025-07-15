@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Food Content Creator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .input-group {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 20px rgba(255,107,107,0.1);
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,107,107,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .content-output {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .output-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .output-panel h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .nutrition-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .nutrition-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+        
+        .nutrition-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .recipe-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+            margin: 20px 0;
+        }
+        
+        .recipe-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .recipe-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .ingredients-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .ingredients-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .ingredients-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .error {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #276749;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .input-section,
+            .content-output {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍽 Automated Food Content Creator</h1>
+            <p>Generate beautiful infographics and content from food & recipe data</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="foodQuery">Search Food/Recipe:</label>
+                    <input type="text" id="foodQuery" placeholder="e.g., chicken pasta, banana smoothie">
+                    <button class="btn" onclick="searchFood()">🔍 Search Food</button>
+                </div>
+                
+                <div class="input-group">
+                    <label for="contentType">Content Type:</label>
+                    <select id="contentType">
+                        <option value="nutrition">Nutrition Infographic</option>
+                        <option value="recipe">Recipe Card</option>
+                        <option value="social">Social Media Post</option>
+                        <option value="comparison">Food Comparison</option>
+                    </select>
+                    <button class="btn" onclick="generateContent()">✨ Generate Content</button>
+                </div>
+            </div>
+            
+            <div class="content-output" id="contentOutput" style="display:none;">
+                <div class="output-panel">
+                    <h3>📊 Nutrition Visualization</h3>
+                    <div class="chart-container">
+                        <canvas id="nutritionChart"></canvas>
+                    </div>
+                    <div class="nutrition-grid" id="nutritionGrid"></div>
+                </div>
+                
+                <div class="output-panel">
+                    <h3>📝 Generated Content</h3>
+                    <div id="generatedContent"></div>
+                    <div class="export-options">
+                        <button class="btn" onclick="exportAsImage()">📸 Export as Image</button>
+                        <button class="btn" onclick="exportAsJSON()">📄 Export as JSON</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFoodData = null;
+        let nutritionChart = null;
+        
+        // Mock food database for demo purposes
+        const mockFoodDatabase = {
+            'chicken pasta': {
+                name: 'Chicken Pasta',
+                calories: 420,
+                protein: 28,
+                carbs: 45,
+                fat: 12,
+                fiber: 3,
+                sugar: 8,
+                sodium: 580,
+                ingredients: ['Chicken breast', 'Pasta', 'Olive oil', 'Garlic', 'Tomatoes', 'Basil', 'Parmesan cheese'],
+                cookTime: 25,
+                servings: 4,
+                difficulty: 'Easy'
+            },
+            'banana smoothie': {
+                name: 'Banana Smoothie',
+                calories: 240,
+                protein: 8,
+                carbs: 52,
+                fat: 2,
+                fiber: 6,
+                sugar: 42,
+                sodium: 120,
+                ingredients: ['Banana', 'Milk', 'Yogurt', 'Honey', 'Ice cubes'],
+                cookTime: 5,
+                servings: 2,
+                difficulty: 'Easy'
+            },
+            'caesar salad': {
+                name: 'Caesar Salad',
+                calories: 180,
+                protein: 6,
+                carbs: 12,
+                fat: 14,
+                fiber: 4,
+                sugar: 3,
+                sodium: 420,
+                ingredients: ['Romaine lettuce', 'Caesar dressing', 'Parmesan cheese', 'Croutons', 'Lemon'],
+                cookTime: 10,
+                servings: 2,
+                difficulty: 'Easy'
+            }
+        };
+
+        async function searchFood() {
+            const query = document.getElementById('foodQuery').value.toLowerCase();
+            const outputDiv = document.getElementById('contentOutput');
+            
+            if (!query) {
+                showMessage('Please enter a food or recipe name', 'error');
+                return;
+            }
+            
+            showMessage('Searching for food data...', 'loading');
+            
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Check mock database
+            if (mockFoodDatabase[query]) {
+                currentFoodData = mockFoodDatabase[query];
+                showMessage('Food data found! Ready to generate content.', 'success');
+                outputDiv.style.display = 'grid';
+                updateNutritionDisplay();
+            } else {
+                // Generate random data for demo
+                currentFoodData = generateRandomFoodData(query);
+                showMessage('Food data generated! Ready to generate content.', 'success');
+                outputDiv.style.display = 'grid';
+                updateNutritionDisplay();
+            }
+        }
+        
+        function generateRandomFoodData(name) {
+            return {
+                name: name.charAt(0).toUpperCase() + name.slice(1),
+                calories: Math.floor(Math.random() * 400) + 100,
+                protein: Math.floor(Math.random() * 30) + 5,
+                carbs: Math.floor(Math.random() * 60) + 10,
+                fat: Math.floor(Math.random() * 20) + 2,
+                fiber: Math.floor(Math.random() * 10) + 1,
+                sugar: Math.floor(Math.random() * 25) + 2,
+                sodium: Math.floor(Math.random() * 800) + 100,
+                ingredients: ['Main ingredient', 'Secondary ingredient', 'Seasoning', 'Oil/Fat', 'Garnish'],
+                cookTime: Math.floor(Math.random() * 45) + 10,
+                servings: Math.floor(Math.random() * 4) + 1,
+                difficulty: ['Easy', 'Medium', 'Hard'][Math.floor(Math.random() * 3)]
+            };
+        }
+        
+        function updateNutritionDisplay() {
+            if (!currentFoodData) return;
+            
+            // Update nutrition grid
+            const nutritionGrid = document.getElementById('nutritionGrid');
+            nutritionGrid.innerHTML = `
+                <div class="nutrition-item">
+                    <div class="nutrition-value">${currentFoodData.calories}</div>
+                    <div class="nutrition-label">Calories</div>
+                </div>
+                <div class="nutrition-item">
+                    <div class="nutrition-value">${currentFoodData.protein}g</div>
+                    <div class="nutrition-label">Protein</div>
+                </div>
+                <div class="nutrition-item">
+                    <div class="nutrition-value">${currentFoodData.carbs}g</div>
+                    <div class="nutrition-label">Carbs</div>
+                </div>
+                <div class="nutrition-item">
+                    <div class="nutrition-value">${currentFoodData.fat}g</div>
+                    <div class="nutrition-label">Fat</div>
+                </div>
+            `;
+            
+            // Update chart
+            updateNutritionChart();
+        }
+        
+        function updateNutritionChart() {
+            const ctx = document.getElementById('nutritionChart').getContext('2d');
+            
+            if (nutritionChart) {
+                nutritionChart.destroy();
+            }
+            
+            nutritionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Protein', 'Carbs', 'Fat'],
+                    datasets: [{
+                        data: [currentFoodData.protein * 4, currentFoodData.carbs * 4, currentFoodData.fat * 9],
+                        backgroundColor: ['#ff6b6b', '#4ecdc4', '#45b7d1'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function generateContent() {
+            if (!currentFoodData) {
+                showMessage('Please search for food data first', 'error');
+                return;
+            }
+            
+            const contentType = document.getElementById('contentType').value;
+            const contentDiv = document.getElementById('generatedContent');
+            
+            switch(contentType) {
+                case 'nutrition':
+                    contentDiv.innerHTML = generateNutritionContent();
+                    break;
+                case 'recipe':
+                    contentDiv.innerHTML = generateRecipeContent();
+                    break;
+                case 'social':
+                    contentDiv.innerHTML = generateSocialContent();
+                    break;
+                case 'comparison':
+                    contentDiv.innerHTML = generateComparisonContent();
+                    break;
+            }
+            
+            showMessage('Content generated successfully!', 'success');
+        }
+        
+        function generateNutritionContent() {
+            return `
+                <div class="recipe-card">
+                    <h3>🥗 Nutrition Facts: ${currentFoodData.name}</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                        <div><strong>Calories:</strong> ${currentFoodData.calories}</div>
+                        <div><strong>Protein:</strong> ${currentFoodData.protein}g</div>
+                        <div><strong>Carbs:</strong> ${currentFoodData.carbs}g</div>
+                        <div><strong>Fat:</strong> ${currentFoodData.fat}g</div>
+                        <div><strong>Fiber:</strong> ${currentFoodData.fiber}g</div>
+                        <div><strong>Sugar:</strong> ${currentFoodData.sugar}g</div>
+                        <div><strong>Sodium:</strong> ${currentFoodData.sodium}mg</div>
+                        <div><strong>Servings:</strong> ${currentFoodData.servings}</div>
+                    </div>
+                    <div style="background: #f0f8ff; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                        <strong>Health Score:</strong> ${calculateHealthScore(currentFoodData)}/100
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateRecipeContent() {
+            return `
+                <div class="recipe-card">
+                    <div class="recipe-title">🍳 ${currentFoodData.name}</div>
+                    <div class="recipe-meta">
+                        <span>⏱ ${currentFoodData.cookTime} min</span>
+                        <span>👥 ${currentFoodData.servings} servings</span>
+                        <span>📊 ${currentFoodData.difficulty}</span>
+                    </div>
+                    <h4>Ingredients:</h4>
+                    <ul class="ingredients-list">
+                        ${currentFoodData.ingredients.map(ingredient => `<li>• ${ingredient}</li>`).join('')}
+                    </ul>
+                    <div style="background: #f0f8ff; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                        <strong>Nutritional Highlights:</strong><br>
+                        High in protein (${currentFoodData.protein}g) • ${currentFoodData.calories} calories per serving
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateSocialContent() {
+            return `
+                <div class="recipe-card">
+                    <h3>📱 Social Media Post</h3>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; text-align: center;">
+                        <h2>🍽 ${currentFoodData.name}</h2>
+                        <p style="font-size: 1.1em; margin: 15px 0;">Only ${currentFoodData.calories} calories!</p>
+                        <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                            <div><strong>${currentFoodData.protein}g</strong><br>Protein</div>
+                            <div><strong>${currentFoodData.carbs}g</strong><br>Carbs</div>
+                            <div><strong>${currentFoodData.fat}g</strong><br>Fat</div>
+                        </div>
+                        <p style="font-size: 0.9em; opacity: 0.9;">Ready in ${currentFoodData.cookTime} minutes • Serves ${currentFoodData.servings}</p>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                        <strong>Caption:</strong> "Delicious ${currentFoodData.name} packed with ${currentFoodData.protein}g protein! 💪 Ready in just ${currentFoodData.cookTime} minutes. #HealthyEating #FoodPrep #Nutrition"
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateComparisonContent() {
+            const comparison = mockFoodDatabase['chicken pasta'] || generateRandomFoodData('comparison food');
+            return `
+                <div class="recipe-card">
+                    <h3>⚖ Food Comparison</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                            <h4>${currentFoodData.name}</h4>
+                            <div style="color: #ff6b6b; font-size: 1.5em; font-weight: bold;">${currentFoodData.calories}</div>
+                            <div style="font-size: 0.9em; color: #666;">calories</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                            <h4>${comparison.name}</h4>
+                            <div style="color: #4ecdc4; font-size: 1.5em; font-weight: bold;">${comparison.calories}</div>
+                            <div style="font-size: 0.9em; color: #666;">calories</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h4>Nutritional Comparison:</h4>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>Protein:</span>
+                                <span>${currentFoodData.protein}g vs ${comparison.protein}g</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>Carbs:</span>
+                                <span>${currentFoodData.carbs}g vs ${comparison.carbs}g</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>Fat:</span>
+                                <span>${currentFoodData.fat}g vs ${comparison.fat}g</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function calculateHealthScore(food) {
+            let score = 50;
+            
+            // Bonus for protein
+            if (food.protein > 20) score += 15;
+            else if (food.protein > 10) score += 10;
+            
+            // Bonus for fiber
+            if (food.fiber > 5) score += 10;
+            else if (food.fiber > 3) score += 5;
+            
+            // Penalty for high sodium
+            if (food.sodium > 600) score -= 10;
+            else if (food.sodium > 400) score -= 5;
+            
+            // Penalty for high sugar
+            if (food.sugar > 20) score -= 10;
+            else if (food.sugar > 10) score -= 5;
+            
+            return Math.max(0, Math.min(100, score));
+        }
+        
+        function exportAsImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 600;
+            
+            // Create a simple image export
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(currentFoodData.name, canvas.width/2, 60);
+            
+            ctx.font = '24px Arial';
+            ctx.fillText(`${currentFoodData.calories} Calories`, canvas.width/2, 120);
+            
+            // Add nutrition info
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Protein: ${currentFoodData.protein}g`, 100, 200);
+            ctx.fillText(`Carbs: ${currentFoodData.carbs}g`, 100, 240);
+            ctx.fillText(`Fat: ${currentFoodData.fat}g`, 100, 280);
+            ctx.fillText(`Fiber: ${currentFoodData.fiber}g`, 100, 320);
+            
+            // Download
+            const link = document.createElement('a');
+            link.download = `${currentFoodData.name}-nutrition.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            
+            showMessage('Image exported successfully!', 'success');
+        }
+        
+        function exportAsJSON() {
+            const data = {
+                food: currentFoodData,
+                generated_at: new Date().toISOString(),
+                content_type: document.getElementById('contentType').value
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${currentFoodData.name}-data.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            showMessage('JSON exported successfully!', 'success');
+        }
+        
+        function showMessage(message, type) {
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            if (type === 'loading') {
+                messageDiv.innerHTML = `<div style="text-align: center;">
+                    <div style="display: inline-block; animation: spin 1s linear infinite; font-size: 1.2em;">⏳</div>
+                    <div style="margin-top: 10px;">${message}</div>
+                </div>`;
+            }
+            
+            document.querySelector('.main-content').insertBefore(messageDiv, document.querySelector('.input-section'));
+            
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    messageDiv.remove();
+                }, 5000);
+            }
+        }
+        
+        // Add CSS animation for loading spinner
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize with demo data
+        document.getElementById('foodQuery').value = 'chicken pasta';
+    </script>
+</body>
+</html>

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 const Camera: React.FC = () => {
   const [isCapturing, setIsCapturing] = useState(false);
@@ -82,25 +83,68 @@ const Camera: React.FC = () => {
     startCamera();
   };
 
-  const savePhoto = () => {
+  const savePhoto = async () => {
     if (!capturedImage) return;
 
-    // Create a new post object (in a real app, this would save to a database)
-    const newPost = {
-      id: Date.now().toString(),
-      image: capturedImage,
-      caption: caption || 'New post from newBuzo Camera!',
-      location: location ? `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}` : 'Unknown location',
-      coordinates: location ? { lat: location.lat, lng: location.lng } : { lat: 0, lng: 0 },
-      timestamp: new Date().toISOString(),
-      username: 'you',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face',
-    };
+    // Convert data URL to Blob
+    const res = await fetch(capturedImage);
+    const blob = await res.blob();
 
-    console.log('New post created:', newPost);
+    // Get location and timestamp
+    const lat = location ? location.lat : 0;
+    const lng = location ? location.lng : 0;
+    const timestamp = new Date().toISOString();
+    const fileName = `guest_${timestamp}_${lat}_${lng}.jpg`;
+
+    // Helper to download image if upload fails
+    function downloadImage(blob: Blob, fileName: string) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Try to upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from('fuzo-images')
+      .upload(fileName, blob, { upsert: true });
+
+    if (uploadError) {
+      downloadImage(blob, fileName);
+      toast.error('Upload failed. Image saved to your device instead.');
+      setCapturedImage(null);
+      setCaption('');
+      return;
+    }
+
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('fuzo-images')
+      .getPublicUrl(fileName);
+    const imageUrl = publicUrlData.publicUrl;
+
+    // Get user info
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+
+    // Insert into feed table
+    await supabase.from('feed').insert([
+      {
+        user_id: user?.id,
+        user_email: user?.email,
+        image_url: imageUrl,
+        timestamp,
+        coordinates: `${lat},${lng}`,
+        location: location ? `${lat},${lng}` : '',
+        place_id: '', // Optionally fill with Google Maps place_id
+      },
+    ]);
+
     toast.success('Photo saved to feed!');
-    
-    // Reset state
     setCapturedImage(null);
     setCaption('');
   };

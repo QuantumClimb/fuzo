@@ -223,3 +223,30 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Lucide](https://lucide.dev/) for the icon set
 - Toronto restaurant community for inspiration
 - Google Maps Platform for location and places APIs
+
+## 🔐 Authentication Flow
+
+- The app uses Supabase Auth for user authentication.
+- Users can sign in with email/password or use the built-in guest account.
+- The guest account uses:
+  - Email: guest@example.com
+  - Password: guestpassword
+- After login, users are redirected to the main app.
+- All user data is protected with Row Level Security (RLS) policies in Supabase.
+
+### RLS Policy Example (for future multi-user support):
+
+```
+-- Enable RLS on the feed table
+ALTER TABLE feed ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can only see their own feed entries
+CREATE POLICY "Users can view their own feed entries" ON feed
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Policy: Users can only insert their own feed entries
+CREATE POLICY "Users can insert their own feed entries" ON feed
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+- For now, all data is associated with the guest user, but the structure is ready for scaling to multiple users.
