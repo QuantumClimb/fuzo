@@ -8,8 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabaseClient';
 import piexif from 'piexifjs';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client for public uploads
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 const Camera: React.FC = () => {
   const [isCapturing, setIsCapturing] = useState(false);
@@ -86,20 +92,36 @@ const Camera: React.FC = () => {
 
   const savePhoto = async () => {
     if (!capturedImage) return;
-
     // Convert data URL to Blob
     let imageDataUrl = capturedImage;
+    const res = await fetch(imageDataUrl);
+    const blob = await res.blob();
 
     // Get location and timestamp
     const lat = location ? location.lat : 0;
     const lng = location ? location.lng : 0;
     let timestamp = new Date().toISOString();
-    // Replace all non-alphanumeric characters in timestamp, lat, lng with hyphens
     timestamp = timestamp.replace(/[:._]/g, '-');
     const latStr = lat.toString().replace(/\./g, '-');
     const lngStr = lng.toString().replace(/\./g, '-');
     const fileName = `guest_${timestamp}-${latStr}-${lngStr}.jpg`;
     const uploadPath = `guest/${fileName}`;
+
+    // Direct client-side upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('fuzo-images')
+      .upload(uploadPath, blob, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: blob.type,
+      });
+    if (error) {
+      console.error('Upload error:', error.message);
+      // Optionally show error to user
+      return;
+    }
+    console.log('Upload success:', data.path);
+    // Optionally show success to user
 
     // If location is available, embed it into EXIF
     if (location) {
@@ -131,8 +153,8 @@ const Camera: React.FC = () => {
     }
 
     // Convert (possibly EXIF-modified) data URL to Blob
-    const res = await fetch(imageDataUrl);
-    const blob = await res.blob();
+    const resBlob = await fetch(imageDataUrl);
+    const blobRes = await resBlob.blob();
 
     // Helper to download image if upload fails
     function downloadImage(blob: Blob, fileName: string) {
@@ -149,10 +171,10 @@ const Camera: React.FC = () => {
     // Try to upload to Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from('fuzo-images')
-      .upload(uploadPath, blob, { upsert: true });
+      .upload(uploadPath, blobRes, { upsert: true });
 
     if (uploadError) {
-      downloadImage(blob, fileName);
+      downloadImage(blobRes, fileName);
       toast.error('Upload failed. Image saved to your device instead.');
       setCapturedImage(null);
       setCaption('');
