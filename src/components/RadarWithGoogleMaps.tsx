@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Star, MapPin, DollarSign, Clock, Wifi, WifiOff } from 'lucide-react';
 import { mockRestaurants } from '@/data/mockData';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -247,78 +247,89 @@ const RadarWithGoogleMaps: React.FC = () => {
 
         {/* Restaurant List */}
         <div className="space-y-4">
-          {filteredRestaurants.map((restaurant) => (
-            <Card key={restaurant.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
-              <div className="flex">
-                <img
-                  src={restaurant.image}
-                  alt={restaurant.name}
-                  className="w-24 h-24 object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
-                />
-                <div className="flex-1">
-                  <CardHeader className="p-3 pb-2">
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg font-semibold leading-tight">
-                        {restaurant.name}
-                        {useGoogleMaps && (
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            Live
-                          </Badge>
-                        )}
-                      </CardTitle>
-                      <div className="flex items-center space-x-1 text-sm">
-                        <Clock className="h-3 w-3" />
-                        <span>{restaurant.distance.toFixed(1)}km</span>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="p-3 pt-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="text-sm font-medium ml-1">{restaurant.rating}</span>
+          {loading ? (
+            <RestaurantListSkeleton />
+          ) : filteredRestaurants.map((restaurant) => {
+            const imageWebp = restaurant.image.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+            return (
+              <Card key={restaurant.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
+                <div className="flex">
+                  <picture>
+                    <source srcSet={imageWebp} type="image/webp" />
+                    <img
+                      src={restaurant.image}
+                      alt={restaurant.name}
+                      className="w-24 h-24 object-cover"
+                      srcSet={`${restaurant.image} 1x, ${restaurant.image.replace(/(\.[a-z]+)$/i, '@2x$1')} 2x`}
+                      sizes="(max-width: 600px) 100vw, 96px"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                  </picture>
+                  <div className="flex-1">
+                    <CardHeader className="p-3 pb-2">
+                      <div className="flex items-start justify-between">
+                        <CardTitle className="text-lg font-semibold leading-tight">
+                          {restaurant.name}
+                          {useGoogleMaps && (
+                            <Badge variant="outline" className="ml-2 text-xs">
+                              Live
+                            </Badge>
+                          )}
+                        </CardTitle>
+                        <div className="flex items-center space-x-1 text-sm">
+                          <Clock className="h-3 w-3" />
+                          <span>{restaurant.distance.toFixed(1)}km</span>
                         </div>
-                        <Badge variant="outline" className="text-xs">
-                          {restaurant.cuisine}
-                        </Badge>
                       </div>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <DollarSign className="h-3 w-3" />
-                        <span>{getPriceLevel(restaurant.priceLevel)}</span>
-                      </div>
-                    </div>
+                    </CardHeader>
                     
-                    <p className="text-xs text-muted-foreground flex items-center">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {restaurant.address}
-                    </p>
-                  </CardContent>
+                    <CardContent className="p-3 pt-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                            <span className="text-sm font-medium ml-1">{restaurant.rating}</span>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {restaurant.cuisine}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <DollarSign className="h-3 w-3" />
+                          <span>{getPriceLevel(restaurant.priceLevel)}</span>
+                        </div>
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground flex items-center">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {restaurant.address}
+                      </p>
+                    </CardContent>
+                  </div>
                 </div>
-              </div>
-              {/* In the restaurant list, after the <img> in each card, show attributions if present */}
-              {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
-                <div className="text-[10px] text-muted-foreground mt-1">
-                  {restaurant.photoAttributions.map((attr, idx) => (
-                    <span key={idx}>
-                      Photo by{' '}
-                      {attr.uri ? (
-                        <a href={attr.uri.startsWith('http') ? attr.uri : `https:${attr.uri}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
-                          {attr.displayName || 'Contributor'}
-                        </a>
-                      ) : (
-                        attr.displayName || 'Contributor'
-                      )}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </Card>
-          ))}
+                {/* In the restaurant list, after the <img> in each card, show attributions if present */}
+                {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
+                  <div className="text-[10px] text-muted-foreground mt-1">
+                    {restaurant.photoAttributions.map((attr, idx) => (
+                      <span key={idx}>
+                        Photo by{' '}
+                        {attr.uri ? (
+                          <a href={attr.uri.startsWith('http') ? attr.uri : `https:${attr.uri}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
+                            {attr.displayName || 'Contributor'}
+                          </a>
+                        ) : (
+                          attr.displayName || 'Contributor'
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            );
+          })}
         </div>
 
         {/* No Results */}
@@ -341,4 +352,20 @@ const RadarWithGoogleMaps: React.FC = () => {
   );
 };
 
-export default RadarWithGoogleMaps; 
+// Skeleton loader for restaurant list
+const RestaurantListSkeleton = () => (
+  <div className="space-y-4">
+    {[...Array(4)].map((_, i) => (
+      <div key={i} className="flex animate-pulse bg-gray-100 rounded-lg overflow-hidden">
+        <div className="bg-gray-200 h-24 w-24" />
+        <div className="flex-1 p-3 space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-1/2" />
+          <div className="h-3 bg-gray-200 rounded w-1/3" />
+          <div className="h-3 bg-gray-200 rounded w-1/4" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+export default memo(RadarWithGoogleMaps); 

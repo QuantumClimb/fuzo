@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { ArrowLeft, Phone, Globe, Clock, Star, MapPin, Image as ImageIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,15 @@ interface RestaurantDetailProps {
   place_id: string;
   onBack: () => void;
 }
+
+// Skeleton loader for photo grid
+const PhotoGridSkeleton = () => (
+  <div className="grid grid-cols-2 gap-2">
+    {[...Array(4)].map((_, i) => (
+      <div key={i} className="bg-gray-200 animate-pulse h-24 rounded-md" />
+    ))}
+  </div>
+);
 
 const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack }) => {
   const [restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
@@ -40,9 +49,10 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
           </Button>
           <h1 className="text-lg font-semibold">Restaurant Details</h1>
         </div>
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex flex-col items-center justify-center space-y-6">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <span className="ml-2 text-sm text-muted-foreground">Loading restaurant details...</span>
+          <PhotoGridSkeleton />
         </div>
       </div>
     );
@@ -184,14 +194,23 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-2">
-                  {restaurant.photos.slice(0, 4).filter(photo => photo.photo_reference).map((photo, index) => (
-                    <img
-                      key={index}
-                      src={getPlacePhotoUrl(photo.photo_reference, 400, 300)}
-                      alt={`${restaurant.name} photo ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-md"
-                    />
-                  ))}
+                  {restaurant.photos.slice(0, 4).filter(photo => photo.photo_reference).map((photo, index) => {
+                    const jpgUrl = getPlacePhotoUrl(photo.photo_reference, 400, 300);
+                    const webpUrl = jpgUrl.replace(/\.(jpg|jpeg|png)(\?.*)?$/i, '.webp$2');
+                    return (
+                      <picture key={index}>
+                        <source srcSet={webpUrl} type="image/webp" />
+                        <img
+                          src={jpgUrl}
+                          alt={`${restaurant.name} photo ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-md"
+                          srcSet={`${jpgUrl} 1x, ${jpgUrl.replace(/(\.[a-z]+)(\?.*)?$/i, '@2x$1$2')} 2x`}
+                          sizes="(max-width: 600px) 100vw, 200px"
+                          loading="lazy"
+                        />
+                      </picture>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -228,4 +247,4 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
   );
 };
 
-export default RestaurantDetail;
+export default memo(RestaurantDetail);

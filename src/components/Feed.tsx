@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { memo } from 'react';
 import { Heart, MessageCircle, Share, MapPin, Clock, Utensils, Search, X, Star, Navigation } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,6 +13,22 @@ import { useLocationSearch, useNearbyRestaurants } from '@/hooks/useGoogleMaps';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { Restaurant, UserLocation } from '@/types';
 import { LocationSearchResult } from '@/lib/googleMaps';
+
+// Skeleton loader component
+const FeedSkeleton = () => (
+  <div className="space-y-4">
+    {[...Array(5)].map((_, i) => (
+      <div key={i} className="animate-pulse bg-gray-100 rounded-lg p-4 flex space-x-4">
+        <div className="bg-gray-200 h-24 w-24 rounded-md" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-3/4" />
+          <div className="h-3 bg-gray-200 rounded w-1/2" />
+          <div className="h-3 bg-gray-200 rounded w-1/3" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
 const Feed: React.FC = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<string | null>(null);
@@ -102,6 +119,8 @@ const Feed: React.FC = () => {
       rating: restaurant.rating,
       cuisine: restaurant.cuisine,
       distance: restaurant.distance,
+      // Responsive image sources
+      imageWebp: restaurant.image.replace(/\.(jpg|jpeg|png)$/i, '.webp'),
     };
   };
 
@@ -123,6 +142,11 @@ const Feed: React.FC = () => {
         onBack={() => setSelectedRestaurant(null)}
       />
     );
+  }
+
+  // Show skeleton loader while loading
+  if (restaurantsLoading) {
+    return <FeedSkeleton />;
   }
 
   return (
@@ -321,11 +345,17 @@ const Feed: React.FC = () => {
                       className="relative aspect-square cursor-pointer"
                       onClick={() => handleRestaurantClick(restaurant)}
                     >
-                      <img
-                        src={post.image}
-                        alt={restaurant.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <picture>
+                        <source srcSet={post.imageWebp} type="image/webp" />
+                        <img
+                          src={post.image}
+                          alt={restaurant.name}
+                          className="w-full h-full object-cover rounded-t-lg"
+                          srcSet={`${post.image} 1x, ${post.image.replace(/(\.[a-z]+)$/i, '@2x$1')} 2x`}
+                          sizes="(max-width: 600px) 100vw, 400px"
+                          loading="lazy"
+                        />
+                      </picture>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       {/* Photo Attributions */}
                       {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
@@ -412,4 +442,4 @@ const Feed: React.FC = () => {
   );
 };
 
-export default Feed;
+export default memo(Feed);
