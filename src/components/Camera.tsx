@@ -93,8 +93,12 @@ const Camera: React.FC = () => {
     // Get location and timestamp
     const lat = location ? location.lat : 0;
     const lng = location ? location.lng : 0;
-    const timestamp = new Date().toISOString();
-    const fileName = `guest_${timestamp}_${lat}_${lng}.jpg`;
+    let timestamp = new Date().toISOString();
+    // Replace all non-alphanumeric characters in timestamp, lat, lng with hyphens
+    timestamp = timestamp.replace(/[:._]/g, '-');
+    const latStr = lat.toString().replace(/\./g, '-');
+    const lngStr = lng.toString().replace(/\./g, '-');
+    const fileName = `guest_${timestamp}-${latStr}-${lngStr}.jpg`;
     const uploadPath = `guest/${fileName}`;
 
     // If location is available, embed it into EXIF
