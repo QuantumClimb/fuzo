@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabaseClient';
+import piexif from 'piexifjs';
 
 const Camera: React.FC = () => {
   const [isCapturing, setIsCapturing] = useState(false);
@@ -87,14 +88,47 @@ const Camera: React.FC = () => {
     if (!capturedImage) return;
 
     // Convert data URL to Blob
-    const res = await fetch(capturedImage);
-    const blob = await res.blob();
+    let imageDataUrl = capturedImage;
 
     // Get location and timestamp
     const lat = location ? location.lat : 0;
     const lng = location ? location.lng : 0;
     const timestamp = new Date().toISOString();
     const fileName = `guest_${timestamp}_${lat}_${lng}.jpg`;
+    const uploadPath = `guest/${fileName}`;
+
+    // If location is available, embed it into EXIF
+    if (location) {
+      try {
+        // Convert lat/lng to EXIF GPS format
+        function toDMS(val) {
+          const abs = Math.abs(val);
+          const deg = Math.floor(abs);
+          const minFloat = (abs - deg) * 60;
+          const min = Math.floor(minFloat);
+          const sec = Math.round((minFloat - min) * 6000) / 100;
+          return [[deg, 1], [min, 1], [Math.round(sec * 100), 100]];
+        }
+        const gpsData = {
+          [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
+          [piexif.GPSIFD.GPSLatitude]: toDMS(lat),
+          [piexif.GPSIFD.GPSLongitudeRef]: lng >= 0 ? 'E' : 'W',
+          [piexif.GPSIFD.GPSLongitude]: toDMS(lng),
+        };
+        const zeroth = {};
+        const exif = {};
+        const exifObj = { '0th': zeroth, Exif: exif, GPS: gpsData };
+        const exifBytes = piexif.dump(exifObj);
+        // Insert EXIF into JPEG Data URL
+        imageDataUrl = piexif.insert(exifBytes, imageDataUrl);
+      } catch (err) {
+        console.warn('Failed to embed EXIF location:', err);
+      }
+    }
+
+    // Convert (possibly EXIF-modified) data URL to Blob
+    const res = await fetch(imageDataUrl);
+    const blob = await res.blob();
 
     // Helper to download image if upload fails
     function downloadImage(blob: Blob, fileName: string) {
@@ -111,7 +145,7 @@ const Camera: React.FC = () => {
     // Try to upload to Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from('fuzo-images')
-      .upload(fileName, blob, { upsert: true });
+      .upload(uploadPath, blob, { upsert: true });
 
     if (uploadError) {
       downloadImage(blob, fileName);
@@ -122,12 +156,12 @@ const Camera: React.FC = () => {
     }
 
     // Debug log for successful upload
-    console.debug(`Image saved to Supabase bucket: fuzo-images/${fileName}`);
+    console.debug(`Image saved to Supabase bucket: fuzo-images/${uploadPath}`);
 
     // Get public URL
     const { data: publicUrlData } = supabase.storage
       .from('fuzo-images')
-      .getPublicUrl(fileName);
+      .getPublicUrl(uploadPath);
     const imageUrl = publicUrlData.publicUrl;
 
     // Get user info
