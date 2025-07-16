@@ -224,29 +224,23 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Toronto restaurant community for inspiration
 - Google Maps Platform for location and places APIs
 
-## 🔐 Authentication Flow
+## 🔐 Authentication Flow (Updated)
 
 - The app uses Supabase Auth for user authentication.
-- Users can sign in with email/password or use the built-in guest account.
-- The guest account uses:
-  - Email: guest@example.com
-  - Password: guestpassword
-- After login, users are redirected to the main app.
+- Users can now sign in with their own email and password, or use the built-in guest account.
+- The login page provides:
+  - Email and password input fields for user login
+  - A button for guest login (email: guest@example.com, password: guestpassword)
+
+### Usage Example
+
+1. **User Login:**
+   - Enter your email and password in the login form and click ENTER.
+   - If credentials are valid, you will be logged in and redirected to the app.
+
+2. **Guest Login:**
+   - Click the "Sign in as Guest" button to log in with the guest account.
+   - Useful for demo/testing without creating a new user.
+
 - All user data is protected with Row Level Security (RLS) policies in Supabase.
-
-### RLS Policy Example (for future multi-user support):
-
-```
--- Enable RLS on the feed table
-ALTER TABLE feed ENABLE ROW LEVEL SECURITY;
-
--- Policy: Users can only see their own feed entries
-CREATE POLICY "Users can view their own feed entries" ON feed
-  FOR SELECT USING (auth.uid() = user_id);
-
--- Policy: Users can only insert their own feed entries
-CREATE POLICY "Users can insert their own feed entries" ON feed
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
-```
-
-- For now, all data is associated with the guest user, but the structure is ready for scaling to multiple users.
+- For now, all data is associated with the guest user or the logged-in user, but the structure is ready for scaling to multiple users.

@@ -121,6 +121,9 @@ const Camera: React.FC = () => {
       return;
     }
 
+    // Debug log for successful upload
+    console.debug(`Image saved to Supabase bucket: fuzo-images/${fileName}`);
+
     // Get public URL
     const { data: publicUrlData } = supabase.storage
       .from('fuzo-images')
