@@ -92,124 +92,117 @@ const Camera: React.FC = () => {
 
   const savePhoto = async () => {
     if (!capturedImage) return;
-    // Convert data URL to Blob
-    let imageDataUrl = capturedImage;
-    const res = await fetch(imageDataUrl);
-    const blob = await res.blob();
+    
+    try {
+      // Convert data URL to Blob
+      let imageDataUrl = capturedImage;
+      const res = await fetch(imageDataUrl);
+      const blob = await res.blob();
 
-    // Get location and timestamp
-    const lat = location ? location.lat : 0;
-    const lng = location ? location.lng : 0;
-    let timestamp = new Date().toISOString();
-    timestamp = timestamp.replace(/[:._]/g, '-');
-    const latStr = lat.toString().replace(/\./g, '-');
-    const lngStr = lng.toString().replace(/\./g, '-');
-    const fileName = `guest_${timestamp}-${latStr}-${lngStr}.jpg`;
-    const uploadPath = `guest/${fileName}`;
+      // Create a simpler, more reliable filename
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const randomId = Math.random().toString(36).substring(2, 15);
+      const fileName = `guest_${timestamp}_${randomId}.jpg`;
+      const uploadPath = `guest/${fileName}`;
 
-    // Direct client-side upload to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from('fuzo-images')
-      .upload(uploadPath, blob, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: blob.type,
-      });
-    if (error) {
-      console.error('Upload error:', error.message);
-      // Optionally show error to user
-      return;
-    }
-    console.log('Upload success:', data.path);
-    // Optionally show success to user
-
-    // If location is available, embed it into EXIF
-    if (location) {
-      try {
-        // Convert lat/lng to EXIF GPS format
-        function toDMS(val) {
-          const abs = Math.abs(val);
-          const deg = Math.floor(abs);
-          const minFloat = (abs - deg) * 60;
-          const min = Math.floor(minFloat);
-          const sec = Math.round((minFloat - min) * 6000) / 100;
-          return [[deg, 1], [min, 1], [Math.round(sec * 100), 100]];
+      // If location is available, embed it into EXIF
+      if (location) {
+        try {
+          function toDMS(val: number) {
+            const abs = Math.abs(val);
+            const deg = Math.floor(abs);
+            const minFloat = (abs - deg) * 60;
+            const min = Math.floor(minFloat);
+            const sec = Math.round((minFloat - min) * 6000) / 100;
+            return [[deg, 1], [min, 1], [Math.round(sec * 100), 100]];
+          }
+          
+          const gpsData = {
+            [piexif.GPSIFD.GPSLatitudeRef]: location.lat >= 0 ? 'N' : 'S',
+            [piexif.GPSIFD.GPSLatitude]: toDMS(location.lat),
+            [piexif.GPSIFD.GPSLongitudeRef]: location.lng >= 0 ? 'E' : 'W',
+            [piexif.GPSIFD.GPSLongitude]: toDMS(location.lng),
+          };
+          
+          const exifObj = { '0th': {}, Exif: {}, GPS: gpsData };
+          const exifBytes = piexif.dump(exifObj);
+          imageDataUrl = piexif.insert(exifBytes, imageDataUrl);
+        } catch (err) {
+          console.warn('Failed to embed EXIF location:', err);
         }
-        const gpsData = {
-          [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
-          [piexif.GPSIFD.GPSLatitude]: toDMS(lat),
-          [piexif.GPSIFD.GPSLongitudeRef]: lng >= 0 ? 'E' : 'W',
-          [piexif.GPSIFD.GPSLongitude]: toDMS(lng),
-        };
-        const zeroth = {};
-        const exif = {};
-        const exifObj = { '0th': zeroth, Exif: exif, GPS: gpsData };
-        const exifBytes = piexif.dump(exifObj);
-        // Insert EXIF into JPEG Data URL
-        imageDataUrl = piexif.insert(exifBytes, imageDataUrl);
-      } catch (err) {
-        console.warn('Failed to embed EXIF location:', err);
       }
-    }
 
-    // Convert (possibly EXIF-modified) data URL to Blob
-    const resBlob = await fetch(imageDataUrl);
-    const blobRes = await resBlob.blob();
+      // Convert (possibly EXIF-modified) data URL to final Blob
+      const finalRes = await fetch(imageDataUrl);
+      const finalBlob = await finalRes.blob();
 
-    // Helper to download image if upload fails
-    function downloadImage(blob: Blob, fileName: string) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
+      // Single upload with proper error handling
+      const { data, error } = await supabase.storage
+        .from('fuzo-images')
+        .upload(uploadPath, finalBlob, {
+          cacheControl: '3600',
+          upsert: true, // Allow overwriting if needed
+          contentType: 'image/jpeg',
+        });
 
-    // Try to upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from('fuzo-images')
-      .upload(uploadPath, blobRes, { upsert: true });
+      if (error) {
+        console.error('Upload error:', error);
+        
+        // Fallback to download
+        const url = URL.createObjectURL(finalBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        toast.error(`Upload failed: ${error.message}. Image saved to your device instead.`);
+        setCapturedImage(null);
+        setCaption('');
+        return;
+      }
 
-    if (uploadError) {
-      downloadImage(blobRes, fileName);
-      toast.error('Upload failed. Image saved to your device instead.');
+      console.log('Upload success:', data.path);
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('fuzo-images')
+        .getPublicUrl(uploadPath);
+      const imageUrl = publicUrlData.publicUrl;
+
+      // Get user info
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
+
+      // Insert into feed table
+      const { error: insertError } = await supabase.from('feed').insert([
+        {
+          user_id: user?.id,
+          user_email: user?.email,
+          image_url: imageUrl,
+          timestamp: new Date().toISOString(),
+          coordinates: location ? `${location.lat},${location.lng}` : '',
+          location: location ? `${location.lat},${location.lng}` : '',
+          place_id: '',
+        },
+      ]);
+
+      if (insertError) {
+        console.error('Database insert error:', insertError);
+        toast.error('Image uploaded but failed to save to feed');
+      } else {
+        toast.success('Photo saved to feed!');
+      }
+      
       setCapturedImage(null);
       setCaption('');
-      return;
+      
+    } catch (error) {
+      console.error('Save photo error:', error);
+      toast.error('Failed to save photo. Please try again.');
     }
-
-    // Debug log for successful upload
-    console.debug(`Image saved to Supabase bucket: fuzo-images/${uploadPath}`);
-
-    // Get public URL
-    const { data: publicUrlData } = supabase.storage
-      .from('fuzo-images')
-      .getPublicUrl(uploadPath);
-    const imageUrl = publicUrlData.publicUrl;
-
-    // Get user info
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData?.user;
-
-    // Insert into feed table
-    await supabase.from('feed').insert([
-      {
-        user_id: user?.id,
-        user_email: user?.email,
-        image_url: imageUrl,
-        timestamp,
-        coordinates: `${lat},${lng}`,
-        location: location ? `${lat},${lng}` : '',
-        place_id: '', // Optionally fill with Google Maps place_id
-      },
-    ]);
-
-    toast.success('Photo saved to feed!');
-    setCapturedImage(null);
-    setCaption('');
   };
 
   const downloadPhoto = () => {
