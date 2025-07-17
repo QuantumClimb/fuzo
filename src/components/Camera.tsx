@@ -99,19 +99,12 @@ const Camera: React.FC = () => {
       const res = await fetch(imageDataUrl);
       const blob = await res.blob();
 
-      // Create a simpler, more reliable filename
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      // Create a filename with no separators: guest + timestamp + randomId + .jpg
+      const now = new Date();
+      const pad = (n: number, l = 2) => n.toString().padStart(l, '0');
+      const timestamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${pad(now.getMilliseconds(), 3)}`;
       const randomId = Math.random().toString(36).substring(2, 15);
-      let latStr = '';
-      let lngStr = '';
-      if (location) {
-        latStr = String(location.lat).replace(/\./g, '-');
-        lngStr = String(location.lng).replace(/\./g, '-');
-      }
-      // If location is available, include sanitized lat/lng in filename
-      const fileName = location
-        ? `guest_${timestamp}_${latStr}_${lngStr}_${randomId}.jpg`
-        : `guest_${timestamp}_${randomId}.jpg`;
+      const fileName = `guest${timestamp}${randomId}.jpg`;
       const uploadPath = `guest/${fileName}`;
 
       // If location is available, embed it into EXIF
