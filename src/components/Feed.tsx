@@ -13,6 +13,8 @@ import { useLocationSearch, useNearbyRestaurants } from '@/hooks/useGoogleMaps';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { Restaurant, UserLocation } from '@/types';
 import { LocationSearchResult } from '@/lib/googleMaps';
+import { Switch } from '@/components/ui/switch';
+import { supabase } from '@/lib/supabaseClient';
 
 // Skeleton loader component
 const FeedSkeleton = () => (
@@ -36,6 +38,10 @@ const Feed: React.FC = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<UserLocation | null>(null);
   const [locationName, setLocationName] = useState<string>('');
+  const [showImageFeed, setShowImageFeed] = useState(false);
+  const [imageFeed, setImageFeed] = useState<Array<{ id: string; user_email: string | null; image_url: string; timestamp: string; location: string | null; user_avatar?: string | null; }>>([]);
+  const [imageFeedLoading, setImageFeedLoading] = useState(false);
+  const [imageFeedError, setImageFeedError] = useState<string | null>(null);
   
   // Location detection
   const { location: currentLocation, loading: locationLoading, error: locationError, getCurrentLocation } = useGeolocation();
@@ -46,6 +52,22 @@ const Feed: React.FC = () => {
   
   // Location search functionality
   const { results, loading: searchLoading, error: searchError, searchLocations, clearResults } = useLocationSearch();
+
+  React.useEffect(() => {
+    if (showImageFeed) {
+      setImageFeedLoading(true);
+      setImageFeedError(null);
+      supabase
+        .from('feed')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .then(({ data, error }) => {
+          if (error) setImageFeedError(error.message);
+          else setImageFeed(data || []);
+          setImageFeedLoading(false);
+        });
+    }
+  }, [showImageFeed]);
 
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
@@ -152,6 +174,11 @@ const Feed: React.FC = () => {
   return (
     <div className="flex flex-col space-y-4 pb-20">
       <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-border p-4 z-10">
+        <div className="flex items-center justify-center mb-2">
+          <span className="mr-2 text-sm font-medium">Google Maps Feed</span>
+          <Switch checked={showImageFeed} onCheckedChange={setShowImageFeed} />
+          <span className="ml-2 text-sm font-medium">Image Feed</span>
+        </div>
         <h1 className="text-2xl font-bold text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           newBuzo
         </h1>
@@ -281,161 +308,212 @@ const Feed: React.FC = () => {
 
       {/* Main Content */}
       <div className="px-4">
-        {/* Loading State */}
-        {restaurantsLoading && (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="ml-2 text-muted-foreground">Loading restaurants...</span>
-          </div>
-        )}
-
-        {/* Error State */}
-        {restaurantsError && (
-          <Alert>
-            <AlertDescription>{restaurantsError}</AlertDescription>
-          </Alert>
-        )}
-
-        {/* No Location Selected */}
-        {!activeLocation && !locationLoading && (
-          <div className="text-center py-8 space-y-4">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-              <MapPin className="h-12 w-12 text-gray-400" />
+        {showImageFeed ? (
+          imageFeedLoading ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-2 text-muted-foreground">Loading images...</span>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Find Great Restaurants</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Search for a location or detect your current location to discover amazing restaurants nearby
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Restaurants Feed */}
-        {activeLocation && validRestaurants.length > 0 && (
-          <div className="space-y-6">
-            {validRestaurants.map((restaurant, index) => {
-              const post = createPostFromRestaurant(restaurant, index);
-              return (
-                <Card key={restaurant.id} className="overflow-hidden">
+          ) : imageFeedError ? (
+            <Alert><AlertDescription>{imageFeedError}</AlertDescription></Alert>
+          ) : imageFeed.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No images found in feed.</div>
+          ) : (
+            <div className="space-y-6">
+              {imageFeed.map((item) => (
+                <Card key={item.id} className="overflow-hidden">
                   <CardContent className="p-0">
-                    {/* Header */}
                     <div className="p-4 pb-2">
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={post.avatar} alt={post.username} />
-                          <AvatarFallback>{post.username[0]}</AvatarFallback>
+                          <AvatarImage src={item.user_avatar || '/placeholder.svg'} alt={item.user_email || 'Guest'} />
+                          <AvatarFallback>{item.user_email ? item.user_email[0] : 'G'}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-sm">{post.username}</span>
+                            <span className="font-semibold text-sm">{item.user_email || 'Guest'}</span>
                             <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">{formatTimeAgo(post.timestamp)}</span>
+                            <span className="text-xs text-muted-foreground">{formatTimeAgo(item.timestamp)}</span>
                           </div>
                           <div className="flex items-center space-x-1 mt-1">
                             <MapPin className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground truncate">{post.location}</span>
+                            <span className="text-xs text-muted-foreground truncate">{item.location}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    {/* Image */}
-                    <div 
-                      className="relative aspect-square cursor-pointer"
-                      onClick={() => handleRestaurantClick(restaurant)}
-                    >
-                      <picture>
-                        <source srcSet={post.imageWebp} type="image/webp" />
-                        <img
-                          src={post.image}
-                          alt={restaurant.name}
-                          className="w-full h-full object-cover rounded-t-lg"
-                          srcSet={`${post.image} 1x, ${post.image.replace(/(\.[a-z]+)$/i, '@2x$1')} 2x`}
-                          sizes="(max-width: 600px) 100vw, 400px"
-                          loading="lazy"
-                        />
-                      </picture>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      {/* Photo Attributions */}
-                      {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
-                        <div className="absolute bottom-1 left-4 right-4 flex flex-wrap items-center gap-2 text-[10px] text-white/80 z-10">
-                          {restaurant.photoAttributions.map((attr, idx) => (
-                            <span key={idx}>
-                              Photo by{' '}
-                              {attr.uri ? (
-                                <a href={attr.uri.startsWith('http') ? attr.uri : `https:${attr.uri}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-white">
-                                  {attr.displayName || 'Contributor'}
-                                </a>
-                              ) : (
-                                attr.displayName || 'Contributor'
-                              )}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-white font-bold text-lg">{restaurant.name}</h3>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <Badge variant="secondary" className="bg-white/20 text-white border-white/20">
-                                {post.cuisine}
-                              </Badge>
-                              <div className="flex items-center space-x-1">
-                                <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                <span className="text-white text-sm font-medium">{post.rating.toFixed(1)}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-white text-sm font-medium">{post.distance.toFixed(1)} km</div>
-                            <div className="text-white/80 text-xs">away</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="p-4 pt-2">
-                      <div className="flex items-center space-x-4 mb-2">
-                        <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0">
-                          <Heart className="h-4 w-4" />
-                          <span className="text-sm">{Math.floor(Math.random() * 100) + 10}</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0">
-                          <MessageCircle className="h-4 w-4" />
-                          <span className="text-sm">{Math.floor(Math.random() * 20) + 1}</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0">
-                          <Share className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-semibold">{post.username}</span>
-                        <span className="ml-2">{post.caption}</span>
-                      </div>
+                    <div className="relative aspect-square">
+                      <img
+                        src={item.image_url}
+                        alt="Feed upload"
+                        className="w-full h-full object-cover rounded-t-lg"
+                        loading="lazy"
+                      />
                     </div>
                   </CardContent>
                 </Card>
-              );
-            })}
-          </div>
-        )}
+              ))}
+            </div>
+          )
+        ) : (
+          <>
+            {/* Loading State */}
+            {restaurantsLoading && (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span className="ml-2 text-muted-foreground">Loading restaurants...</span>
+              </div>
+            )}
 
-        {/* No Restaurants Found */}
-        {activeLocation && validRestaurants.length === 0 && !restaurantsLoading && (
-          <div className="text-center py-8 space-y-4">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-              <Utensils className="h-12 w-12 text-gray-400" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">No Restaurants Found</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Try searching for a different location or expand your search area
-              </p>
-            </div>
-          </div>
+            {/* Error State */}
+            {restaurantsError && (
+              <Alert>
+                <AlertDescription>{restaurantsError}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* No Location Selected */}
+            {!activeLocation && !locationLoading && (
+              <div className="text-center py-8 space-y-4">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                  <MapPin className="h-12 w-12 text-gray-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Find Great Restaurants</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Search for a location or detect your current location to discover amazing restaurants nearby
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Restaurants Feed */}
+            {activeLocation && validRestaurants.length > 0 && (
+              <div className="space-y-6">
+                {validRestaurants.map((restaurant, index) => {
+                  const post = createPostFromRestaurant(restaurant, index);
+                  return (
+                    <Card key={restaurant.id} className="overflow-hidden">
+                      <CardContent className="p-0">
+                        {/* Header */}
+                        <div className="p-4 pb-2">
+                          <div className="flex items-center space-x-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={post.avatar} alt={post.username} />
+                              <AvatarFallback>{post.username[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-semibold text-sm">{post.username}</span>
+                                <span className="text-xs text-muted-foreground">•</span>
+                                <span className="text-xs text-muted-foreground">{formatTimeAgo(post.timestamp)}</span>
+                              </div>
+                              <div className="flex items-center space-x-1 mt-1">
+                                <MapPin className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-xs text-muted-foreground truncate">{post.location}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Image */}
+                        <div 
+                          className="relative aspect-square cursor-pointer"
+                          onClick={() => handleRestaurantClick(restaurant)}
+                        >
+                          <picture>
+                            <source srcSet={post.imageWebp} type="image/webp" />
+                            <img
+                              src={post.image}
+                              alt={restaurant.name}
+                              className="w-full h-full object-cover rounded-t-lg"
+                              srcSet={`${post.image} 1x, ${post.image.replace(/(\.[a-z]+)$/i, '@2x$1')} 2x`}
+                              sizes="(max-width: 600px) 100vw, 400px"
+                              loading="lazy"
+                            />
+                          </picture>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          {/* Photo Attributions */}
+                          {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
+                            <div className="absolute bottom-1 left-4 right-4 flex flex-wrap items-center gap-2 text-[10px] text-white/80 z-10">
+                              {restaurant.photoAttributions.map((attr, idx) => (
+                                <span key={idx}>
+                                  Photo by{' '}
+                                  {attr.uri ? (
+                                    <a href={attr.uri.startsWith('http') ? attr.uri : `https:${attr.uri}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-white">
+                                      {attr.displayName || 'Contributor'}
+                                    </a>
+                                  ) : (
+                                    attr.displayName || 'Contributor'
+                                  )}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-white font-bold text-lg">{restaurant.name}</h3>
+                                <div className="flex items-center space-x-2 mt-1">
+                                  <Badge variant="secondary" className="bg-white/20 text-white border-white/20">
+                                    {post.cuisine}
+                                  </Badge>
+                                  <div className="flex items-center space-x-1">
+                                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                    <span className="text-white text-sm font-medium">{post.rating.toFixed(1)}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-white text-sm font-medium">{post.distance.toFixed(1)} km</div>
+                                <div className="text-white/80 text-xs">away</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-4 pt-2">
+                          <div className="flex items-center space-x-4 mb-2">
+                            <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0">
+                              <Heart className="h-4 w-4" />
+                              <span className="text-sm">{Math.floor(Math.random() * 100) + 10}</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0">
+                              <MessageCircle className="h-4 w-4" />
+                              <span className="text-sm">{Math.floor(Math.random() * 20) + 1}</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0">
+                              <Share className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="text-sm">
+                            <span className="font-semibold">{post.username}</span>
+                            <span className="ml-2">{post.caption}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* No Restaurants Found */}
+            {activeLocation && validRestaurants.length === 0 && !restaurantsLoading && (
+              <div className="text-center py-8 space-y-4">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                  <Utensils className="h-12 w-12 text-gray-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">No Restaurants Found</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Try searching for a different location or expand your search area
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
