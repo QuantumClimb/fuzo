@@ -1,87 +1,27 @@
 
-import React, { useState, useEffect, memo } from 'react';
-import { ArrowLeft, Phone, Globe, Clock, Star, MapPin, Image as ImageIcon } from 'lucide-react';
+import React, { useState, memo } from 'react';
+import { ArrowLeft, Phone, Globe, Clock, Star, MapPin, Image as ImageIcon, ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RestaurantDetails } from '@/types';
-import { usePlaceDetails } from '@/hooks/useGoogleMaps';
-import { getPlacePhotoUrl } from '@/lib/googleMaps';
+import { Restaurant } from '@/types';
 
 interface RestaurantDetailProps {
-  place_id: string;
+  restaurant: Restaurant;
   onBack: () => void;
 }
 
 // Skeleton loader for photo grid
 const PhotoGridSkeleton = () => (
   <div className="grid grid-cols-2 gap-2">
-    {[...Array(4)].map((_, i) => (
+    {[...Array(6)].map((_, i) => (
       <div key={i} className="bg-gray-200 animate-pulse h-24 rounded-md" />
     ))}
   </div>
 );
 
-const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack }) => {
-  const [restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
-  const { fetchPlaceDetails, loading, error } = usePlaceDetails();
-
-  useEffect(() => {
-    const loadRestaurantDetails = async () => {
-      try {
-        const data = await fetchPlaceDetails(place_id);
-        setRestaurant(data);
-      } catch (err) {
-        console.error('Error loading restaurant details:', err);
-      }
-    };
-
-    loadRestaurantDetails();
-  }, [place_id, fetchPlaceDetails]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col h-full">
-        <div className="flex items-center p-4 border-b">
-          <Button variant="ghost" size="sm" onClick={onBack} className="mr-2">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg font-semibold">Restaurant Details</h1>
-        </div>
-        <div className="flex-1 flex flex-col items-center justify-center space-y-6">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <span className="ml-2 text-sm text-muted-foreground">Loading restaurant details...</span>
-          <PhotoGridSkeleton />
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !restaurant) {
-    return (
-      <div className="flex flex-col h-full">
-        <div className="flex items-center p-4 border-b">
-          <Button variant="ghost" size="sm" onClick={onBack} className="mr-2">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg font-semibold">Restaurant Details</h1>
-        </div>
-        <div className="p-4">
-          <Alert>
-            <AlertDescription>
-              {error || 'Restaurant details not available'}
-              {error && (
-                <div className="mt-2 text-xs text-muted-foreground">
-                  Make sure Google Maps API is configured correctly with Places API enabled.
-                </div>
-              )}
-            </AlertDescription>
-          </Alert>
-        </div>
-      </div>
-    );
-  }
+const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack }) => {
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -96,32 +36,73 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
     ));
   };
 
+  // Use the existing restaurant image from the Feed
+  const heroImageUrl = restaurant.image;
+
   return (
     <div className="flex flex-col h-full pb-20">
-      <div className="flex items-center p-4 border-b bg-white/95 backdrop-blur-sm sticky top-0 z-10">
-        <Button variant="ghost" size="sm" onClick={onBack} className="mr-2">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-lg font-semibold truncate">{restaurant.name}</h1>
-      </div>
+      {/* Hero Image Section */}
+      {restaurant.image && restaurant.image !== '/placeholder.svg' && (
+        <div className="relative h-48 bg-gray-100">
+          <img
+            src={heroImageUrl}
+            alt={restaurant.name}
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute top-4 left-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onBack}
+              className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="absolute bottom-4 left-4 right-4">
+            <h1 className="text-white text-xl font-bold">{restaurant.name}</h1>
+            <div className="flex items-center space-x-2 mt-1">
+              {renderStars(restaurant.rating)}
+              <span className="text-white text-sm font-medium">{restaurant.rating}</span>
+              <Badge variant="secondary" className="bg-white/20 text-white border-white/20">
+                {restaurant.cuisine}
+              </Badge>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Navigation Bar (only if no hero image) */}
+      {(!restaurant.image || restaurant.image === '/placeholder.svg') && (
+        <div className="flex items-center p-4 border-b bg-white/95 backdrop-blur-sm sticky top-0 z-10">
+          <Button variant="ghost" size="sm" onClick={onBack} className="mr-2">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-lg font-semibold truncate">{restaurant.name}</h1>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-6">
-          {/* Header Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>{restaurant.name}</span>
-                <Badge variant={restaurant.opening_hours?.open_now ? 'default' : 'secondary'}>
-                  {restaurant.opening_hours?.open_now ? 'Open' : 'Closed'}
-                </Badge>
-              </CardTitle>
-              <div className="flex items-center space-x-1">
-                {renderStars(restaurant.rating)}
-                <span className="ml-2 text-sm font-medium">{restaurant.rating}</span>
-              </div>
-            </CardHeader>
-          </Card>
+          {/* Header Card (only if no hero image) */}
+          {(!restaurant.image || restaurant.image === '/placeholder.svg') && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>{restaurant.name}</span>
+                  <Badge variant="secondary" className="text-xs">
+                    {restaurant.cuisine}
+                  </Badge>
+                </CardTitle>
+                <div className="flex items-center space-x-1">
+                  {renderStars(restaurant.rating)}
+                  <span className="ml-2 text-sm font-medium">{restaurant.rating}</span>
+                </div>
+              </CardHeader>
+            </Card>
+          )}
 
           {/* Contact Information */}
           <Card>
@@ -131,86 +112,53 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
             <CardContent className="space-y-3">
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 mt-1 text-muted-foreground" />
-                <span className="text-sm">{restaurant.formatted_address}</span>
+                <span className="text-sm">{restaurant.address}</span>
               </div>
               
-              {restaurant.formatted_phone_number && (
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <a 
-                    href={`tel:${restaurant.formatted_phone_number}`}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    {restaurant.formatted_phone_number}
-                  </a>
-                </div>
-              )}
+              <div className="flex items-center space-x-3">
+                <Star className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-primary">{restaurant.rating} stars</span>
+              </div>
               
-              {restaurant.website && (
-                <div className="flex items-center space-x-3">
-                  <Globe className="h-4 w-4 text-muted-foreground" />
-                  <a 
-                    href={restaurant.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline"
-                  >
-                    Visit Website
-                  </a>
-                </div>
-              )}
+              <div className="flex items-center space-x-3">
+                <Badge variant="outline" className="text-xs">
+                  {restaurant.cuisine}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  {restaurant.distance.toFixed(1)} km away
+                </span>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Opening Hours */}
-          {restaurant.opening_hours && restaurant.opening_hours.weekday_text && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Opening Hours
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  {restaurant.opening_hours.weekday_text.map((hours, index) => (
-                    <div key={index} className="text-sm">
-                      {hours}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Photos */}
-          {restaurant.photos && restaurant.photos.length > 0 && (
+          {/* Photo Attribution */}
+          {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base flex items-center">
                   <ImageIcon className="h-4 w-4 mr-2" />
-                  Photos
+                  Photo Credits
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-2">
-                  {restaurant.photos.slice(0, 4).filter(photo => photo.photo_reference).map((photo, index) => {
-                    const jpgUrl = getPlacePhotoUrl(photo.photo_reference, 400, 300);
-                    const webpUrl = jpgUrl.replace(/\.(jpg|jpeg|png)(\?.*)?$/i, '.webp$2');
-                    return (
-                      <picture key={index}>
-                        <source srcSet={webpUrl} type="image/webp" />
-                        <img
-                          src={jpgUrl}
-                          alt={`${restaurant.name} photo ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-md"
-                          srcSet={`${jpgUrl} 1x, ${jpgUrl.replace(/(\.[a-z]+)(\?.*)?$/i, '@2x$1$2')} 2x`}
-                          sizes="(max-width: 600px) 100vw, 200px"
-                          loading="lazy"
-                        />
-                      </picture>
-                    );
-                  })}
+                <div className="space-y-2">
+                  {restaurant.photoAttributions.map((attr, index) => (
+                    <div key={index} className="text-sm">
+                      Photo by{' '}
+                      {attr.uri ? (
+                        <a 
+                          href={attr.uri.startsWith('http') ? attr.uri : `https:${attr.uri}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-primary hover:underline"
+                        >
+                          {attr.displayName || 'Contributor'}
+                        </a>
+                      ) : (
+                        attr.displayName || 'Contributor'
+                      )}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -221,7 +169,7 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
             <Button 
               variant="outline" 
               onClick={() => {
-                const url = `https://www.google.com/maps/search/?api=1&query=${restaurant.name}&query_place_id=${restaurant.place_id}`;
+                const url = `https://www.google.com/maps/search/?api=1&query=${restaurant.name}&query_place_id=${restaurant.id}`;
                 window.open(url, '_blank');
               }}
               className="flex items-center space-x-2"
@@ -230,16 +178,17 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ place_id, onBack })
               <span>Directions</span>
             </Button>
             
-            {restaurant.formatted_phone_number && (
-              <Button 
-                variant="outline"
-                onClick={() => window.open(`tel:${restaurant.formatted_phone_number}`, '_self')}
-                className="flex items-center space-x-2"
-              >
-                <Phone className="h-4 w-4" />
-                <span>Call</span>
-              </Button>
-            )}
+            <Button 
+              variant="outline"
+              onClick={() => {
+                const url = `https://www.google.com/maps/search/?api=1&query=${restaurant.name}`;
+                window.open(url, '_blank');
+              }}
+              className="flex items-center space-x-2"
+            >
+              <Globe className="h-4 w-4" />
+              <span>View on Maps</span>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,37 +1,42 @@
 
 import React from 'react';
-import { Camera, MapPin, Home } from 'lucide-react';
+import { Camera, MapPin, Home, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GameButton } from './ui/button';
 
 interface BottomNavigationProps {
-  activeTab: 'feed' | 'radar' | 'camera';
-  onTabChange: (tab: 'feed' | 'radar' | 'camera') => void;
+  activeTab: 'feed' | 'radar' | 'camera' | 'quicksearch';
+  onTabChange: (tab: 'feed' | 'radar' | 'camera' | 'quicksearch') => void;
+}
+
+interface TabItem {
+  id: 'feed' | 'radar' | 'camera' | 'quicksearch';
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: 'strawberry' | 'grape' | 'lemon' | 'blueberry';
 }
 
 const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabChange }) => {
-  const tabs = [
-    { id: 'feed', label: 'Feed', icon: Home },
-    { id: 'radar', label: 'Radar', icon: MapPin },
-    { id: 'camera', label: 'Camera', icon: Camera },
-  ] as const;
+  const tabs: TabItem[] = [
+    { id: 'feed', label: 'Feed', icon: Home, color: 'strawberry' },
+    { id: 'radar', label: 'Radar', icon: MapPin, color: 'blueberry' },
+    { id: 'camera', label: 'Camera', icon: Camera, color: 'lemon' },
+    { id: 'quicksearch', label: 'Quick Search', icon: Search, color: 'grape' },
+  ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border z-50">
-      <div className="flex items-center justify-around py-2 px-4 max-w-md mx-auto">
-        {tabs.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => onTabChange(id)}
-            className={cn(
-              'flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200',
-              activeTab === id
-                ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-            )}
-          >
-            <Icon className="h-6 w-6 mb-1" />
-            <span className="text-xs font-medium">{label}</span>
-          </button>
+    <div className="fixed bottom-0 left-0 right-0 candy-bottom-nav z-50">
+      <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
+        {tabs.map(({ id, label, icon: Icon, color }) => (
+          <div key={id} className="flex flex-col items-center">
+            <GameButton
+              label=""
+              icon={<Icon className="h-5 w-5" />}
+              color={color}
+              onClick={() => onTabChange(id)}
+            />
+            <span className="text-xs font-medium font-roundo text-white mt-1">{label}</span>
+          </div>
         ))}
       </div>
     </div>

@@ -57,7 +57,7 @@ export interface RestaurantDetails {
   }>;
   opening_hours?: {
     weekday_text?: string[];
-    open_now: boolean;
+    isOpen?: () => boolean;
   };
   geometry: {
     location: {

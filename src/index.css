@@ -3,88 +3,151 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Candy Crush Style Mobile Game Interface */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Fredoka+One:wght@400&family=Nunito:wght@400;600;700&display=swap');
+
+/* Roundo Font */
+@font-face {
+  font-family: 'Roundo';
+  src: url('/fonts/roundo/Roundo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 85% 55%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 85% 55%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 85% 55%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 345 100% 58%;
+    /* Candy Red Primary Colors */
+    --primary: 0 85% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 197 100% 50%;
+    --secondary: 0 70% 35%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 85% 55%;
+    --muted-foreground: 0 0% 90%;
 
-    --accent: 197 100% 95%;
-    --accent-foreground: 345 100% 58%;
+    --accent: 45 100% 65%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84.2% 50.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 345 100% 58%;
+    --border: 0 85% 55%;
+    --input: 0 85% 55%;
+    --ring: 0 85% 55%;
 
-    --radius: 0.75rem;
+    --radius: 1.5rem; /* Extra rounded for candy feel */
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 85% 55%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 85% 55%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 85% 55%;
+    --sidebar-ring: 0 85% 55%;
+
+    /* Game Fonts - All using Roundo */
+    --font-headline: 'Roundo', sans-serif;
+    --font-body: 'Roundo', sans-serif;
+    --font-cta: 'Roundo', sans-serif;
+
+    /* Fruit-Themed Candy Colors */
+    --color-strawberry: 0 85% 55%; /* Darker Red */
+    --color-orange: 25 100% 65%; /* Bright Orange */
+    --color-lemon: 45 100% 65%; /* Bright Yellow */
+    --color-lime: 120 85% 60%; /* Bright Green */
+    --color-blueberry: 200 100% 65%; /* Bright Blue */
+    --color-grape: 280 85% 65%; /* Bright Purple */
+    --color-cherry: 340 85% 65%; /* Bright Pink */
+    --color-banana: 60 100% 70%; /* Bright Yellow */
+    --color-apple: 120 100% 50%; /* Bright Green */
+    --color-raspberry: 320 85% 60%; /* Bright Pink */
+
+    /* Fruit-Themed Gradients */
+    --gradient-strawberry: linear-gradient(135deg, hsl(0 85% 55%) 0%, hsl(10 90% 60%) 100%);
+    --gradient-orange: linear-gradient(135deg, hsl(25 100% 65%) 0%, hsl(35 100% 70%) 100%);
+    --gradient-lemon: linear-gradient(135deg, hsl(45 100% 65%) 0%, hsl(55 100% 70%) 100%);
+    --gradient-lime: linear-gradient(135deg, hsl(120 85% 60%) 0%, hsl(130 90% 65%) 100%);
+    --gradient-blueberry: linear-gradient(135deg, hsl(200 100% 65%) 0%, hsl(210 100% 70%) 100%);
+    --gradient-grape: linear-gradient(135deg, hsl(280 85% 65%) 0%, hsl(290 90% 70%) 100%);
+    --gradient-cherry: linear-gradient(135deg, hsl(340 85% 65%) 0%, hsl(350 90% 70%) 100%);
+    --gradient-banana: linear-gradient(135deg, hsl(60 100% 70%) 0%, hsl(70 100% 75%) 100%);
+    --gradient-apple: linear-gradient(135deg, hsl(120 100% 50%) 0%, hsl(130 100% 55%) 100%);
+    --gradient-raspberry: linear-gradient(135deg, hsl(320 85% 60%) 0%, hsl(330 90% 65%) 100%);
+
+    /* 3D Candy Effects */
+    --candy-shadow-light: 0 4px 8px rgba(255, 255, 255, 0.3);
+    --candy-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --candy-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    --candy-shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --candy-shadow-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    
+    /* Candy Glass Effects */
+    --candy-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+    --candy-glass-border: rgba(255, 255, 255, 0.3);
+    --candy-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --candy-blur: blur(20px);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 70% 45%;
+    --foreground: 0 0% 100%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 70% 45%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 70% 45%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 345 100% 58%;
+    --primary: 0 85% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 197 100% 50%;
+    --secondary: 0 70% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 70% 45%;
+    --muted-foreground: 0 0% 90%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 45 100% 65%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 0 70% 45%;
+    --input: 0 70% 45%;
+    --ring: 0 85% 65%;
+
+    --sidebar-background: 0 70% 45%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 85% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 70% 45%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 70% 45%;
+    --sidebar-ring: 0 85% 65%;
+
+    /* Dark mode candy effects */
+    --candy-shadow-light: 0 4px 8px rgba(255, 255, 255, 0.1);
+    --candy-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --candy-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    --candy-shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.25);
+    --candy-shadow-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    
+    --candy-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    --candy-glass-border: rgba(255, 255, 255, 0.1);
+    --candy-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -94,36 +157,321 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    @apply text-foreground;
+    font-family: 'Roundo', sans-serif;
+    background: linear-gradient(to bottom, #e62e2e, #e65555);
+    min-height: 100vh;
+    color: #fff;
+  }
+
+  /* Global candy styling */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roundo', sans-serif;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  p, span, div {
+    color: #fff;
+    font-family: 'Roundo', sans-serif;
+  }
+
+  /* Ensure all text elements use Roundo */
+  button, input, textarea, select, label {
+    font-family: 'Roundo', sans-serif;
   }
 }
 
-/* Custom animations for mobile interactions */
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
+/* Game Fonts - All using Roundo */
+.font-headline {
+  font-family: 'Roundo', sans-serif !important;
+}
+
+.font-cta {
+  font-family: 'Roundo', sans-serif !important;
+}
+
+.font-body {
+  font-family: 'Roundo', sans-serif !important;
+}
+
+/* 3D Candy Card */
+.candy-card {
+  background: var(--candy-glass);
+  backdrop-filter: var(--candy-blur);
+  -webkit-backdrop-filter: var(--candy-blur);
+  border: 2px solid var(--candy-glass-border);
+  border-radius: 1.5rem;
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), var(--candy-shadow-elevated);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.candy-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-strawberry);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.candy-card:hover::before {
+  opacity: 1;
+}
+
+.candy-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+/* 3D Candy Button */
+.btn-candy {
+  background: var(--gradient-strawberry);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1.5rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-candy::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-candy:hover::before {
+  left: 100%;
+}
+
+.btn-candy:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+.btn-candy:active {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: var(--candy-shadow-pressed);
+}
+
+/* Fruit-Themed Badges */
+.badge-strawberry {
+  background: var(--gradient-strawberry);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+.badge-orange {
+  background: var(--gradient-orange);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+.badge-lemon {
+  background: var(--gradient-lemon);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+.badge-lime {
+  background: var(--gradient-lime);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+.badge-blueberry {
+  background: var(--gradient-blueberry);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+.badge-grape {
+  background: var(--gradient-grape);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+.badge-cherry {
+  background: var(--gradient-cherry);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  font-weight: bold;
+  font-family: var(--font-cta);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+/* Candy Header */
+.candy-header {
+  background: linear-gradient(135deg, #e62e2e 0%, #e65555 100%);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--candy-shadow-elevated);
+}
+
+/* Candy Glass Effect */
+.glass-candy {
+  background: var(--candy-glass);
+  backdrop-filter: var(--candy-blur);
+  -webkit-backdrop-filter: var(--candy-blur);
+  border: 2px solid var(--candy-glass-border);
+  border-radius: 1.5rem;
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+/* Candy Input */
+.input-candy {
+  background: var(--candy-glass);
+  border: 2px solid var(--candy-glass-border);
+  border-radius: 1.5rem;
+  box-shadow: var(--candy-shadow-inset);
+  transition: all 0.3s ease;
+  color: #fff;
+}
+
+.input-candy:focus {
+  border-color: hsl(0 85% 65%);
+  box-shadow: 0 0 0 4px rgba(255, 61, 61, 0.2), var(--candy-shadow-inset);
+  transform: scale(1.02);
+}
+
+.input-candy::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Candy Avatar */
+.avatar-candy {
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+}
+
+/* Candy Bottom Navigation */
+.candy-bottom-nav {
+  background: var(--candy-glass);
+  backdrop-filter: var(--candy-blur);
+  -webkit-backdrop-filter: var(--candy-blur);
+  border-top: 2px solid var(--candy-glass-border);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Candy Animations */
+@keyframes candyBounce {
+  0%, 100% {
     transform: translateY(0);
-    opacity: 1;
+  }
+  50% {
+    transform: translateY(-8px);
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+.candy-bounce {
+  animation: candyBounce 2s ease-in-out infinite;
+}
+
+@keyframes candyGlow {
+  0%, 100% {
+    box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 0 20px rgba(255, 61, 61, 0.3);
   }
-  to {
-    opacity: 1;
+  50% {
+    box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 0 30px rgba(255, 61, 61, 0.6);
   }
 }
 
-.slide-up {
-  animation: slideUp 0.3s ease-out;
+.candy-glow {
+  animation: candyGlow 3s ease-in-out infinite;
 }
 
-.fade-in {
-  animation: fadeIn 0.5s ease-out;
+@keyframes candyPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
+
+.candy-pulse {
+  animation: candyPulse 2s ease-in-out infinite;
+}
+
+/* Fruit Color Utilities */
+.bg-strawberry { background-color: hsl(var(--color-strawberry)); }
+.bg-orange { background-color: hsl(var(--color-orange)); }
+.bg-lemon { background-color: hsl(var(--color-lemon)); }
+.bg-lime { background-color: hsl(var(--color-lime)); }
+.bg-blueberry { background-color: hsl(var(--color-blueberry)); }
+.bg-grape { background-color: hsl(var(--color-grape)); }
+.bg-cherry { background-color: hsl(var(--color-cherry)); }
+.bg-banana { background-color: hsl(var(--color-banana)); }
+.bg-apple { background-color: hsl(var(--color-apple)); }
+.bg-raspberry { background-color: hsl(var(--color-raspberry)); }
+
+.text-strawberry { color: hsl(var(--color-strawberry)); }
+.text-orange { color: hsl(var(--color-orange)); }
+.text-lemon { color: hsl(var(--color-lemon)); }
+.text-lime { color: hsl(var(--color-lime)); }
+.text-blueberry { color: hsl(var(--color-blueberry)); }
+.text-grape { color: hsl(var(--color-grape)); }
+.text-cherry { color: hsl(var(--color-cherry)); }
+.text-banana { color: hsl(var(--color-banana)); }
+.text-apple { color: hsl(var(--color-apple)); }
+.text-raspberry { color: hsl(var(--color-raspberry)); }
+
+/* Gradient Utilities */
+.gradient-strawberry { background: var(--gradient-strawberry); }
+.gradient-orange { background: var(--gradient-orange); }
+.gradient-lemon { background: var(--gradient-lemon); }
+.gradient-lime { background: var(--gradient-lime); }
+.gradient-blueberry { background: var(--gradient-blueberry); }
+.gradient-grape { background: var(--gradient-grape); }
+.gradient-cherry { background: var(--gradient-cherry); }
+.gradient-banana { background: var(--gradient-banana); }
+.gradient-apple { background: var(--gradient-apple); }
+.gradient-raspberry { background: var(--gradient-raspberry); }
+

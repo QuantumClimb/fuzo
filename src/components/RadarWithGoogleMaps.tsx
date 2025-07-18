@@ -1,350 +1,199 @@
-import React, { useState, memo } from 'react';
-import { Star, MapPin, DollarSign, Clock, Wifi, WifiOff } from 'lucide-react';
-import { mockRestaurants } from '@/data/mockData';
+import React, { useEffect, useState } from 'react';
+import { GoogleMap, useJsApiLoader, Circle } from '@react-google-maps/api';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { useNearbyRestaurants } from '@/hooks/useGoogleMaps';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Switch } from '@/components/ui/switch';
-import { getStaticMapUrl } from '@/lib/googleMaps';
-import { Slider } from '@/components/ui/slider';
 
-/**
- * Example component showing Google Maps API integration
- * This demonstrates how to switch between mock data and real Google Maps data
- */
+const mapContainerStyle = {
+  width: 'calc(100% - 32px)', // 16px padding on each side
+  height: 'calc(100vh - 120px)', // Adjust for nav height and padding
+  aspectRatio: '9/16',
+  margin: '16px',
+  borderRadius: '20px',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+  border: '2px solid rgba(255, 255, 255, 0.2)',
+  overflow: 'hidden',
+};
+
+const mapOptions = {
+  disableDefaultUI: true,
+  zoomControl: true,
+  tilt: 45, // Enable 3D tilt
+  rotateControl: true, // Enable rotation
+  mapTypeId: 'roadmap',
+  styles: [
+    {
+      "elementType": "geometry",
+      "stylers": [
+        { "color": "#fff0f0" }
+      ]
+    },
+    {
+      "elementType": "labels.text.fill",
+      "stylers": [
+        { "color": "#a42c2c" }
+      ]
+    },
+    {
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        { "color": "#fff8f8" }
+      ]
+    },
+    {
+      "featureType": "poi",
+      "elementType": "geometry",
+      "stylers": [
+        { "color": "#ffe8ec" }
+      ]
+    },
+    {
+      "featureType": "poi.business",
+      "stylers": [
+        { "visibility": "off" }
+      ]
+    },
+    {
+      "featureType": "poi.park",
+      "elementType": "geometry",
+      "stylers": [
+        { "color": "#daf9e2" }
+      ]
+    },
+    {
+      "featureType": "poi.medical",
+      "stylers": [
+        { "visibility": "off" }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "geometry",
+      "stylers": [
+        { "color": "#ffc2cc" }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "geometry.stroke",
+      "stylers": [
+        { "color": "#ff9aa2" }
+      ]
+    },
+    {
+      "featureType": "road.highway",
+      "elementType": "geometry",
+      "stylers": [
+        { "color": "#fcb045" }
+      ]
+    },
+    {
+      "featureType": "road.highway",
+      "elementType": "geometry.stroke",
+      "stylers": [
+        { "color": "#fca311" }
+      ]
+    },
+    {
+      "featureType": "transit",
+      "stylers": [
+        { "visibility": "off" }
+      ]
+    },
+    {
+      "featureType": "water",
+      "stylers": [
+        { "color": "#aee8ff" }
+      ]
+    },
+    {
+      "featureType": "poi.attraction",
+      "elementType": "labels.icon",
+      "stylers": [
+        { "visibility": "on" }
+      ]
+    }
+  ]
+};
+
+const RADIUS_METERS = 500;
+
 const RadarWithGoogleMaps: React.FC = () => {
   const { location, loading: locationLoading, error: locationError, getCurrentLocation } = useGeolocation();
-  const [selectedFilter, setSelectedFilter] = useState<string>('all');
-  const [useGoogleMaps, setUseGoogleMaps] = useState(false);
-  const [distance, setDistance] = useState(2000); // default 2km
-  
-  // Google Maps API integration
-  const { 
-    restaurants: googleRestaurants, 
-    loading: googleLoading, 
-    error: googleError,
-    searchWithFilters
-  } = useNearbyRestaurants(useGoogleMaps ? location : null);
-
-  const filters = [
-    { id: 'all', label: 'All' },
-    { id: 'steakhouse', label: 'Steakhouse' },
-    { id: 'thai', label: 'Thai' },
-    { id: 'japanese', label: 'Japanese' },
-    { id: 'canadian', label: 'Canadian' },
-  ];
-
-  const getPriceLevel = (level: number) => {
-    return '$'.repeat(level);
-  };
-
-  // Choose data source based on Google Maps toggle
-  const restaurants = useGoogleMaps ? googleRestaurants : mockRestaurants;
-  const loading = useGoogleMaps ? googleLoading : false;
-  const dataError = useGoogleMaps ? googleError : null;
-
-  // Filter restaurants based on selected cuisine and distance
-  const filteredRestaurants = restaurants.filter(restaurant => {
-    if (selectedFilter !== 'all' && !restaurant.cuisine.toLowerCase().includes(selectedFilter.toLowerCase())) {
-      return false;
-    }
-    return restaurant.distance <= distance / 1000; // restaurant.distance is in km
+  const [map, setMap] = useState(null);
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
 
-  // Handle cuisine-specific search for Google Maps
-  const handleFilterChange = async (filterId: string) => {
-    setSelectedFilter(filterId);
-    
-    if (useGoogleMaps && location && filterId !== 'all') {
-      // Use Google Maps text search for specific cuisines
-      try {
-        await searchWithFilters(location, 2000, filterId);
-      } catch (error) {
-        console.error('Failed to filter restaurants:', error);
-      }
+  useEffect(() => {
+    if (!location && !locationLoading) getCurrentLocation();
+  }, [location, locationLoading, getCurrentLocation]);
+
+  // Set tilt and heading for 3D effect when map loads
+  const handleMapLoad = (mapInstance: google.maps.Map) => {
+    setMap(mapInstance);
+    if (mapInstance && mapInstance.setTilt && mapInstance.setHeading) {
+      mapInstance.setTilt(45);
+      mapInstance.setHeading(0);
     }
   };
 
   return (
-    <div className="flex flex-col h-full pb-20">
-      <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-border p-4 z-10">
-        <h1 className="text-2xl font-bold text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Radar (Demo)
-        </h1>
-        <p className="text-sm text-muted-foreground text-center mt-1">
-          Restaurant discovery with Google Maps integration
-        </p>
-        
-        {/* Google Maps Toggle */}
-        <div className="flex items-center justify-center space-x-2 mt-3">
-          <WifiOff className="h-4 w-4 text-muted-foreground" />
-          <Switch 
-            checked={useGoogleMaps}
-            onCheckedChange={setUseGoogleMaps}
-            disabled={!location}
+    <div className="flex flex-col h-full pb-20 bg-gradient-to-b from-pink-50 to-pink-100">
+      {/* Candy Header with Fuzocube Logo */}
+      <div className="candy-header sticky top-0 z-10 p-4">
+        <div className="flex items-center justify-center mb-4">
+          <img 
+            src="/Fuzocube.png" 
+            alt="Rubik's Chef Logo" 
+            className="h-12 w-12 candy-bounce"
           />
-          <Wifi className="h-4 w-4 text-green-600" />
-          <span className="text-xs text-muted-foreground">
-            {useGoogleMaps ? 'Google Maps API' : 'Mock Data'}
-          </span>
+        </div>
+        <div className="w-full glass-candy text-center py-3 px-4 font-cta text-base my-3 rounded-2xl border-2 border-white/30">
+          Scout locations nearby and pin them to win candy rewards! 🍭
         </div>
       </div>
-
-      <div className="p-4">
-        {/* Location Error */}
+      <div className="flex-1 flex items-center justify-center">
         {locationError && (
-          <Alert className="mb-4">
-            <MapPin className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between">
-              <span>{locationError}</span>
-              <Button onClick={getCurrentLocation} size="sm" variant="outline">
-                Retry
-              </Button>
-            </AlertDescription>
-          </Alert>
+          <div className="text-center text-white font-body p-4 glass-candy rounded-2xl border-2 border-red-300/50">{locationError}</div>
         )}
-
-        {/* Google Maps API Error */}
-        {useGoogleMaps && dataError && (
-          <Alert className="mb-4" variant="destructive">
-            <AlertDescription>
-              Google Maps API Error: {dataError}
-              <br />
-              <span className="text-xs">Falling back to mock data...</span>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Loading State */}
-        {(locationLoading || loading) && (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="ml-2 text-sm text-muted-foreground">
-              {locationLoading 
-                ? 'Getting your location...' 
-                : 'Loading restaurants from Google Maps...'
-              }
-            </span>
+        {locationLoading && (
+          <div className="flex flex-col items-center justify-center w-full h-full">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mb-4"></div>
+            <span className="font-body text-white font-cta">Getting your location...</span>
           </div>
         )}
-
-        {/* User Location Display */}
-        {location && (
-          <div className="mb-4 p-3 bg-muted rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <MapPin className="h-4 w-4 text-primary mr-2" />
-                <span className="text-sm font-medium">
-                  Your location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                </span>
-              </div>
-              <Badge variant={useGoogleMaps ? 'default' : 'secondary'}>
-                {useGoogleMaps ? 'Live' : 'Demo'}
-              </Badge>
-            </div>
-            {location.address && useGoogleMaps && (
-              <p className="text-xs text-muted-foreground mt-1 ml-6">
-                {location.address}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Add Detect My Location button at the top, after the title/description */}
-        <div className="flex justify-center mt-4">
-          <Button
-            onClick={getCurrentLocation}
-            disabled={locationLoading}
-            className="flex items-center space-x-2 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
-          >
-            <MapPin className={`h-4 w-4 ${locationLoading ? 'animate-spin' : ''}`} />
-            <span>{locationLoading ? 'Detecting Location...' : 'DETECT MY LOCATION'}</span>
-          </Button>
-        </div>
-
-        {/* Cuisine Filters */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Filter by cuisine:</span>
-            <Badge variant="outline" className="text-xs">
-              {filteredRestaurants.length} results
-            </Badge>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {filters.map((filter) => (
-              <Badge
-                key={filter.id}
-                variant={selectedFilter === filter.id ? 'default' : 'secondary'}
-                className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                onClick={() => handleFilterChange(filter.id)}
+        {isLoaded && location && (
+          <div className="flex-1 flex items-center justify-center p-4">
+            <div className="relative w-full max-w-4xl">
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={{ lat: location.lat, lng: location.lng }}
+                zoom={18}
+                options={mapOptions}
+                onLoad={handleMapLoad}
               >
-                {filter.label}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        {/* Add slider above cuisine filters */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Distance: {distance}m</span>
-            <span className="text-xs text-muted-foreground">Showing restaurants within {distance} meters</span>
-          </div>
-          <Slider
-            min={50}
-            max={5000}
-            step={50}
-            value={[distance]}
-            onValueChange={([val]) => setDistance(val)}
-            className="w-full mb-2"
-          />
-        </div>
-
-        {/* After cuisine filters and before Data Source Indicator, show map if location and restaurants exist */}
-        {useGoogleMaps && location && filteredRestaurants.length > 0 && (
-          <div className="mb-6 flex flex-col items-center">
-            <img
-              src={getStaticMapUrl(
-                location,
-                14,
-                600,
-                300,
-                [
-                  { lat: location.lat, lng: location.lng, label: 'U' },
-                  ...filteredRestaurants.map((r, i) => ({ lat: r.coordinates.lat, lng: r.coordinates.lng, label: String.fromCharCode(65 + (i % 26)) }))
-                ]
-              )}
-              alt="Map with restaurants"
-              className="rounded-lg border shadow"
-              style={{ maxWidth: '100%', height: 'auto' }}
-            />
-            <div className="text-xs text-muted-foreground mt-1">Map: U = You, A-Z = Restaurants</div>
+                <Circle
+                  center={{ lat: location.lat, lng: location.lng }}
+                  radius={RADIUS_METERS}
+                  options={{
+                    fillColor: '#ff3d3d',
+                    fillOpacity: 0.15,
+                    strokeColor: '#ff3d3d',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 3,
+                  }}
+                />
+              </GoogleMap>
+            </div>
           </div>
         )}
-
-        {/* Data Source Indicator */}
-        <div className="mb-4 p-2 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-800">
-                Data Source: {useGoogleMaps ? 'Google Maps Places API' : 'Mock Data'}
-              </p>
-              <p className="text-xs text-blue-600">
-                {useGoogleMaps 
-                  ? 'Real-time restaurant data with live ratings and photos'
-                  : 'Sample Toronto restaurants for development'
-                }
-              </p>
-            </div>
-            <div className="text-2xl">
-              {useGoogleMaps ? '🌐' : '📱'}
-            </div>
-          </div>
-        </div>
-
-        {/* Restaurant List */}
-        <div className="space-y-4">
-          {loading ? (
-            <RestaurantListSkeleton />
-          ) : filteredRestaurants.map((restaurant) => {
-            const imageWebp = restaurant.image.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-            return (
-              <Card key={restaurant.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
-                <div className="flex">
-                  <picture>
-                    <source srcSet={imageWebp} type="image/webp" />
-                    <img
-                      src={restaurant.image}
-                      alt={restaurant.name}
-                      className="w-24 h-24 object-cover"
-                      srcSet={`${restaurant.image} 1x, ${restaurant.image.replace(/(\.[a-z]+)$/i, '@2x$1')} 2x`}
-                      sizes="(max-width: 600px) 100vw, 96px"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.svg';
-                      }}
-                    />
-                  </picture>
-                  <div className="flex-1">
-                    <CardHeader className="p-3 pb-2">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg font-semibold leading-tight">
-                          {restaurant.name}
-                          {useGoogleMaps && (
-                            <Badge variant="outline" className="ml-2 text-xs">
-                              Live
-                            </Badge>
-                          )}
-                        </CardTitle>
-                        <div className="flex items-center space-x-1 text-sm">
-                          <Clock className="h-3 w-3" />
-                          <span>{restaurant.distance.toFixed(1)}km</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    
-                    <CardContent className="p-3 pt-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="flex items-center">
-                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                            <span className="text-sm font-medium ml-1">{restaurant.rating}</span>
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            {restaurant.cuisine}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <DollarSign className="h-3 w-3" />
-                          <span>{getPriceLevel(restaurant.priceLevel)}</span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-xs text-muted-foreground flex items-center">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {restaurant.address}
-                      </p>
-                    </CardContent>
-                  </div>
-                </div>
-                {/* In the restaurant list, after the <img> in each card, show attributions if present */}
-                {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
-                  <div className="text-[10px] text-muted-foreground mt-1">
-                    {restaurant.photoAttributions.map((attr, idx) => (
-                      <span key={idx}>
-                        Photo by{' '}
-                        {attr.uri ? (
-                          <a href={attr.uri.startsWith('http') ? attr.uri : `https:${attr.uri}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
-                            {attr.displayName || 'Contributor'}
-                          </a>
-                        ) : (
-                          attr.displayName || 'Contributor'
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* No Results */}
-        {filteredRestaurants.length === 0 && !loading && (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">
-              No restaurants found for "{filters.find(f => f.id === selectedFilter)?.label}"
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => handleFilterChange('all')}
-              className="mt-2"
+        {!location && !locationLoading && (
+          <div className="flex flex-col items-center w-full">
+            <button
+              onClick={getCurrentLocation}
+              className="mt-8 px-6 py-3 btn-candy text-white rounded-2xl font-cta text-lg shadow-lg font-bold candy-pulse"
             >
-              Show All Restaurants
-            </Button>
+              Detect My Location
+            </button>
           </div>
         )}
       </div>
@@ -352,20 +201,4 @@ const RadarWithGoogleMaps: React.FC = () => {
   );
 };
 
-// Skeleton loader for restaurant list
-const RestaurantListSkeleton = () => (
-  <div className="space-y-4">
-    {[...Array(4)].map((_, i) => (
-      <div key={i} className="flex animate-pulse bg-gray-100 rounded-lg overflow-hidden">
-        <div className="bg-gray-200 h-24 w-24" />
-        <div className="flex-1 p-3 space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-1/2" />
-          <div className="h-3 bg-gray-200 rounded w-1/3" />
-          <div className="h-3 bg-gray-200 rounded w-1/4" />
-        </div>
-      </div>
-    ))}
-  </div>
-);
-
-export default memo(RadarWithGoogleMaps); 
+export default RadarWithGoogleMaps; 

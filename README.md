@@ -244,3 +244,34 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - All user data is protected with Row Level Security (RLS) policies in Supabase.
 - For now, all data is associated with the guest user or the logged-in user, but the structure is ready for scaling to multiple users.
+
+## Camera Image Upload (Public, Client-Side)
+
+Images captured in the Camera component are now uploaded **directly from the browser** to Supabase Storage using the public client. No Edge Function is required for this workflow.
+
+- **Bucket:** `fuzo-images`
+- **Folder:** `guest/`
+- **Upload Type:** Public (for testing/demo purposes)
+
+### Example Upload Logic
+```js
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ...
+const { data, error } = await supabase.storage
+  .from('fuzo-images')
+  .upload(`guest/${filename}`, fileBlob, {
+    cacheControl: '3600',
+    upsert: false,
+    contentType: fileBlob.type,
+  });
+```
+
+- `fileBlob` is a `Blob` or `File` (e.g., from a camera or file input)
+- `filename` is a unique name for the image
+
+### Notes
+- The `fuzo-images` bucket must allow public uploads for this to work.
+- This approach is ideal for rapid prototyping and testing.
+- For production, consider using authenticated uploads or Edge Functions for additional security and validation.

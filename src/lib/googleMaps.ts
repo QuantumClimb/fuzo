@@ -61,8 +61,9 @@ interface GooglePlaceResult {
     width: number;
   }>;
   opening_hours?: {
-    open_now: boolean;
+    open_now?: boolean;
     weekday_text?: string[];
+    isOpen?: () => boolean;
   };
   formatted_phone_number?: string;
   website?: string;
@@ -163,7 +164,7 @@ interface GooglePlace {
     width: number;
   }[];
   opening_hours?: {
-    open_now: boolean;
+    isOpen?: () => boolean;
   };
 }
 
@@ -181,7 +182,7 @@ interface GooglePlaceDetails {
   }[];
   opening_hours?: {
     weekday_text: string[];
-    open_now: boolean;
+    isOpen?: () => boolean;
   };
   geometry: {
     location: {
@@ -401,7 +402,17 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
                 attributions: photo.authorAttributions || [],
               }))
           : [],
-        opening_hours: dg.currentOpeningHours,
+        opening_hours: dg.currentOpeningHours ? {
+          weekday_text: dg.currentOpeningHours.weekdayText,
+          isOpen: () => {
+            // Use the modern isOpen() method if available
+            if (dg.currentOpeningHours && typeof dg.currentOpeningHours.isOpen === 'function') {
+              return dg.currentOpeningHours.isOpen();
+            }
+            // Fallback to open_now if available
+            return dg.currentOpeningHours?.openNow || false;
+          }
+        } : undefined,
         geometry: {
           location: {
             lat: dg.location?.lat ? dg.location.lat() : 0,
@@ -450,7 +461,17 @@ export async function getPlaceDetails(placeId: string): Promise<RestaurantDetail
             height: photo.height,
             attributions: [], // No attributions in legacy API
           })),
-          opening_hours: place.opening_hours,
+          opening_hours: place.opening_hours ? {
+            weekday_text: place.opening_hours.weekday_text,
+            isOpen: () => {
+              // Use the modern isOpen() method if available, otherwise fallback
+              if (place.opening_hours && typeof place.opening_hours.isOpen === 'function') {
+                return place.opening_hours.isOpen();
+              }
+              // Fallback to open_now if isOpen is not available (for backward compatibility)
+              return place.opening_hours?.open_now || false;
+            }
+          } : undefined,
           geometry: {
             location: {
               lat: place.geometry.location.lat(),

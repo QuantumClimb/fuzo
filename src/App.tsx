@@ -17,17 +17,6 @@ const App = () => {
         <Toaster />
         <Sonner />
         <div className="relative">
-          <button
-            className="absolute top-4 right-4 z-50 bg-white rounded-full border border-gray-200 shadow p-1 hover:shadow-lg transition"
-            onClick={() => navigate('/profile')}
-            title="Profile"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
-              alt="Profile"
-              className="w-10 h-10 rounded-full"
-            />
-          </button>
           <Routes>
             <Route path="/profile" element={<Profile />} />
             <Route path="/" element={<Index />} />

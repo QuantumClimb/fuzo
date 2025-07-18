@@ -12,6 +12,7 @@ import piexif from 'piexifjs';
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client for public uploads
+// Change bucket name to 'guestimages'
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -26,6 +27,7 @@ const Camera: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const { location, loading: locationLoading, error: locationError } = useGeolocation();
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
   const startCamera = useCallback(async () => {
     try {
@@ -140,7 +142,7 @@ const Camera: React.FC = () => {
 
       // Single upload with proper error handling
       const { data, error } = await supabase.storage
-        .from('fuzo-images')
+        .from('guestimages') // <-- updated bucket name
         .upload(uploadPath, finalBlob, {
           cacheControl: '3600',
           upsert: true, // Allow overwriting if needed
@@ -160,9 +162,10 @@ const Camera: React.FC = () => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        toast.error(`Upload failed: ${error.message}. Image saved to your device instead.`);
+        toast.error("Upload failed. But hey, it’s saved to your device. 📷");
         setCapturedImage(null);
         setCaption('');
+        setUploadedImageUrl(null);
         return;
       }
 
@@ -170,9 +173,10 @@ const Camera: React.FC = () => {
 
       // Get public URL
       const { data: publicUrlData } = supabase.storage
-        .from('fuzo-images')
+        .from('guestimages') // <-- updated bucket name
         .getPublicUrl(uploadPath);
       const imageUrl = publicUrlData.publicUrl;
+      setUploadedImageUrl(imageUrl); // <-- set preview
 
       // Get user info
       const { data: userData } = await supabase.auth.getUser();
@@ -204,6 +208,7 @@ const Camera: React.FC = () => {
     } catch (error) {
       console.error('Save photo error:', error);
       toast.error('Failed to save photo. Please try again.');
+      setUploadedImageUrl(null);
     }
   };
 
@@ -212,26 +217,32 @@ const Camera: React.FC = () => {
 
     const link = document.createElement('a');
     link.href = capturedImage;
-    link.download = `newbuzo-${Date.now()}.jpg`;
+    link.download = `fuzo-${Date.now()}.jpg`;
     link.click();
     toast.success('Photo downloaded!');
   };
 
   return (
     <div className="flex flex-col h-full pb-20">
-      <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-border p-4 z-10">
-        <h1 className="text-2xl font-bold text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Camera
-        </h1>
-        <p className="text-sm text-muted-foreground text-center mt-1">
-          Capture and share your moments
-        </p>
+      {/* Candy Header */}
+      <div className="candy-header sticky top-0 z-10 p-4">
+        <div className="flex items-center justify-center mb-4">
+          <img 
+            src="/Fuzocube.png" 
+            alt="Rubik's Chef Logo" 
+            className="h-12 w-12 candy-bounce"
+          />
+        </div>
+        {/* Banner */}
+        <div className="w-full glass-candy text-center py-3 px-4 font-cta text-base my-3 rounded-2xl border-2 border-white/30">
+          Snap your favorite food and restaurant moments! Share the deliciousness! 🍰
+        </div>
       </div>
 
       <div className="flex-1 p-4">
         {locationError && (
-          <Alert className="mb-4">
-            <AlertDescription>
+          <Alert className="mb-4 glass-candy border-red-300/50">
+            <AlertDescription className="text-white">
               {locationError} Location data won't be added to your photos.
             </AlertDescription>
           </Alert>
@@ -239,9 +250,9 @@ const Camera: React.FC = () => {
 
         {!capturedImage ? (
           <div className="space-y-4">
-            <Card className="overflow-hidden">
+            <Card className="candy-card overflow-hidden">
               <CardContent className="p-0">
-                <div className="relative bg-black aspect-square rounded-lg overflow-hidden">
+                <div className="relative bg-black aspect-square rounded-2xl overflow-hidden">
                   {isCapturing ? (
                     <video
                       ref={videoRef}
@@ -253,8 +264,8 @@ const Camera: React.FC = () => {
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center text-white">
-                        <CameraIcon className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                        <p className="text-sm opacity-75">Tap to start camera</p>
+                        <CameraIcon className="h-16 w-16 mx-auto mb-4 opacity-50 candy-bounce" />
+                        <p className="text-sm opacity-75 font-cta">Tap to start camera</p>
                       </div>
                     </div>
                   )}
@@ -264,19 +275,19 @@ const Camera: React.FC = () => {
 
             <div className="flex items-center justify-center space-x-4">
               {!isCapturing ? (
-                <Button onClick={startCamera} size="lg" className="flex-1">
+                <Button onClick={startCamera} size="lg" className="btn-candy flex-1 font-cta">
                   <CameraIcon className="h-5 w-5 mr-2" />
                   Start Camera
                 </Button>
               ) : (
                 <>
-                  <Button onClick={flipCamera} variant="outline" size="lg">
+                  <Button onClick={flipCamera} variant="outline" size="lg" className="glass-candy border-white/30 text-white hover:bg-white/20 font-cta">
                     <FlipHorizontal className="h-5 w-5" />
                   </Button>
-                  <Button onClick={capturePhoto} size="lg" className="flex-1">
+                  <Button onClick={capturePhoto} size="lg" className="btn-candy text-white shadow-lg font-cta">
                     Capture
                   </Button>
-                  <Button onClick={stopCamera} variant="outline" size="lg">
+                  <Button onClick={stopCamera} variant="outline" size="lg" className="glass-candy border-white/30 text-white hover:bg-white/20 font-cta">
                     <X className="h-5 w-5" />
                   </Button>
                 </>
@@ -285,55 +296,67 @@ const Camera: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <Card className="overflow-hidden">
+            <Card className="candy-card overflow-hidden">
               <CardHeader>
-                <CardTitle className="text-lg">Preview</CardTitle>
+                <CardTitle className="text-lg text-white font-headline">Preview</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <img
                   src={capturedImage}
                   alt="Captured"
-                  className="w-full aspect-square object-cover"
+                  className="w-full aspect-square object-cover rounded-2xl"
                 />
               </CardContent>
             </Card>
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="caption">Caption</Label>
+                <Label htmlFor="caption" className="text-white font-cta">Caption</Label>
                 <Input
                   id="caption"
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
                   placeholder="Add a caption..."
-                  className="mt-1"
+                  className="mt-1 input-candy font-body"
                 />
               </div>
 
               {location && (
-                <div className="p-3 bg-muted rounded-lg">
-                  <p className="text-sm font-medium">Location</p>
-                  <p className="text-xs text-muted-foreground">
+                <div className="p-3 glass-candy rounded-2xl border-2 border-white/30">
+                  <p className="text-sm font-medium text-white font-cta">Location</p>
+                  <p className="text-xs text-white/80 font-body">
                     {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
                   </p>
                 </div>
               )}
 
               <div className="flex space-x-2">
-                <Button onClick={retakePhoto} variant="outline" className="flex-1">
+                <Button onClick={retakePhoto} variant="outline" className="flex-1 glass-candy border-white/30 text-white hover:bg-white/20 font-cta">
                   <X className="h-4 w-4 mr-2" />
                   Retake
                 </Button>
-                <Button onClick={downloadPhoto} variant="outline" className="flex-1">
+                <Button onClick={downloadPhoto} variant="outline" className="flex-1 glass-candy border-white/30 text-white hover:bg-white/20 font-cta">
                   <Download className="h-4 w-4 mr-2" />
                   Download
                 </Button>
-                <Button onClick={savePhoto} className="flex-1">
+                <Button onClick={savePhoto} className="btn-candy font-cta">
                   <Check className="h-4 w-4 mr-2" />
                   Save to Feed
                 </Button>
               </div>
             </div>
+          </div>
+        )}
+
+        {uploadedImageUrl && (
+          <div className="my-4">
+            <h2 className="text-center font-semibold text-white font-headline">Uploaded Image Preview</h2>
+            <img src={uploadedImageUrl} alt="Uploaded preview" className="mx-auto max-w-xs rounded-2xl shadow-lg candy-pulse" />
+          </div>
+        )}
+        {uploadedImageUrl && (
+          <div className="w-full glass-candy text-center text-sm py-3 mt-4 rounded-2xl border-2 border-green-300/50 text-white font-cta">
+            Your photo has been added to the feed. Share more moments! 🎉
           </div>
         )}
 

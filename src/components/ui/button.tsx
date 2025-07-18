@@ -44,7 +44,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn('font-cta', buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       />
@@ -53,4 +53,34 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = "Button"
 
-export { Button, buttonVariants }
+// GameButton component for candy-themed styling
+interface GameButtonProps {
+  label: string;
+  icon?: React.ReactNode;
+  color?: 'strawberry' | 'grape' | 'lemon' | 'blueberry';
+  onClick?: () => void;
+}
+
+const colorMap = {
+  strawberry: 'from-pink-400 to-pink-600',
+  grape: 'from-purple-400 to-purple-600',
+  lemon: 'from-yellow-300 to-yellow-500',
+  blueberry: 'from-blue-400 to-blue-600',
+};
+
+const GameButton: React.FC<GameButtonProps> = ({ label, icon, color = 'strawberry', onClick }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      `px-5 py-3 rounded-full font-bold text-white shadow-lg text-lg flex items-center gap-2`,
+      `bg-gradient-to-b ${colorMap[color]}`,
+      'transform transition-all duration-200 hover:scale-105 active:scale-95',
+      'font-roundo'
+    )}
+  >
+    {icon && <span className="text-xl">{icon}</span>}
+    {label}
+  </button>
+);
+
+export { Button, buttonVariants, GameButton } 
