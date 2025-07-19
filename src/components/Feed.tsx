@@ -13,7 +13,7 @@ import RestaurantDetail from './RestaurantDetail';
 import { useLocationSearch, useNearbyRestaurants } from '@/hooks/useGoogleMaps';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { Restaurant, UserLocation } from '@/types';
-import { LocationSearchResult } from '@/lib/googleMaps';
+import { LocationSearchResult, calculateDistance } from '@/lib/googleMaps';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
@@ -22,12 +22,12 @@ import { toast } from 'sonner';
 const FeedSkeleton = () => (
   <div className="space-y-4">
     {[...Array(5)].map((_, i) => (
-      <div key={i} className="animate-pulse candy-card p-4 flex space-x-4">
-        <div className="bg-white/20 h-24 w-24 rounded-2xl" />
+      <div key={i} className="animate-pulse ios-card p-4 flex space-x-4">
+        <div className="bg-muted h-24 w-24 rounded-lg" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-white/20 rounded w-3/4" />
-          <div className="h-3 bg-white/20 rounded w-1/2" />
-          <div className="h-3 bg-white/20 rounded w-1/3" />
+          <div className="h-4 bg-muted rounded w-3/4" />
+          <div className="h-3 bg-muted rounded w-1/2" />
+          <div className="h-3 bg-muted rounded w-1/3" />
         </div>
       </div>
     ))}
@@ -141,6 +141,20 @@ const Feed: React.FC = () => {
 
   // Convert Restaurant to Post-like format for display
   const createPostFromRestaurant = (restaurant: Restaurant, index: number) => {
+    // Calculate distance from user's current location to restaurant
+    let distanceFromUser = restaurant.distance;
+    
+    // If user has a current location and we're showing restaurants from a searched location,
+    // calculate the actual distance from user's current location to the restaurant
+    if (currentLocation && selectedLocation && currentLocation !== selectedLocation) {
+      distanceFromUser = calculateDistance(
+        currentLocation.lat,
+        currentLocation.lng,
+        restaurant.coordinates.lat,
+        restaurant.coordinates.lng
+      );
+    }
+    
     return {
       id: restaurant.id,
       image: restaurant.image,
@@ -154,7 +168,7 @@ const Feed: React.FC = () => {
       place_id: restaurant.id,
       rating: restaurant.rating,
       cuisine: restaurant.cuisine,
-      distance: restaurant.distance,
+      distance: distanceFromUser,
       // Responsive image sources
       imageWebp: restaurant.image.replace(/\.(jpg|jpeg|png)$/i, '.webp'),
     };
@@ -186,68 +200,68 @@ const Feed: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col space-y-4 pb-20">
-      {/* Candy Header with Rubik's Chef Logo */}
-      <div className="candy-header sticky top-0 z-10 p-4">
+    <div className="flex flex-col space-y-4 lg:pb-0 pb-20">
+      {/* iOS Header */}
+      <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
         <div className="flex items-center justify-center mb-4">
           <img 
             src="/Fuzocube.png" 
-            alt="Rubik's Chef Logo" 
-            className="h-12 w-12 candy-bounce"
+            alt="FUZO Logo" 
+            className="h-12 w-12"
           />
         </div>
         
-        {/* Feed Toggle with Candy Styling */}
+        {/* Feed Toggle */}
         <div className="flex items-center justify-center mb-4">
-          <span className="mr-2 text-sm font-medium text-white font-cta">Google Maps Feed</span>
+          <span className="mr-2 text-sm font-medium text-foreground">Google Maps Feed</span>
           <Switch checked={showImageFeed} onCheckedChange={setShowImageFeed} />
-          <span className="ml-2 text-sm font-medium text-white font-cta">Image Feed</span>
+          <span className="ml-2 text-sm font-medium text-foreground">Image Feed</span>
         </div>
 
-        {/* Dynamic Info Banner with Candy Colors */}
-        <div className="glass-candy rounded-2xl text-center py-3 px-4 text-sm mb-3 border-2 border-white/30">
+        {/* Info Banner */}
+        <div className="bg-muted rounded-lg text-center py-3 px-4 text-sm mb-3 border border-border">
           {showImageFeed 
             ? "🍰 You're viewing snaps from the community. Add your own from the Camera tab!" 
             : "🍕 These restaurants are recommended based on your location. Tap a photo for more details."}
         </div>
         
-        <p className="text-sm text-white/80 text-center mt-1 font-body">
+        <p className="text-sm text-muted-foreground text-center mt-1">
           {activeLocation ? `${restaurants.length} restaurants found${locationName ? ` in ${locationName}` : ' nearby'}` : 'Search for a location to discover restaurants'}
         </p>
         
-        {/* Location Accordion with Candy Styling */}
+        {/* Location Accordion */}
         <div className="mt-4">
           <button
             onClick={() => setIsLocationAccordionOpen(!isLocationAccordionOpen)}
-            className="w-full flex items-center justify-between p-3 glass-candy rounded-2xl hover:bg-white/20 transition-colors border-2 border-white/30"
+            className="w-full flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors border border-border"
           >
             <div className="flex items-center space-x-2">
-              <MapPin className="h-5 w-5 text-white" />
-              <span className="font-medium text-white font-cta">Location & Search</span>
+              <MapPin className="h-5 w-5 text-foreground" />
+              <span className="font-medium text-foreground">Location & Search</span>
             </div>
             {isLocationAccordionOpen ? (
-              <ChevronUp className="h-5 w-5 text-white" />
+              <ChevronUp className="h-5 w-5 text-foreground" />
             ) : (
-              <ChevronDown className="h-5 w-5 text-white" />
+              <ChevronDown className="h-5 w-5 text-foreground" />
             )}
           </button>
           
           {/* Accordion Content */}
           {isLocationAccordionOpen && (
-            <div className="mt-3 space-y-3 slide-up">
+            <div className="mt-3 space-y-3">
               {/* Selected Location Display */}
               {selectedLocation && locationName && (
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="flex items-center space-x-2 glass-candy px-3 py-2 rounded-full border-2 border-white/30">
-                    <MapPin className="h-4 w-4 text-white" />
-                    <span className="text-sm font-medium text-white font-cta">{locationName}</span>
+                  <div className="flex items-center space-x-2 bg-primary/10 px-3 py-2 rounded-full border border-primary/20">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-foreground">{locationName}</span>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={clearSelectedLocation}
-                      className="h-4 w-4 p-0 hover:bg-white/30 text-white"
+                      className="h-4 w-4 p-0 hover:bg-primary/20 text-foreground"
                     >
-                      <X className="h-3 w-3 text-white" />
+                      <X className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>
@@ -258,7 +272,7 @@ const Feed: React.FC = () => {
                 <Button
                   onClick={handleDetectLocation}
                   disabled={locationLoading}
-                  className="btn-candy flex items-center space-x-2 font-cta"
+                  className="btn-ios flex items-center space-x-2"
                 >
                   <Navigation className={`h-4 w-4 ${locationLoading ? 'animate-spin' : ''}`} />
                   <span>
@@ -270,48 +284,48 @@ const Feed: React.FC = () => {
               {/* Search Section */}
               <div className="relative">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
                     type="text"
                     placeholder="Search for a location (city, address, place)..."
                     value={searchQuery}
                     onChange={handleSearchInput}
-                    className="pl-10 pr-10 input-candy border-white/30 focus:border-white font-body"
+                    className="pl-10 pr-10 input-ios"
                   />
                   {searchQuery && (
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={clearSearch}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-white/30 text-white"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted text-foreground"
                     >
-                      <X className="h-4 w-4 text-white" />
+                      <X className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
                 
                 {/* Location Search Results */}
                 {showSearchResults && (
-                  <Card className="absolute top-full mt-2 w-full max-h-96 overflow-y-auto z-50 border shadow-lg glass-candy">
+                  <Card className="absolute top-full mt-2 w-full max-h-96 overflow-y-auto z-50 border shadow-lg ios-card">
                     <CardContent className="p-0">
                       {searchLoading && (
-                        <div className="p-4 text-center text-sm text-white/80">
+                        <div className="p-4 text-center text-sm text-muted-foreground">
                           <div className="flex items-center justify-center space-x-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                             <span>Searching locations...</span>
                           </div>
                         </div>
                       )}
                       
                       {searchError && (
-                        <div className="p-4 text-center text-sm text-red-300">
+                        <div className="p-4 text-center text-sm text-destructive">
                           <p>Error: {searchError}</p>
                           <p className="text-xs mt-1">Check if Google Maps API is configured correctly</p>
                         </div>
                       )}
                       
                       {!searchLoading && !searchError && results.length === 0 && searchQuery && (
-                        <div className="p-4 text-center text-sm text-white/80">
+                        <div className="p-4 text-center text-sm text-muted-foreground">
                           No locations found for "{searchQuery}"
                         </div>
                       )}
@@ -319,24 +333,24 @@ const Feed: React.FC = () => {
                       {results.map((location, index) => (
                         <div
                           key={location.place_id}
-                          className="p-4 border-b last:border-b-0 hover:bg-white/10 cursor-pointer transition-colors border-white/20"
+                          className="p-4 border-b last:border-b-0 hover:bg-muted cursor-pointer transition-colors"
                           onClick={() => handleLocationSelect(location)}
                         >
                           <div className="flex items-start space-x-3">
-                            <div className="flex-shrink-0 w-10 h-10 glass-candy rounded-lg flex items-center justify-center border-2 border-white/30">
-                              <MapPin className="h-5 w-5 text-white" />
+                            <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20">
+                              <MapPin className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-sm truncate text-white font-cta">{location.name}</h3>
-                              <p className="text-xs text-white/70 mt-1 line-clamp-2 font-body">
+                              <h3 className="font-semibold text-sm truncate text-foreground">{location.name}</h3>
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                                 {location.formatted_address}
                               </p>
                               <div className="flex items-center space-x-1 mt-2">
                                 {location.types.slice(0, 2).map((type, idx) => (
                                   <Badge 
                                     key={type} 
-                                    className={`text-xs font-cta ${
-                                      idx === 0 ? 'badge-strawberry' : 'badge-blueberry'
+                                    className={`text-xs ${
+                                      idx === 0 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
                                     }`}
                                   >
                                     {type.replace(/_/g, ' ')}
@@ -354,8 +368,8 @@ const Feed: React.FC = () => {
               
               {/* Location Error */}
               {locationError && (
-                <Alert className="mt-4 glass-candy border-red-300/50">
-                  <AlertDescription className="text-white">{locationError}</AlertDescription>
+                <Alert className="mt-4 border-destructive/50 bg-destructive/10">
+                  <AlertDescription className="text-destructive">{locationError}</AlertDescription>
                 </Alert>
               )}
             </div>
@@ -364,39 +378,39 @@ const Feed: React.FC = () => {
       </div>
       
       {/* Main Content */}
-      <div className="px-4">
+      <div className="px-4 lg:max-w-4xl lg:mx-auto lg:w-full">
         {showImageFeed ? (
           imageFeedLoading ? (
             <div className="flex justify-center items-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-              <span className="ml-2 text-white font-body">Loading images...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-2 text-muted-foreground">Loading images...</span>
             </div>
           ) : imageFeedError ? (
-            <Alert className="glass-candy border-red-300/50"><AlertDescription className="text-white">{imageFeedError}</AlertDescription></Alert>
+            <Alert className="border-destructive/50 bg-destructive/10"><AlertDescription className="text-destructive">{imageFeedError}</AlertDescription></Alert>
           ) : imageFeed.length === 0 ? (
-            <div className="text-center py-8 text-white/80 font-body">No images found in feed.</div>
+            <div className="text-center py-8 text-muted-foreground">No images found in feed.</div>
           ) : (
             <div className="space-y-6">
               {imageFeed.map((item, index) => (
-                <div key={item.id} className="candy-card overflow-hidden">
+                <div key={item.id} className="ios-card overflow-hidden">
                   <CardContent className="p-0">
                     <div className="p-4 pb-2">
                       <div className="flex items-center space-x-3">
-                        <Avatar className="avatar-candy h-8 w-8">
+                        <Avatar className="avatar-ios h-8 w-8">
                           <AvatarImage src={item.user_avatar || '/placeholder.svg'} alt={item.user_email || 'Guest'} />
-                          <AvatarFallback className="glass-candy text-white font-cta">
+                          <AvatarFallback className="bg-primary/10 text-primary">
                             {item.user_email ? item.user_email[0] : 'G'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-sm text-white font-cta">{item.user_email || 'Guest'}</span>
-                            <span className="text-xs text-white/60">•</span>
-                            <span className="text-xs text-white/60 font-body">{formatTimeAgo(item.timestamp)}</span>
+                            <span className="font-semibold text-sm text-foreground">{item.user_email || 'Guest'}</span>
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground">{formatTimeAgo(item.timestamp)}</span>
                           </div>
                           <div className="flex items-center space-x-1 mt-1">
-                            <MapPin className="h-3 w-3 text-white/60" />
-                            <span className="text-xs text-white/60 truncate font-body">{item.location}</span>
+                            <MapPin className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground truncate">{item.location}</span>
                           </div>
                         </div>
                       </div>
@@ -405,7 +419,7 @@ const Feed: React.FC = () => {
                       <img
                         src={item.image_url}
                         alt="Feed upload"
-                        className="w-full h-full object-cover rounded-t-2xl"
+                        className="w-full h-full object-cover rounded-t-lg"
                         loading="lazy"
                       />
                     </div>
@@ -419,27 +433,27 @@ const Feed: React.FC = () => {
             {/* Loading State */}
             {restaurantsLoading && (
               <div className="flex justify-center items-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                <span className="ml-2 text-white/80 font-body">Loading restaurants...</span>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span className="ml-2 text-muted-foreground">Loading restaurants...</span>
               </div>
             )}
 
             {/* Error State */}
             {restaurantsError && (
-              <Alert className="glass-candy border-red-300/50">
-                <AlertDescription className="text-white">{restaurantsError}</AlertDescription>
+              <Alert className="border-destructive/50 bg-destructive/10">
+                <AlertDescription className="text-destructive">{restaurantsError}</AlertDescription>
               </Alert>
             )}
 
             {/* No Location Selected */}
             {!activeLocation && !locationLoading && (
               <div className="text-center py-8 space-y-4">
-                <div className="w-24 h-24 glass-candy rounded-full flex items-center justify-center mx-auto candy-bounce border-2 border-white/30">
-                  <MapPin className="h-12 w-12 text-white" />
+                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto border border-primary/20">
+                  <MapPin className="h-12 w-12 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white font-headline">Find Great Restaurants</h3>
-                  <p className="text-sm text-white/80 mt-1 font-body">
+                  <h3 className="text-lg font-semibold text-foreground">Find Great Restaurants</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
                     Search for a location or detect your current location to discover amazing restaurants nearby
                   </p>
                 </div>
@@ -451,26 +465,30 @@ const Feed: React.FC = () => {
               <div className="space-y-6">
                 {validRestaurants.map((restaurant, index) => {
                   const post = createPostFromRestaurant(restaurant, index);
-                  const badgeColors = ['badge-strawberry', 'badge-orange', 'badge-lemon', 'badge-lime', 'badge-blueberry', 'badge-grape', 'badge-cherry'];
+                  const badgeColors = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-muted', 'bg-destructive'];
                   const badgeColor = badgeColors[index % badgeColors.length];
                   
                   return (
-                    <div key={restaurant.id} className="candy-card overflow-hidden">
+                    <div key={restaurant.id} className="ios-card overflow-hidden">
                       <CardContent className="p-0">
                         {/* Header */}
                         <div className="p-4 pb-2">
                           <div className="flex items-center space-x-3">
-                            <Avatar className="avatar-candy h-8 w-8">
-                              <AvatarImage src={post.avatar} alt={post.username} />
-                              <AvatarFallback className="glass-candy text-white font-cta">
-                                {post.username[0]}
+                            <Avatar className="avatar-ios h-8 w-8">
+                              <AvatarImage src={post.username === 'TakosPicks' ? '/tako_pic.png' : post.avatar} alt={post.username} />
+                              <AvatarFallback className="bg-primary/10 text-primary">
+                                {post.username === 'TakosPicks' ? (
+                                  <img src="/tako_pic.png" alt="TakosPicks" className="w-full h-full object-cover rounded-full" />
+                                ) : (
+                                  post.username[0]
+                                )}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-sm text-white font-cta" style={{ fontSize: '1.25em' }}>{post.username}</span>
-                                <span className="text-xs text-white/60">•</span>
-                                <span className="text-xs text-white/60 font-body">{formatTimeAgo(post.timestamp)}</span>
+                                <span className="font-semibold text-sm text-foreground" style={{ fontSize: '1.25em' }}>{post.username}</span>
+                                <span className="text-xs text-muted-foreground">•</span>
+                                <span className="text-xs text-muted-foreground">{formatTimeAgo(post.timestamp)}</span>
                               </div>
                             </div>
                           </div>
@@ -478,7 +496,7 @@ const Feed: React.FC = () => {
                         
                         {/* Image */}
                         <div 
-                          className="relative aspect-square cursor-pointer px-4 pb-4"
+                          className="relative aspect-square cursor-pointer"
                           onClick={() => handleRestaurantClick(restaurant)}
                         >
                           <picture>
@@ -486,53 +504,45 @@ const Feed: React.FC = () => {
                             <img
                               src={post.image}
                               alt={restaurant.name}
-                              className="w-full h-full object-cover rounded-2xl"
+                              className="w-full h-full object-cover rounded-lg"
                               srcSet={`${post.image} 1x, ${post.image.replace(/(\.[a-z]+)$/i, '@2x$1')} 2x`}
                               sizes="(max-width: 600px) 100vw, 400px"
                               loading="lazy"
                             />
                           </picture>
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl" />
-                          <div className="absolute bottom-4 left-4 right-4">
-                            <div className="space-y-2">
-                              {/* Restaurant Name */}
-                              <h3 className="text-white font-bold text-lg leading-tight font-headline">{restaurant.name}</h3>
-                              
-                              {/* Restaurant Address */}
-                              <p className="text-white/90 text-sm font-body">{restaurant.address}</p>
-                              
-                              {/* Badges Row */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                  <Badge className={`${badgeColor} text-xs font-cta`}>
-                                    {post.cuisine}
-                                  </Badge>
-                                  <div className="flex items-center space-x-1">
-                                    <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                                    <span className="text-white text-xs font-medium font-body">{post.rating.toFixed(1)}</span>
-                                  </div>
-                                </div>
-                                
-                                {/* Distance Badge */}
-                                <Badge className="badge-lemon text-xs font-cta">
-                                  {post.distance.toFixed(1)} km away
+                          {/* Restaurant Info Overlay */}
+                          <div className="absolute top-0 left-0 right-0 p-4">
+                            <div className="flex items-start justify-between">
+                              {/* Left side - Food type and rating */}
+                              <div className="space-y-2">
+                                <Badge className={`${badgeColor} text-primary-foreground text-xs`}>
+                                  {post.cuisine}
                                 </Badge>
+                                <div className="flex items-center space-x-1">
+                                  <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                                  <span className="text-white text-xs font-medium">{post.rating.toFixed(1)}</span>
+                                </div>
                               </div>
+                              {/* Right side - Distance */}
+                              <Badge className="bg-accent text-accent-foreground text-xs">
+                                {post.distance.toFixed(1)} km
+                              </Badge>
                             </div>
+                          </div>
+                          {/* Restaurant name and address at bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <h3 className="text-white font-bold text-lg leading-tight mb-1">{restaurant.name}</h3>
+                            <p className="text-white/90 text-sm">{restaurant.address}</p>
                           </div>
                         </div>
 
                         {/* Footer */}
                         <div className="p-4 pt-2">
-                          <div className="flex items-center space-x-4 mb-3">
-                            <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0 hover:text-white text-white/80 font-cta">
+                          <div className="flex items-center space-x-4">
+                            <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-0 hover:text-primary text-muted-foreground">
                               <Heart className="h-4 w-4" />
                               <span className="text-sm">{Math.floor(Math.random() * 100) + 10}</span>
                             </Button>
-                          </div>
-                          <div className="text-sm leading-relaxed">
-                            <span className="font-semibold text-white font-cta">{post.username}</span>
-                            <span className="ml-2 break-words text-white/80 font-body">{post.caption}</span>
                           </div>
                         </div>
                       </CardContent>
@@ -545,12 +555,12 @@ const Feed: React.FC = () => {
             {/* No Restaurants Found */}
             {activeLocation && validRestaurants.length === 0 && !restaurantsLoading && (
               <div className="text-center py-8 space-y-4">
-                <div className="w-24 h-24 glass-candy rounded-full flex items-center justify-center mx-auto candy-bounce border-2 border-white/30">
-                  <Utensils className="h-12 w-12 text-white" />
+                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto border border-primary/20">
+                  <Utensils className="h-12 w-12 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white font-headline">No Restaurants Found</h3>
-                  <p className="text-sm text-white/80 mt-1 font-body">
+                  <h3 className="text-lg font-semibold text-foreground">No Restaurants Found</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
                     Try searching for a different location or expand your search area
                   </p>
                 </div>

@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
-import { Star } from 'lucide-react';
+import { Star, MessageCircle, Heart, Settings, LogOut, MapPin, Calendar, User, ArrowLeft } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const GUEST_AVATAR = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face';
 const GUEST_NAME = 'GUEST';
@@ -12,99 +16,226 @@ const GUEST_CUISINES = ['Steakhouse', 'Thai', 'Japanese', 'Canadian', 'Fine Dini
 
 // Synthetic/mock images for demo (replace with real Supabase Storage fetch later)
 const MOCK_IMAGES = [
-  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1526178613658-3f1622045557?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?w=400&h=400&fit=crop',
-  'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=400&h=400&fit=crop',
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop',
 ];
 
 const Profile = () => {
-  // In a real app, fetch from Supabase Storage:
-  // const [images, setImages] = useState<string[]>([]);
-  // useEffect(() => { ... fetch from supabase.storage.from('guestimages').list('guest/') ... }, []);
-  // For now, use mock images:
-  const [images] = useState<string[]>(MOCK_IMAGES);
   const navigate = useNavigate();
-  // There is no 'profile' tab in BottomNavigation, so highlight none or default to 'feed'.
-  const [activeTab, setActiveTab] = useState<'feed' | 'radar' | 'camera' | 'quicksearch'>('feed');
+  const [activeTab, setActiveTab] = useState('posts');
 
-  const handleTabChange = (tab: 'feed' | 'radar' | 'camera' | 'quicksearch') => {
-    setActiveTab(tab);
-    switch (tab) {
-      case 'feed':
-        navigate('/');
-        break;
-      case 'radar':
-        navigate('/'); // Index page, will switch to radar tab
-        break;
-      case 'camera':
-        navigate('/'); // Index page, will switch to camera tab
-        break;
-      case 'quicksearch':
-        navigate('/'); // Index page, will switch to quicksearch tab
-        break;
-      default:
-        navigate('/');
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
     }
   };
 
+  const handleNavigateToChat = () => {
+    navigate('/chat');
+  };
+
+  const handleNavigateToPlate = () => {
+    navigate('/plate');
+  };
+
+  const handleNavigateToSettings = () => {
+    // Navigate to settings page (to be implemented)
+    console.log('Navigate to settings');
+  };
+
+  const handleBackToMain = () => {
+    navigate('/');
+  };
+
+  const handleTabChange = (tab: string) => {
+    // Navigate back to main app with the selected tab
+    navigate('/', { state: { activeTab: tab } });
+  };
+
   return (
-    <div className="max-w-md mx-auto p-4 font-body pb-24">
-      {/* Profile Header */}
-      <div className="flex flex-col items-center mb-6">
-        <div className="relative">
-          <img
-            src={GUEST_AVATAR}
-            alt="Guest Avatar"
-            className="w-28 h-28 rounded-full border-4 border-yellow-400 shadow-lg object-cover"
-          />
-          {/* Gold Star Badge */}
-          <span className="absolute -bottom-2 -right-2 bg-yellow-400 rounded-full p-2 shadow-lg flex items-center justify-center">
-            <Star className="h-5 w-5 text-white drop-shadow" fill="#FFD700" />
-          </span>
-        </div>
-        <h2 className="text-2xl font-bold font-headline mt-3">{GUEST_NAME}</h2>
-        <div className="flex items-center gap-2 mt-1 text-gray-600 text-sm">
-          <span>Age {GUEST_AGE}</span>
-          <span className="mx-1">•</span>
-          <span>Lives in {GUEST_LOCATION}</span>
-        </div>
-        <div className="flex flex-wrap gap-2 mt-3 justify-center">
-          {GUEST_CUISINES.map((cuisine) => (
-            <span key={cuisine} className="bg-primary/10 text-primary font-medium px-3 py-1 rounded-full text-xs border border-primary/20">
-              {cuisine}
-            </span>
-          ))}
-        </div>
-        {/* Banner */}
-        <div className="w-full bg-primary text-primary-foreground text-center py-2 px-4 font-body text-base my-4 rounded-lg shadow">
-          This is your profile. View your uploaded photos and account info here.
+    <div className="flex flex-col h-full lg:pb-0 pb-20">
+      {/* iOS Header */}
+      <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <Button variant="ghost" size="sm" onClick={handleBackToMain} className="text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-foreground">
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
         </div>
       </div>
-      {/* Photo Grid */}
-      <h3 className="text-lg font-semibold mb-3 font-headline">Photos</h3>
-      {images.length === 0 ? (
-        <div className="text-gray-500 text-center">No photos uploaded yet.</div>
-      ) : (
-        <div className="grid grid-cols-3 gap-2">
-          {images.map((url, idx) => (
-            <img
-              key={idx}
-              src={url}
-              alt={`Guest photo ${idx + 1}`}
-              className="w-full aspect-square object-cover rounded-lg shadow-sm hover:scale-105 transition-transform"
-              loading="lazy"
-            />
-          ))}
+
+      <div className="px-4 space-y-6 lg:max-w-4xl lg:mx-auto lg:w-full">
+        {/* Profile Header */}
+        <Card className="ios-card">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-4">
+              <Avatar className="avatar-ios h-20 w-20">
+                <AvatarImage src={GUEST_AVATAR} alt={GUEST_NAME} />
+                <AvatarFallback className="bg-primary/10 text-primary text-xl">
+                  {GUEST_NAME[0]}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1 space-y-2">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">{GUEST_NAME}</h2>
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                    <User className="h-3 w-3" />
+                    <span>{GUEST_AGE} years old</span>
+                    <span>•</span>
+                    <MapPin className="h-3 w-3" />
+                    <span>{GUEST_LOCATION}</span>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap gap-1">
+                  {GUEST_CUISINES.map((cuisine) => (
+                    <Badge key={cuisine} variant="secondary" className="text-xs">
+                      {cuisine}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button 
+            onClick={handleNavigateToChat}
+            variant="outline" 
+            className="h-16 flex flex-col items-center justify-center space-y-1 ios-card"
+          >
+            <MessageCircle className="h-6 w-6 text-primary" />
+            <span className="text-sm font-medium text-foreground">Chat</span>
+          </Button>
+          
+          <Button 
+            onClick={handleNavigateToPlate}
+            variant="outline" 
+            className="h-16 flex flex-col items-center justify-center space-y-1 ios-card"
+          >
+            <Heart className="h-6 w-6 text-primary" />
+            <span className="text-sm font-medium text-foreground">My Plate</span>
+          </Button>
         </div>
-      )}
-      {/* Bottom Navigation */}
-      <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
+
+        {/* Stats */}
+        <Card className="ios-card">
+          <CardHeader>
+            <CardTitle className="text-foreground">Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-foreground">24</div>
+                <div className="text-sm text-muted-foreground">Posts</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">156</div>
+                <div className="text-sm text-muted-foreground">Likes</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">12</div>
+                <div className="text-sm text-muted-foreground">Saved</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Content Tabs */}
+        <div className="space-y-4">
+          <div className="flex space-x-1 bg-muted p-1 rounded-lg">
+            <Button
+              variant={activeTab === 'posts' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('posts')}
+              className="flex-1"
+            >
+              Posts
+            </Button>
+            <Button
+              variant={activeTab === 'liked' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('liked')}
+              className="flex-1"
+            >
+              Liked
+            </Button>
+            <Button
+              variant={activeTab === 'saved' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('saved')}
+              className="flex-1"
+            >
+              Saved
+            </Button>
+          </div>
+
+          {/* Content Grid */}
+          <div className="grid grid-cols-3 gap-2">
+            {MOCK_IMAGES.map((image, index) => (
+              <div key={index} className="aspect-square overflow-hidden rounded-lg">
+                <img
+                  src={image}
+                  alt={`Post ${index + 1}`}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Settings Section */}
+        <Card className="ios-card">
+          <CardHeader>
+            <CardTitle className="text-foreground">Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-foreground"
+              onClick={handleNavigateToSettings}
+            >
+              <Settings className="h-4 w-4 mr-3" />
+              Account Settings
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-foreground"
+            >
+              <Calendar className="h-4 w-4 mr-3" />
+              Privacy Policy
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-foreground"
+            >
+              <Star className="h-4 w-4 mr-3" />
+              Terms of Service
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="lg:hidden">
+        <BottomNavigation activeTab="profile" onTabChange={handleTabChange} />
+      </div>
     </div>
   );
 };

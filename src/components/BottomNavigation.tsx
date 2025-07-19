@@ -1,41 +1,50 @@
 
 import React from 'react';
-import { Camera, MapPin, Home, Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { GameButton } from './ui/button';
-
-interface BottomNavigationProps {
-  activeTab: 'feed' | 'radar' | 'camera' | 'quicksearch';
-  onTabChange: (tab: 'feed' | 'radar' | 'camera' | 'quicksearch') => void;
-}
+import { Home, MapPin, Camera, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface TabItem {
-  id: 'feed' | 'radar' | 'camera' | 'quicksearch';
+  id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  color: 'strawberry' | 'grape' | 'lemon' | 'blueberry';
+  color: string;
+}
+
+interface BottomNavigationProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 }
 
 const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabChange }) => {
   const tabs: TabItem[] = [
-    { id: 'feed', label: 'Feed', icon: Home, color: 'strawberry' },
-    { id: 'radar', label: 'Radar', icon: MapPin, color: 'blueberry' },
-    { id: 'camera', label: 'Camera', icon: Camera, color: 'lemon' },
-    { id: 'quicksearch', label: 'Quick Search', icon: Search, color: 'grape' },
+    { id: 'feed', label: 'Feed', icon: Home, color: 'blue' },
+    { id: 'radar', label: 'Radar', icon: MapPin, color: 'green' },
+    { id: 'camera', label: 'Camera', icon: Camera, color: 'orange' },
+    { id: 'quicksearch', label: 'Quick Search', icon: Search, color: 'purple' },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 candy-bottom-nav z-50">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 ios-bottom-nav z-50">
       <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
         {tabs.map(({ id, label, icon: Icon, color }) => (
           <div key={id} className="flex flex-col items-center">
-            <GameButton
-              label=""
-              icon={<Icon className="h-5 w-5" />}
-              color={color}
+            <Button
+              variant={activeTab === id ? "default" : "ghost"}
+              size="sm"
               onClick={() => onTabChange(id)}
-            />
-            <span className="text-xs font-medium font-roundo text-white mt-1">{label}</span>
+              className={`h-10 w-10 rounded-full ${
+                activeTab === id 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+            </Button>
+            <span className={`text-xs font-medium mt-1 ${
+              activeTab === id ? 'text-primary' : 'text-muted-foreground'
+            }`}>
+              {label}
+            </span>
           </div>
         ))}
       </div>

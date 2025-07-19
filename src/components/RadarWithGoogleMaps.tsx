@@ -137,9 +137,9 @@ const RadarWithGoogleMaps: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full pb-20 bg-gradient-to-b from-pink-50 to-pink-100">
+    <div className="flex flex-col h-full lg:pb-0 pb-20">
       {/* Candy Header with Fuzocube Logo */}
-      <div className="candy-header sticky top-0 z-10 p-4">
+      <div className="candy-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
         <div className="flex items-center justify-center mb-4">
           <img 
             src="/Fuzocube.png" 

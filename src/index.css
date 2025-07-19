@@ -3,8 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Candy Crush Style Mobile Game Interface */
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Fredoka+One:wght@400&family=Nunito:wght@400;600;700&display=swap');
+/* Clean iOS Style Interface */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Roundo Font */
 @font-face {
@@ -17,137 +17,130 @@
 
 @layer base {
   :root {
-    --background: 0 85% 55%;
-    --foreground: 0 0% 100%;
+    /* Clean iOS Color Scheme */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
 
-    --card: 0 85% 55%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
 
-    --popover: 0 85% 55%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Candy Red Primary Colors */
-    --primary: 0 85% 55%;
+    /* iOS Blue Primary Colors */
+    --primary: 210 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 70% 35%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 0 85% 55%;
-    --muted-foreground: 0 0% 90%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 45 100% 65%;
+    --accent: 210 100% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 50.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 85% 55%;
-    --input: 0 85% 55%;
-    --ring: 0 85% 55%;
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 210 100% 50%;
 
-    --radius: 1.5rem; /* Extra rounded for candy feel */
+    --radius: 0.75rem; /* iOS-style rounded corners */
 
-    --sidebar-background: 0 85% 55%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 85% 55%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 210 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 85% 55%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 85% 55%;
-    --sidebar-ring: 0 85% 55%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 210 100% 50%;
 
-    /* Game Fonts - All using Roundo */
-    --font-headline: 'Roundo', sans-serif;
-    --font-body: 'Roundo', sans-serif;
-    --font-cta: 'Roundo', sans-serif;
+    /* iOS Fonts */
+    --font-headline: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-cta: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-    /* Fruit-Themed Candy Colors */
-    --color-strawberry: 0 85% 55%; /* Darker Red */
-    --color-orange: 25 100% 65%; /* Bright Orange */
-    --color-lemon: 45 100% 65%; /* Bright Yellow */
-    --color-lime: 120 85% 60%; /* Bright Green */
-    --color-blueberry: 200 100% 65%; /* Bright Blue */
-    --color-grape: 280 85% 65%; /* Bright Purple */
-    --color-cherry: 340 85% 65%; /* Bright Pink */
-    --color-banana: 60 100% 70%; /* Bright Yellow */
-    --color-apple: 120 100% 50%; /* Bright Green */
-    --color-raspberry: 320 85% 60%; /* Bright Pink */
+    /* iOS Color Palette */
+    --color-blue: 210 100% 50%;
+    --color-green: 142 76% 36%;
+    --color-orange: 25 95% 53%;
+    --color-red: 0 84% 60%;
+    --color-purple: 262 83% 58%;
+    --color-pink: 330 81% 60%;
+    --color-yellow: 45 93% 47%;
+    --color-gray: 0 0% 45%;
 
-    /* Fruit-Themed Gradients */
-    --gradient-strawberry: linear-gradient(135deg, hsl(0 85% 55%) 0%, hsl(10 90% 60%) 100%);
-    --gradient-orange: linear-gradient(135deg, hsl(25 100% 65%) 0%, hsl(35 100% 70%) 100%);
-    --gradient-lemon: linear-gradient(135deg, hsl(45 100% 65%) 0%, hsl(55 100% 70%) 100%);
-    --gradient-lime: linear-gradient(135deg, hsl(120 85% 60%) 0%, hsl(130 90% 65%) 100%);
-    --gradient-blueberry: linear-gradient(135deg, hsl(200 100% 65%) 0%, hsl(210 100% 70%) 100%);
-    --gradient-grape: linear-gradient(135deg, hsl(280 85% 65%) 0%, hsl(290 90% 70%) 100%);
-    --gradient-cherry: linear-gradient(135deg, hsl(340 85% 65%) 0%, hsl(350 90% 70%) 100%);
-    --gradient-banana: linear-gradient(135deg, hsl(60 100% 70%) 0%, hsl(70 100% 75%) 100%);
-    --gradient-apple: linear-gradient(135deg, hsl(120 100% 50%) 0%, hsl(130 100% 55%) 100%);
-    --gradient-raspberry: linear-gradient(135deg, hsl(320 85% 60%) 0%, hsl(330 90% 65%) 100%);
+    /* iOS Gradients */
+    --gradient-blue: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(210 100% 60%) 100%);
+    --gradient-green: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(142 76% 46%) 100%);
+    --gradient-orange: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(25 95% 63%) 100%);
+    --gradient-red: linear-gradient(135deg, hsl(0 84% 60%) 0%, hsl(0 84% 70%) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(262 83% 68%) 100%);
+    --gradient-pink: linear-gradient(135deg, hsl(330 81% 60%) 0%, hsl(330 81% 70%) 100%);
 
-    /* 3D Candy Effects */
-    --candy-shadow-light: 0 4px 8px rgba(255, 255, 255, 0.3);
-    --candy-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.2);
-    --candy-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    --candy-shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.15);
-    --candy-shadow-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* iOS Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
     
-    /* Candy Glass Effects */
-    --candy-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
-    --candy-glass-border: rgba(255, 255, 255, 0.3);
-    --candy-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    --candy-blur: blur(20px);
+    /* iOS Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --glass-blur: blur(20px);
   }
 
   .dark {
-    --background: 0 70% 45%;
-    --foreground: 0 0% 100%;
+    --background: 0 0% 9%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 70% 45%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 70% 45%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 0 85% 65%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 210 100% 60%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 0 70% 45%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 70% 45%;
-    --muted-foreground: 0 0% 90%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 45 100% 65%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 210 100% 60%;
+    --accent-foreground: 0 0% 9%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 0 0% 9%;
 
-    --border: 0 70% 45%;
-    --input: 0 70% 45%;
-    --ring: 0 85% 65%;
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 210 100% 60%;
 
-    --sidebar-background: 0 70% 45%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 85% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 70% 45%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 70% 45%;
-    --sidebar-ring: 0 85% 65%;
+    --sidebar-background: 0 0% 9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 210 100% 60%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 210 100% 60%;
 
-    /* Dark mode candy effects */
-    --candy-shadow-light: 0 4px 8px rgba(255, 255, 255, 0.1);
-    --candy-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.3);
-    --candy-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-    --candy-shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.25);
-    --candy-shadow-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    /* Dark mode shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4), 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4), 0 10px 10px rgba(0, 0, 0, 0.3);
     
-    --candy-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-    --candy-glass-border: rgba(255, 255, 255, 0.1);
-    --candy-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    --glass-bg: rgba(0, 0, 0, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -157,321 +150,312 @@
   }
 
   body {
-    @apply text-foreground;
-    font-family: 'Roundo', sans-serif;
-    background: linear-gradient(to bottom, #e62e2e, #e65555);
+    @apply text-foreground bg-background;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     min-height: 100vh;
-    color: #fff;
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Global candy styling */
+  /* Global iOS styling */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Roundo', sans-serif;
-    color: #fff;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: hsl(var(--foreground));
+    font-weight: 600;
+    line-height: 1.2;
   }
 
   p, span, div {
-    color: #fff;
-    font-family: 'Roundo', sans-serif;
+    color: hsl(var(--foreground));
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.5;
   }
 
-  /* Ensure all text elements use Roundo */
+  /* Ensure all text elements use iOS fonts */
   button, input, textarea, select, label {
-    font-family: 'Roundo', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
 
-/* Game Fonts - All using Roundo */
+/* iOS Font Classes */
 .font-headline {
-  font-family: 'Roundo', sans-serif !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 600;
 }
 
 .font-cta {
-  font-family: 'Roundo', sans-serif !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 500;
 }
 
 .font-body {
-  font-family: 'Roundo', sans-serif !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 400;
 }
 
-/* 3D Candy Card */
-.candy-card {
-  background: var(--candy-glass);
-  backdrop-filter: var(--candy-blur);
-  -webkit-backdrop-filter: var(--candy-blur);
-  border: 2px solid var(--candy-glass-border);
-  border-radius: 1.5rem;
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), var(--candy-shadow-elevated);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.candy-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--gradient-strawberry);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.candy-card:hover::before {
-  opacity: 1;
-}
-
-.candy-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 16px 48px rgba(0, 0, 0, 0.2);
-}
-
-/* 3D Candy Button */
-.btn-candy {
-  background: var(--gradient-strawberry);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1.5rem;
-  font-weight: bold;
-  font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+/* iOS Card */
+.ios-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-.btn-candy::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
+.ios-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
-.btn-candy:hover::before {
-  left: 100%;
-}
-
-.btn-candy:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 12px 35px rgba(0, 0, 0, 0.25);
-}
-
-.btn-candy:active {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: var(--candy-shadow-pressed);
-}
-
-/* Fruit-Themed Badges */
-.badge-strawberry {
-  background: var(--gradient-strawberry);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  font-weight: bold;
+/* iOS Button */
+.btn-ios {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 500;
   font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.badge-orange {
-  background: var(--gradient-orange);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  font-weight: bold;
+.btn-ios:hover {
+  background: hsl(var(--primary) / 0.9);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-ios:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* iOS Badge */
+.badge-ios {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: calc(var(--radius) - 2px);
+  font-weight: 500;
   font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+  font-size: 0.75rem;
+  box-shadow: var(--shadow-sm);
 }
 
-.badge-lemon {
-  background: var(--gradient-lemon);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  font-weight: bold;
-  font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+/* iOS Header */
+.ios-header {
+  background: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow-sm);
+  color: hsl(var(--foreground));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-.badge-lime {
-  background: var(--gradient-lime);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  font-weight: bold;
-  font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+/* iOS Glass Effect */
+.glass-ios {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  color: hsl(var(--foreground));
 }
 
-.badge-blueberry {
-  background: var(--gradient-blueberry);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  font-weight: bold;
-  font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+/* iOS Input */
+.input-ios {
+  background: hsl(var(--input));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  color: hsl(var(--foreground));
 }
 
-.badge-grape {
-  background: var(--gradient-grape);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  font-weight: bold;
-  font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+.input-ios:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1), var(--shadow-sm);
+  outline: none;
 }
 
-.badge-cherry {
-  background: var(--gradient-cherry);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  font-weight: bold;
-  font-family: var(--font-cta);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+.input-ios::placeholder {
+  color: hsl(var(--muted-foreground));
 }
 
-/* Candy Header */
-.candy-header {
-  background: linear-gradient(135deg, #e62e2e 0%, #e65555 100%);
-  border-bottom: 3px solid rgba(255, 255, 255, 0.3);
-  box-shadow: var(--candy-shadow-elevated);
-}
-
-/* Candy Glass Effect */
-.glass-candy {
-  background: var(--candy-glass);
-  backdrop-filter: var(--candy-blur);
-  -webkit-backdrop-filter: var(--candy-blur);
-  border: 2px solid var(--candy-glass-border);
-  border-radius: 1.5rem;
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
-}
-
-/* Candy Input */
-.input-candy {
-  background: var(--candy-glass);
-  border: 2px solid var(--candy-glass-border);
-  border-radius: 1.5rem;
-  box-shadow: var(--candy-shadow-inset);
-  transition: all 0.3s ease;
-  color: #fff;
-}
-
-.input-candy:focus {
-  border-color: hsl(0 85% 65%);
-  box-shadow: 0 0 0 4px rgba(255, 61, 61, 0.2), var(--candy-shadow-inset);
-  transform: scale(1.02);
-}
-
-.input-candy::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* Candy Avatar */
-.avatar-candy {
-  border: 3px solid rgba(255, 255, 255, 0.4);
+/* iOS Avatar */
+.avatar-ios {
+  border: 2px solid hsl(var(--border));
   border-radius: 50%;
-  box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Candy Bottom Navigation */
-.candy-bottom-nav {
-  background: var(--candy-glass);
-  backdrop-filter: var(--candy-blur);
-  -webkit-backdrop-filter: var(--candy-blur);
-  border-top: 2px solid var(--candy-glass-border);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+/* iOS Bottom Navigation */
+.ios-bottom-nav {
+  background: hsl(var(--background));
+  border-top: 1px solid hsl(var(--border));
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+  color: hsl(var(--foreground));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-/* Candy Animations */
-@keyframes candyBounce {
+/* iOS Animations */
+@keyframes iosBounce {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-4px);
   }
 }
 
-.candy-bounce {
-  animation: candyBounce 2s ease-in-out infinite;
+.ios-bounce {
+  animation: iosBounce 2s ease-in-out infinite;
 }
 
-@keyframes candyGlow {
+@keyframes iosGlow {
   0%, 100% {
-    box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 0 20px rgba(255, 61, 61, 0.3);
+    box-shadow: var(--shadow-sm), 0 0 20px hsl(var(--primary) / 0.2);
   }
   50% {
-    box-shadow: var(--candy-shadow-light), var(--candy-shadow-dark), 0 0 30px rgba(255, 61, 61, 0.6);
+    box-shadow: var(--shadow-md), 0 0 30px hsl(var(--primary) / 0.4);
   }
 }
 
-.candy-glow {
-  animation: candyGlow 3s ease-in-out infinite;
+.ios-glow {
+  animation: iosGlow 3s ease-in-out infinite;
 }
 
-@keyframes candyPulse {
+@keyframes iosPulse {
   0%, 100% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
 }
 
-.candy-pulse {
-  animation: candyPulse 2s ease-in-out infinite;
+.ios-pulse {
+  animation: iosPulse 2s ease-in-out infinite;
 }
 
-/* Fruit Color Utilities */
-.bg-strawberry { background-color: hsl(var(--color-strawberry)); }
+/* iOS Color Utilities */
+.bg-blue { background-color: hsl(var(--color-blue)); }
+.bg-green { background-color: hsl(var(--color-green)); }
 .bg-orange { background-color: hsl(var(--color-orange)); }
-.bg-lemon { background-color: hsl(var(--color-lemon)); }
-.bg-lime { background-color: hsl(var(--color-lime)); }
-.bg-blueberry { background-color: hsl(var(--color-blueberry)); }
-.bg-grape { background-color: hsl(var(--color-grape)); }
-.bg-cherry { background-color: hsl(var(--color-cherry)); }
-.bg-banana { background-color: hsl(var(--color-banana)); }
-.bg-apple { background-color: hsl(var(--color-apple)); }
-.bg-raspberry { background-color: hsl(var(--color-raspberry)); }
+.bg-red { background-color: hsl(var(--color-red)); }
+.bg-purple { background-color: hsl(var(--color-purple)); }
+.bg-pink { background-color: hsl(var(--color-pink)); }
+.bg-yellow { background-color: hsl(var(--color-yellow)); }
+.bg-gray { background-color: hsl(var(--color-gray)); }
 
-.text-strawberry { color: hsl(var(--color-strawberry)); }
+.text-blue { color: hsl(var(--color-blue)); }
+.text-green { color: hsl(var(--color-green)); }
 .text-orange { color: hsl(var(--color-orange)); }
-.text-lemon { color: hsl(var(--color-lemon)); }
-.text-lime { color: hsl(var(--color-lime)); }
-.text-blueberry { color: hsl(var(--color-blueberry)); }
-.text-grape { color: hsl(var(--color-grape)); }
-.text-cherry { color: hsl(var(--color-cherry)); }
-.text-banana { color: hsl(var(--color-banana)); }
-.text-apple { color: hsl(var(--color-apple)); }
-.text-raspberry { color: hsl(var(--color-raspberry)); }
+.text-red { color: hsl(var(--color-red)); }
+.text-purple { color: hsl(var(--color-purple)); }
+.text-pink { color: hsl(var(--color-pink)); }
+.text-yellow { color: hsl(var(--color-yellow)); }
+.text-gray { color: hsl(var(--color-gray)); }
 
-/* Gradient Utilities */
-.gradient-strawberry { background: var(--gradient-strawberry); }
+/* iOS Gradient Utilities */
+.gradient-blue { background: var(--gradient-blue); }
+.gradient-green { background: var(--gradient-green); }
 .gradient-orange { background: var(--gradient-orange); }
-.gradient-lemon { background: var(--gradient-lemon); }
-.gradient-lime { background: var(--gradient-lime); }
-.gradient-blueberry { background: var(--gradient-blueberry); }
-.gradient-grape { background: var(--gradient-grape); }
-.gradient-cherry { background: var(--gradient-cherry); }
-.gradient-banana { background: var(--gradient-banana); }
-.gradient-apple { background: var(--gradient-apple); }
-.gradient-raspberry { background: var(--gradient-raspberry); }
+.gradient-red { background: var(--gradient-red); }
+.gradient-purple { background: var(--gradient-purple); }
+.gradient-pink { background: var(--gradient-pink); }
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: 0 0% 0%;
+    --muted-foreground: 0 0% 0%;
+  }
+}
+
+/* Focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Ensure minimum contrast ratios */
+.text-primary {
+  color: hsl(var(--primary));
+}
+
+.text-secondary {
+  color: hsl(var(--secondary-foreground));
+}
+
+.text-muted {
+  color: hsl(var(--muted-foreground));
+}
+
+/* iOS-style focus states */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.2);
+}
+
+/* Desktop Layout Styles */
+@media (min-width: 1024px) {
+  /* Ensure content doesn't overlap with sidebar */
+  .lg\:ml-64 {
+    margin-left: 16rem; /* 256px */
+  }
+  
+  /* Desktop container max-width */
+  .lg\:max-w-4xl {
+    max-width: 56rem; /* 896px */
+  }
+  
+  /* Desktop sidebar styles */
+  .sidebar-desktop {
+    width: 16rem; /* 256px */
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    background: hsl(var(--background));
+    border-right: 1px solid hsl(var(--border));
+  }
+  
+  /* Desktop content area */
+  .content-desktop {
+    margin-left: 16rem;
+    min-height: 100vh;
+  }
+  
+  /* Hide mobile elements on desktop */
+  .lg\:hidden {
+    display: none;
+  }
+  
+  /* Show desktop elements */
+  .lg\:block {
+    display: block;
+  }
+  
+  .lg\:flex {
+    display: flex;
+  }
+}
 

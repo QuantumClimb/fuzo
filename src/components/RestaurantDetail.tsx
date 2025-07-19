@@ -15,7 +15,7 @@ interface RestaurantDetailProps {
 const PhotoGridSkeleton = () => (
   <div className="grid grid-cols-2 gap-2">
     {[...Array(6)].map((_, i) => (
-      <div key={i} className="bg-gray-200 animate-pulse h-24 rounded-md" />
+      <div key={i} className="bg-muted animate-pulse h-24 rounded-md" />
     ))}
   </div>
 );
@@ -30,7 +30,7 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
         className={`h-4 w-4 ${
           i < Math.floor(rating) 
             ? 'text-yellow-400 fill-current' 
-            : 'text-gray-300'
+            : 'text-muted-foreground/30'
         }`}
       />
     ));
@@ -43,7 +43,7 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
     <div className="flex flex-col h-full pb-20">
       {/* Hero Image Section */}
       {restaurant.image && restaurant.image !== '/placeholder.svg' && (
-        <div className="relative h-48 bg-gray-100">
+        <div className="relative h-48 bg-muted">
           <img
             src={heroImageUrl}
             alt={restaurant.name}
@@ -76,11 +76,13 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
 
       {/* Navigation Bar (only if no hero image) */}
       {(!restaurant.image || restaurant.image === '/placeholder.svg') && (
-        <div className="flex items-center p-4 border-b bg-white/95 backdrop-blur-sm sticky top-0 z-10">
-          <Button variant="ghost" size="sm" onClick={onBack} className="mr-2">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg font-semibold truncate">{restaurant.name}</h1>
+        <div className="ios-header p-4 z-10">
+          <div className="flex items-center">
+            <Button variant="ghost" size="sm" onClick={onBack} className="mr-2 text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-lg font-semibold truncate text-foreground">{restaurant.name}</h1>
+          </div>
         </div>
       )}
 
@@ -88,9 +90,9 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
         <div className="p-4 space-y-6">
           {/* Header Card (only if no hero image) */}
           {(!restaurant.image || restaurant.image === '/placeholder.svg') && (
-            <Card>
+            <Card className="ios-card">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-foreground">
                   <span>{restaurant.name}</span>
                   <Badge variant="secondary" className="text-xs">
                     {restaurant.cuisine}
@@ -98,21 +100,21 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
                 </CardTitle>
                 <div className="flex items-center space-x-1">
                   {renderStars(restaurant.rating)}
-                  <span className="ml-2 text-sm font-medium">{restaurant.rating}</span>
+                  <span className="ml-2 text-sm font-medium text-foreground">{restaurant.rating}</span>
                 </div>
               </CardHeader>
             </Card>
           )}
 
           {/* Contact Information */}
-          <Card>
+          <Card className="ios-card">
             <CardHeader>
-              <CardTitle className="text-base">Contact Information</CardTitle>
+              <CardTitle className="text-base text-foreground">Contact Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 mt-1 text-muted-foreground" />
-                <span className="text-sm">{restaurant.address}</span>
+                <span className="text-sm text-foreground">{restaurant.address}</span>
               </div>
               
               <div className="flex items-center space-x-3">
@@ -133,9 +135,9 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
 
           {/* Photo Attribution */}
           {restaurant.photoAttributions && restaurant.photoAttributions.length > 0 && (
-            <Card>
+            <Card className="ios-card">
               <CardHeader>
-                <CardTitle className="text-base flex items-center">
+                <CardTitle className="text-base flex items-center text-foreground">
                   <ImageIcon className="h-4 w-4 mr-2" />
                   Photo Credits
                 </CardTitle>
@@ -143,7 +145,7 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
               <CardContent>
                 <div className="space-y-2">
                   {restaurant.photoAttributions.map((attr, index) => (
-                    <div key={index} className="text-sm">
+                    <div key={index} className="text-sm text-foreground">
                       Photo by{' '}
                       {attr.uri ? (
                         <a 
@@ -172,7 +174,7 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
                 const url = `https://www.google.com/maps/search/?api=1&query=${restaurant.name}&query_place_id=${restaurant.id}`;
                 window.open(url, '_blank');
               }}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 btn-ios"
             >
               <MapPin className="h-4 w-4" />
               <span>Directions</span>
@@ -184,7 +186,7 @@ const RestaurantDetail: React.FC<RestaurantDetailProps> = ({ restaurant, onBack 
                 const url = `https://www.google.com/maps/search/?api=1&query=${restaurant.name}`;
                 window.open(url, '_blank');
               }}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 btn-ios"
             >
               <Globe className="h-4 w-4" />
               <span>View on Maps</span>
