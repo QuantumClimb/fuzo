@@ -1,4 +1,4 @@
-# Supabase Edge Functions: Reference & Best Practices
+ic ha# Supabase Edge Functions: Reference & Best Practices
 
 ## What Are Edge Functions?
 Supabase Edge Functions are globally distributed, server-side TypeScript (Deno) functions that run close to your users. They are ideal for:

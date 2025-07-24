@@ -31,3 +31,6 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Project specific exclusions
+DO NOT COMMIT/

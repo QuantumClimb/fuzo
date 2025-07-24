@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import SEO from '@/components/SEO';
 
 interface Chat {
   id: string;
@@ -95,8 +96,23 @@ const ChatList = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO 
+        title="Messages"
+        description="Connect with food lovers, share restaurant recommendations, and join food communities. Chat with friends about your latest culinary discoveries."
+        keywords="food chat, restaurant recommendations, food communities, food lovers, culinary discussions"
+        tags={['chat', 'messages', 'food communities', 'restaurant recommendations']}
+      />
+      
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center space-x-3">
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-center mb-4 lg:hidden">
+          <img 
+            src="/logo_trans.png" 
+            alt="Logo" 
+            className="h-12 w-36"
+          />
+        </div>
+        <div className="flex items-center space-x-3">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -116,6 +132,7 @@ const ChatList = () => {
         <Button variant="ghost" size="sm" className="p-2">
           <Plus size={20} />
         </Button>
+        </div>
       </div>
 
       {/* Search */}

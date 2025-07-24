@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import SEO from '@/components/SEO';
 
 const GUEST_AVATAR = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face';
 const GUEST_NAME = 'GUEST';
@@ -62,8 +63,23 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col h-full lg:pb-0 pb-20">
+      <SEO 
+        title="My Profile"
+        description="Manage your FUZO profile, view your food posts, and connect with other food lovers. Share your culinary adventures and discover new dining experiences."
+        keywords="user profile, food posts, culinary adventures, food sharing, user settings"
+        type="profile"
+        tags={['profile', 'user', 'food posts', 'settings']}
+      />
+      
       {/* iOS Header */}
       <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
+        <div className="flex items-center justify-center mb-4 lg:hidden">
+          <img 
+            src="/logo_trans.png" 
+            alt="Logo" 
+            className="h-12 w-36"
+          />
+        </div>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Button variant="ghost" size="sm" onClick={handleBackToMain} className="text-foreground">

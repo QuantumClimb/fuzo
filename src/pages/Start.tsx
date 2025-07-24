@@ -18,11 +18,13 @@ const Start: React.FC = () => {
       {/* Background image placeholder */}
       <div className="absolute inset-0 z-0" style={{ background: 'url(/public/placeholder.svg) center/cover no-repeat', opacity: 0.25 }} />
       <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-8">
-        {/* Logo placeholder */}
+        {/* Logo */}
         <div className="mb-8">
-          <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center shadow-lg">
-            <span className="text-4xl text-white font-headline">FUZO</span>
-          </div>
+          <img 
+            src="/logo_trans.png" 
+            alt="Logo" 
+                         className="h-32 w-96"
+          />
         </div>
         <h1 className="text-3xl font-headline text-primary mb-4 text-center">Savings, delivered.<br />From the store to your door</h1>
         <div className="flex flex-col gap-4 w-full max-w-xs mt-8">

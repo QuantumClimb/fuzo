@@ -203,11 +203,11 @@ const Feed: React.FC = () => {
     <div className="flex flex-col space-y-4 lg:pb-0 pb-20">
       {/* iOS Header */}
       <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
-        <div className="flex items-center justify-center mb-4">
+        <div className="flex items-center justify-center mb-4 lg:hidden">
           <img 
-            src="/Fuzocube.png" 
-            alt="FUZO Logo" 
-            className="h-12 w-12"
+            src="/logo_trans.png" 
+            alt="Logo" 
+            className="h-12 w-36"
           />
         </div>
         
@@ -218,11 +218,26 @@ const Feed: React.FC = () => {
           <span className="ml-2 text-sm font-medium text-foreground">Image Feed</span>
         </div>
 
-        {/* Info Banner */}
-        <div className="bg-muted rounded-lg text-center py-3 px-4 text-sm mb-3 border border-border">
-          {showImageFeed 
-            ? "🍰 You're viewing snaps from the community. Add your own from the Camera tab!" 
-            : "🍕 These restaurants are recommended based on your location. Tap a photo for more details."}
+        {/* Enhanced Info Banner */}
+        <div className="glass-candy text-center py-4 px-6 text-sm mb-4 rounded-2xl shadow-md border border-white/30">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            {showImageFeed ? (
+              <>
+                <span className="text-2xl">🍰</span>
+                <span className="font-cta text-base font-semibold text-gradient">Community Snaps</span>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl">🍕</span>
+                <span className="font-cta text-base font-semibold text-gradient">Local Restaurants</span>
+              </>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {showImageFeed 
+              ? "You're viewing snaps from the community. Add your own from the Camera tab!" 
+              : "These restaurants are recommended based on your location. Tap a photo for more details."}
+          </p>
         </div>
         
         <p className="text-sm text-muted-foreground text-center mt-1">
@@ -233,7 +248,7 @@ const Feed: React.FC = () => {
         <div className="mt-4">
           <button
             onClick={() => setIsLocationAccordionOpen(!isLocationAccordionOpen)}
-            className="w-full flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors border border-border"
+            className="w-full flex items-center justify-between p-4 glass-effect rounded-xl hover:shadow-glow transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex items-center space-x-2">
               <MapPin className="h-5 w-5 text-foreground" />
@@ -469,7 +484,7 @@ const Feed: React.FC = () => {
                   const badgeColor = badgeColors[index % badgeColors.length];
                   
                   return (
-                    <div key={restaurant.id} className="ios-card overflow-hidden">
+                    <div key={restaurant.id} className="ios-card overflow-hidden floating transform-gpu">
                       <CardContent className="p-0">
                         {/* Header */}
                         <div className="p-4 pb-2">

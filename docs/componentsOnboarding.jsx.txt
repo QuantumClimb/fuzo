@@ -1,0 +1,113 @@
+// /components/Onboarding.jsx
+import React, { useState } from 'react';
+import './Onboarding.css';
+
+const slides = [
+  {
+    image: '/images/share-image.png',
+    title: 'Discover Hidden Food Spots',
+    text: 'Follow Tako as he scouts the best local eats, one snap at a time.'
+  },
+  {
+    image: '/images/radar_image.png',
+    title: 'Use Radar Mode',
+    text: 'Tako shows you the best-rated food around you. It updates live.'
+  },
+  {
+    image: '/images/camera_image.png',
+    title: 'Snap and Share Instantly',
+    text: 'Your food shots power FUZO. Just point, shoot, and rank.'
+  },
+  {
+    image: '/images/feed_image.png',
+    title: 'Curated Feed',
+    text: 'Your feed is tailored by Tako using geolocation and reviews.'
+  },
+  {
+    image: '/images/scout_image.png',
+    title: 'Join Tako's Scout Network',
+    text: 'Become a verified food explorer and earn badges as you go!'
+  }
+];
+
+export default function Onboarding({ onFinish }) {
+  const [index, setIndex] = useState(0);
+
+  const next = () => {
+    if (index < slides.length - 1) setIndex(index + 1);
+    else onFinish();
+  };
+
+  return (
+    <div className="onboarding-container">
+      <img className="onboarding-image" src={slides[index].image} alt="Onboarding step" />
+      <h2>{slides[index].title}</h2>
+      <p>{slides[index].text}</p>
+      <button onClick={next}>{index < slides.length - 1 ? 'Next' : 'Start Exploring'}</button>
+    </div>
+  );
+}
+/* Onboarding.css */
+.onboarding-container {
+  background: #fff;
+  border-radius: 24px;
+  max-width: 480px;
+  margin: 60px auto;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  font-family: 'Outfit', sans-serif;
+}
+
+.onboarding-image {
+  width: 200px;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+.onboarding-container h2 {
+  color: #F9502F;
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+}
+
+.onboarding-container p {
+  color: #444;
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+
+.onboarding-container button {
+  background: #F9502F;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 16px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.onboarding-container button:hover {
+  background: #d8432b;
+}
+
+import Onboarding from './components/Onboarding';
+
+function App() {
+  const [showOnboarding, setShowOnboarding] = useState(true);
+
+  return (
+    <>
+      {showOnboarding ? (
+        <Onboarding onFinish={() => setShowOnboarding(false)} />
+      ) : (
+        <MainApp />
+      )}
+    </>
+  );
+}
+

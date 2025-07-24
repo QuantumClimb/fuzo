@@ -81,6 +81,14 @@ src/
 
 ## 🎨 Components Overview
 
+### Onboarding Component
+- **First-time user experience**: Interactive slides introducing app features
+- **5-step walkthrough**: Discover Hidden Food Spots, Radar Mode, Snap & Share, Curated Feed, Scout Network
+- **Skip functionality**: Users can skip onboarding at any time
+- **Progress indicators**: Visual dots showing current slide position
+- **Responsive design**: Optimized for mobile and desktop
+- **Local storage**: Remembers if user has completed onboarding
+
 ### Feed Component
 - Social media style posts with images and captions
 - Interactive like, comment, and share buttons
@@ -110,6 +118,23 @@ src/
 - `npm run build:dev` - Build in development mode
 - `npm run lint` - Run ESLint
 - `npm run preview` - Preview production build
+
+## 🧪 Testing Features
+
+### Onboarding Testing
+To test the onboarding flow, you can reset the onboarding state:
+
+```javascript
+// In browser console
+localStorage.removeItem('hasSeenOnboarding');
+// Then refresh the page
+```
+
+Or use the utility function in your code:
+```javascript
+import { resetOnboarding } from './lib/utils';
+resetOnboarding();
+```
 
 ## 🌐 Deployment
 

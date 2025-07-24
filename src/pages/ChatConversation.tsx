@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
+import SEO from '@/components/SEO';
 
 interface Message {
   id: string;
@@ -135,8 +136,23 @@ const ChatConversation = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
+      <SEO 
+        title={`Chat with ${mockChat.title}`}
+        description={`Chat with ${mockChat.title} about food, restaurants, and culinary experiences. Share recommendations and discover new dining spots together.`}
+        keywords="food chat, restaurant recommendations, culinary discussions, food conversations"
+        tags={['chat', 'food discussions', 'restaurant recommendations']}
+      />
+      
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center space-x-3">
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-center mb-4 lg:hidden">
+          <img 
+            src="/logo_trans.png" 
+            alt="Logo" 
+            className="h-12 w-36"
+          />
+        </div>
+        <div className="flex items-center space-x-3">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -170,6 +186,7 @@ const ChatConversation = () => {
           <Button variant="ghost" size="sm" className="p-2">
             <MoreVertical size={18} />
           </Button>
+        </div>
         </div>
       </div>
 

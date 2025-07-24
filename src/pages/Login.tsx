@@ -9,18 +9,20 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
-        {/* Logo placeholder */}
+        {/* Logo */}
         <div className="mb-6">
-          <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow">
-            <span className="text-3xl text-white font-headline">FUZO</span>
-          </div>
+          <img 
+            src="/logo_trans.png" 
+            alt="Logo" 
+                         className="h-20 w-60"
+          />
         </div>
-        <h2 className="text-2xl font-headline text-primary mb-4 text-center">Welcome to FUZO</h2>
+        <h2 className="text-2xl font-headline text-primary mb-4 text-center">Welcome</h2>
         <button
           className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-cta text-lg shadow font-bold mt-2"
           onClick={handleEnter}
         >
-          Enter FUZO
+          Enter
         </button>
       </div>
     </div>

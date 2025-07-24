@@ -9,6 +9,7 @@ import RadarWithGoogleMaps from '@/components/RadarWithGoogleMaps';
 import Camera from '@/components/Camera';
 import QuickSearch from '@/components/QuickSearch';
 import { Button } from '@/components/ui/button';
+import SEO from '@/components/SEO';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<'feed' | 'radar' | 'camera' | 'quicksearch'>('feed');
@@ -50,7 +51,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      <SEO 
+        title="Discover Amazing Food"
+        description="Explore the best restaurants, discover hidden gems, and share your culinary adventures with FUZO. Find local favorites, capture food photos, and connect with food lovers worldwide."
+        keywords="food discovery, restaurant finder, local restaurants, food photos, dining experiences, culinary adventures"
+        tags={['food', 'restaurants', 'dining', 'discovery']}
+      />
+      
       {/* Loading Overlay */}
       {loading && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center ios-header">
@@ -72,7 +80,7 @@ const Index = () => {
               variant="ghost"
               size="sm"
               onClick={handleProfileClick}
-              className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-md rounded-full w-10 h-10 p-0"
+              className="glass-effect hover:shadow-glow shadow-lg rounded-full w-10 h-10 p-0 transition-all duration-300 transform hover:scale-110"
             >
               <User className="h-5 w-5 text-foreground" />
             </Button>

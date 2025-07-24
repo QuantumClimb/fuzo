@@ -142,11 +142,11 @@ const QuickSearch: React.FC = () => {
     <div className="flex flex-col space-y-4 lg:pb-0 pb-20">
       {/* iOS Header */}
       <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
-        <div className="flex items-center justify-center mb-4">
+        <div className="flex items-center justify-center mb-4 lg:hidden">
           <img 
-            src="/Fuzocube.png" 
-            alt="FUZO Logo" 
-            className="h-12 w-12"
+            src="/logo_trans.png" 
+            alt="Logo" 
+            className="h-12 w-36"
           />
         </div>
         
@@ -177,7 +177,7 @@ const QuickSearch: React.FC = () => {
           <Button
             onClick={handleDetectLocation}
             disabled={locationLoading}
-            className="btn-ios flex items-center space-x-2"
+            className="btn-candy flex items-center space-x-2 px-6 py-3 text-white rounded-xl font-cta text-sm font-bold shadow-lg transform transition-all duration-300 hover:scale-105"
           >
             <Navigation className={`h-4 w-4 ${locationLoading ? 'animate-spin' : ''}`} />
             <span>
@@ -308,9 +308,9 @@ const QuickSearch: React.FC = () => {
               const badgeColors = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-muted', 'bg-destructive'];
               const badgeColor = badgeColors[index % badgeColors.length];
               
-              return (
-                <div key={restaurant.id} className="ios-card overflow-hidden">
-                  <CardContent className="p-0">
+                                return (
+                    <div key={restaurant.id} className="ios-card overflow-hidden floating transform-gpu">
+                      <CardContent className="p-0">
                     {/* Header */}
                     <div className="p-4 pb-2">
                       <div className="flex items-center space-x-3">

@@ -30,16 +30,15 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({ activeTab, onTabC
   };
 
   return (
-    <div className="hidden lg:flex flex-col w-64 h-screen bg-background border-r border-border fixed left-0 top-0 z-50">
+    <div className="hidden lg:flex flex-col w-64 h-screen glass-effect border-r border-border/50 fixed left-0 top-0 z-50 backdrop-blur">
       {/* Logo Section */}
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center space-x-3">
+      <div className="p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-accent/5">
+        <div className="flex items-center justify-center">
           <img 
-            src="/Fuzocube.png" 
-            alt="FUZO Logo" 
-            className="h-8 w-8"
+            src="/logo_trans.png" 
+            alt="Logo" 
+            className="h-8 w-24"
           />
-          <h1 className="text-xl font-bold text-foreground">FUZO</h1>
         </div>
       </div>
 
@@ -50,10 +49,10 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({ activeTab, onTabC
             key={id}
             variant={activeTab === id ? "default" : "ghost"}
             onClick={() => onTabChange(id)}
-            className={`w-full justify-start h-12 px-4 ${
+            className={`w-full justify-start h-12 px-4 rounded-xl transition-all duration-300 transform ${
               activeTab === id 
-                ? 'bg-primary text-primary-foreground shadow-sm' 
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-105' 
+                : 'text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted hover:to-muted/80 hover:scale-102'
             }`}
           >
             <Icon className="h-5 w-5 mr-3" />

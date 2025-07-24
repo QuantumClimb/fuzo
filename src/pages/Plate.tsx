@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import SEO from '@/components/SEO';
 
 interface PlateItem {
   id: string;
@@ -127,8 +128,23 @@ const Plate = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO 
+        title="My Plate"
+        description="View your saved restaurants and favorite dining spots. Organize your culinary bucket list and plan your next food adventure with FUZO."
+        keywords="saved restaurants, favorite restaurants, dining bucket list, restaurant collection, food planning"
+        tags={['saved restaurants', 'favorites', 'bucket list', 'food planning']}
+      />
+      
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center space-x-3">
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-center mb-4 lg:hidden">
+          <img 
+            src="/logo_trans.png" 
+            alt="Logo" 
+            className="h-12 w-36"
+          />
+        </div>
+        <div className="flex items-center space-x-3">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -143,6 +159,7 @@ const Plate = () => {
           <p className="text-sm text-gray-500">
             {savedItems.length} saved restaurants
           </p>
+        </div>
         </div>
       </div>
 
