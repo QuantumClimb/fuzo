@@ -84,8 +84,9 @@ export default {
 				xl: '20px',
 			},
 			fontFamily: {
-				sans: ['Inter', 'system-ui', 'Helvetica Neue', 'Arial', 'sans-serif'],
-				display: ['SF Pro Display', 'Inter', 'sans-serif'],
+				sans: ['Roundo', 'Inter', 'system-ui', 'Helvetica Neue', 'Arial', 'sans-serif'],
+				display: ['Roundo', 'SF Pro Display', 'Inter', 'sans-serif'],
+				roundo: ['Roundo', 'Inter', 'sans-serif'],
 			},
 			keyframes: {
 				'accordion-down': {
