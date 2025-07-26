@@ -119,7 +119,7 @@ const ChatList = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/profile')} className="text-foreground">
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-2xl font-bold text-foreground">Messages</h1>
+            <div className="flex-1" />
           </div>
           <Button variant="ghost" size="sm" className="text-foreground">
             <Plus className="h-4 w-4" />

@@ -303,7 +303,6 @@ const ChatConversation = () => {
             </Avatar>
             
             <div className="flex-1">
-              <h2 className="font-semibold text-lg text-foreground">{mockChat.title}</h2>
               <p className="text-sm text-muted-foreground">
                 {mockChat.type === 'group' ? `${mockChat.participants.length} members` : 'Online'}
               </p>

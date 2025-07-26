@@ -92,10 +92,10 @@ const Profile = () => {
             </div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
-                <Button variant="ghost" size="sm" onClick={handleBackToMain} className="text-foreground">
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+                            <Button variant="ghost" size="sm" onClick={handleBackToMain} className="text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex-1" />
               </div>
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-foreground">
                 <LogOut className="h-4 w-4 mr-2" />
@@ -289,10 +289,10 @@ const Profile = () => {
             </div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
-                <Button variant="ghost" size="sm" onClick={handleBackToMain} className="text-foreground">
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+                                          <Button variant="ghost" size="sm" onClick={handleBackToMain} className="text-foreground">
+                            <ArrowLeft className="h-4 w-4" />
+                          </Button>
+                          <div className="flex-1" />
               </div>
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-foreground">
                 <LogOut className="h-4 w-4 mr-2" />

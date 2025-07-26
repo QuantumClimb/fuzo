@@ -240,7 +240,7 @@ const Camera: React.FC = () => {
           <Button variant="ghost" size="sm" className="text-foreground">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-lg font-semibold text-foreground">Camera</h1>
+          <div className="flex-1" />
           <Button variant="ghost" size="sm" className="text-foreground">
             <Settings className="h-5 w-5" />
           </Button>
