@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, MapPin, Camera, Search } from 'lucide-react';
+import { Home, MapPin, Camera, Search, Heart, Play, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface TabItem {
@@ -18,13 +18,14 @@ interface BottomNavigationProps {
 const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabChange }) => {
   const tabs: TabItem[] = [
     { id: 'feed', label: 'Feed', icon: Home, color: 'blue' },
-    { id: 'radar', label: 'Radar', icon: MapPin, color: 'green' },
+    { id: 'quicksearch', label: 'Search', icon: Search, color: 'red' },
     { id: 'camera', label: 'Camera', icon: Camera, color: 'orange' },
-    { id: 'quicksearch', label: 'Quick Search', icon: Search, color: 'purple' },
+    { id: 'video', label: 'Video', icon: Play, color: 'purple' },
+    { id: 'profile', label: 'Profile', icon: User, color: 'gray' },
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 ios-bottom-nav z-50">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 ios-bottom-nav z-50 bg-white/10 backdrop-blur-md border-t border-white/10">
       <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
         {tabs.map(({ id, label, icon: Icon, color }) => (
           <div key={id} className="flex flex-col items-center">

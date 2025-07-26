@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Star, Heart, Trash2, Share2, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlassCard } from '@/components/ui/glass-card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SEO from '@/components/SEO';
@@ -25,71 +26,21 @@ interface PlateItem {
 
 const Plate = () => {
   const navigate = useNavigate();
-  const [savedItems, setSavedItems] = useState<PlateItem[]>([
-    {
-      id: '1',
-      name: 'Bella Vista',
-      cuisine: 'Italian',
-      image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop',
-      rating: 4.8,
-      address: '123 Queen Street West, Toronto',
-      priceRange: '$$',
-      savedAt: '2 hours ago',
-      description: 'Amazing Italian restaurant with authentic pasta and great atmosphere.',
-      coordinates: { lat: 43.6435, lng: -79.4001 }
-    },
-    {
-      id: '2',
-      name: 'Sakura Sushi',
-      cuisine: 'Japanese',
-      image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=800&h=600&fit=crop',
-      rating: 4.6,
-      address: '456 Bloor Street, Toronto',
-      priceRange: '$$$',
-      savedAt: '1 day ago',
-      description: 'Fresh sushi and sashimi with traditional Japanese ambiance.',
-      coordinates: { lat: 43.6671, lng: -79.4062 }
-    },
-    {
-      id: '3',
-      name: 'Taco Fiesta',
-      cuisine: 'Mexican',
-      image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop',
-      rating: 4.4,
-      address: '789 King Street East, Toronto',
-      priceRange: '$',
-      savedAt: '3 days ago',
-      description: 'Authentic Mexican street food with amazing tacos and margaritas.',
-      coordinates: { lat: 43.6487, lng: -79.3774 }
-    },
-    {
-      id: '4',
-      name: 'Golden Dragon',
-      cuisine: 'Chinese',
-      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
-      rating: 4.7,
-      address: '321 Spadina Avenue, Toronto',
-      priceRange: '$$',
-      savedAt: '1 week ago',
-      description: 'Traditional Chinese cuisine with dim sum and Peking duck.',
-      coordinates: { lat: 43.6532, lng: -79.3832 }
-    },
-    {
-      id: '5',
-      name: 'Le Petit Bistro',
-      cuisine: 'French',
-      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop',
-      rating: 4.9,
-      address: '654 College Street, Toronto',
-      priceRange: '$$$',
-      savedAt: '2 weeks ago',
-      description: 'Elegant French bistro with classic dishes and fine wine selection.',
-      coordinates: { lat: 43.6591, lng: -79.4163 }
-    }
-  ]);
+  const [savedItems, setSavedItems] = useState<PlateItem[]>([]);
+
+  // Load saved restaurants from localStorage on component mount
+  useEffect(() => {
+    const savedRestaurantsData = JSON.parse(localStorage.getItem('savedRestaurants') || '[]');
+    setSavedItems(savedRestaurantsData);
+  }, []);
 
   const handleRemoveItem = (itemId: string) => {
     setSavedItems(prev => prev.filter(item => item.id !== itemId));
+    
+    // Also remove from localStorage
+    const savedRestaurantsData = JSON.parse(localStorage.getItem('savedRestaurants') || '[]');
+    const updatedData = savedRestaurantsData.filter((item: PlateItem) => item.id !== itemId);
+    localStorage.setItem('savedRestaurants', JSON.stringify(updatedData));
   };
 
   const handleGetDirections = (coordinates: { lat: number; lng: number }) => {
@@ -127,7 +78,7 @@ const Plate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0a0a0a] text-iosText">
       <SEO 
         title="My Plate"
         description="View your saved restaurants and favorite dining spots. Organize your culinary bucket list and plan your next food adventure with FUZO."
@@ -136,7 +87,7 @@ const Plate = () => {
       />
       
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
+      <div className="bg-white/10 backdrop-blur-md border-b border-white/20 px-4 py-3">
         <div className="flex items-center justify-center mb-4 lg:hidden">
           <img 
             src="/logo_trans.png" 
@@ -175,7 +126,7 @@ const Plate = () => {
           </div>
         ) : (
           savedItems.map((item) => (
-            <Card key={item.id} className="overflow-hidden">
+            <GlassCard key={item.id} className="overflow-hidden">
               <div className="relative">
                 <img 
                   src={item.image} 
@@ -194,13 +145,13 @@ const Plate = () => {
                 </div>
               </div>
               
-              <CardHeader className="pb-3">
+              <div className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg">{item.name}</CardTitle>
+                    <h3 className="text-lg font-semibold text-iosText">{item.name}</h3>
                     <div className="flex items-center space-x-2 mt-1">
-                      <MapPin size={14} className="text-gray-500" />
-                      <span className="text-sm text-gray-600">{item.address}</span>
+                      <MapPin size={14} className="text-iosText/70" />
+                      <span className="text-sm text-iosText/70">{item.address}</span>
                     </div>
                     <div className="mt-2">
                       {renderStars(item.rating)}
@@ -212,7 +163,7 @@ const Plate = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleGetDirections(item.coordinates)}
-                      className="p-2"
+                      className="p-2 text-iosText/70 hover:text-iosText"
                     >
                       <Navigation size={16} />
                     </Button>
@@ -220,7 +171,7 @@ const Plate = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleShareItem(item)}
-                      className="p-2"
+                      className="p-2 text-iosText/70 hover:text-iosText"
                     >
                       <Share2 size={16} />
                     </Button>
@@ -228,31 +179,31 @@ const Plate = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoveItem(item.id)}
-                      className="p-2 text-red-500 hover:text-red-700"
+                      className="p-2 text-red-400 hover:text-red-300"
                     >
                       <Trash2 size={16} />
                     </Button>
                   </div>
                 </div>
-              </CardHeader>
+              </div>
               
-              <CardContent className="pt-0">
-                <p className="text-sm text-gray-600 mb-3">
+              <div className="pt-0">
+                <p className="text-sm text-iosText/70 mb-3">
                   {item.description}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-iosText/50">
                     Saved {item.savedAt}
                   </span>
                   <Button 
                     size="sm"
-                    className="bg-gradient-to-r from-strawberry to-grape hover:from-strawberry/90 hover:to-grape/90 text-white"
+                    className="bg-iosAccent hover:bg-iosAccent/90 text-white"
                   >
                     View Details
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </GlassCard>
           ))
         )}
       </div>

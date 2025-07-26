@@ -9,6 +9,8 @@ const GOOGLE_GEOCODING_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode'
 // Validate API key
 if (!GOOGLE_MAPS_API_KEY) {
   console.warn('Google Maps API key not found. Set VITE_GOOGLE_MAPS_API_KEY in your environment variables.');
+} else {
+  console.log('Google Maps API key found:', GOOGLE_MAPS_API_KEY.substring(0, 10) + '...');
 }
 
 // TypeScript types for Google Maps API
@@ -76,27 +78,39 @@ interface GoogleGeocoderResult {
 // Load Google Maps API script dynamically
 function loadGoogleMapsScript(): Promise<void> {
   return new Promise((resolve, reject) => {
+    console.log('Loading Google Maps script...');
+    
     if (window.googleMapsLoaded && window.google) {
+      console.log('Google Maps already loaded');
       resolve();
       return;
     }
 
     if (!GOOGLE_MAPS_API_KEY) {
+      console.error('Google Maps API key is required');
       reject(new Error('Google Maps API key is required'));
       return;
     }
 
     // Check if script is already being loaded
     if (document.querySelector('script[src*="maps.googleapis.com"]')) {
-      window.addEventListener('google-maps-loaded', () => resolve());
+      console.log('Google Maps script already loading, waiting...');
+      window.addEventListener('google-maps-loaded', () => {
+        console.log('Google Maps loaded via event');
+        resolve();
+      });
       return;
     }
 
+    console.log('Creating Google Maps script element...');
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&loading=async&callback=initGoogleMaps`;
     script.async = true;
     script.defer = true;
-    script.onerror = () => reject(new Error('Failed to load Google Maps API'));
+    script.onerror = () => {
+      console.error('Failed to load Google Maps API script');
+      reject(new Error('Failed to load Google Maps API'));
+    };
     
     window.addEventListener('google-maps-loaded', () => resolve());
     document.head.appendChild(script);
@@ -243,10 +257,13 @@ export async function searchNearbyRestaurants(
   radius: number = 2000, // 2km radius
   type: string = 'restaurant'
 ): Promise<Restaurant[]> {
+  console.log('searchNearbyRestaurants: Starting with location:', location, 'radius:', radius);
   await initializeGoogleMapsService();
+  console.log('searchNearbyRestaurants: Google Maps service initialized');
 
   // Try new Place API first (if available)
   try {
+    console.log('searchNearbyRestaurants: Checking for new Place API...');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (window.google.maps.places.Place && (window.google.maps.places.Place as any).searchNearby) {
       const request = {
@@ -310,6 +327,7 @@ export async function searchNearbyRestaurants(
   }
 
   // Fallback to legacy PlacesService
+  console.log('searchNearbyRestaurants: Using legacy PlacesService fallback');
   return new Promise((resolve, reject) => {
     const request = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -319,7 +337,9 @@ export async function searchNearbyRestaurants(
     };
 
     placesService.nearbySearch(request, (results: GooglePlaceResult[], status: string) => {
+      console.log('searchNearbyRestaurants: PlacesService callback - status:', status, 'results count:', results?.length);
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        console.log('searchNearbyRestaurants: Processing', results.length, 'restaurants');
         const restaurants = results.map((place: GooglePlaceResult): Restaurant => ({
           id: place.place_id,
           name: place.name,
@@ -340,8 +360,10 @@ export async function searchNearbyRestaurants(
           ),
           photoAttributions: [], // No attributions in legacy API
         }));
+        console.log('searchNearbyRestaurants: Successfully processed', restaurants.length, 'restaurants');
         resolve(restaurants);
       } else {
+        console.error('searchNearbyRestaurants: Places API error:', status);
         reject(new Error(`Places API error: ${status}`));
       }
     });

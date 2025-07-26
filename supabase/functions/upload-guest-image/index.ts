@@ -16,11 +16,29 @@ async function parseMultipart(req: Request) {
 }
 
 Deno.serve(async (req) => {
-  const debug: any[] = [];
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
+  }
+
+  const debug: Array<Record<string, unknown>> = [];
   debug.push({ step: 'function_invoked', method: req.method });
   if (req.method !== 'POST') {
     debug.push({ step: 'invalid_method', method: req.method });
-    return new Response(JSON.stringify({ error: 'Method Not Allowed', debug }), { status: 405, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Method Not Allowed', debug }), { 
+      status: 405, 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      } 
+    })
   }
 
   try {
@@ -29,7 +47,13 @@ Deno.serve(async (req) => {
     debug.push({ step: 'parsed_form', filename, fileType: file?.type, fileSize: file?.size });
     if (!filename) {
       debug.push({ step: 'missing_filename' });
-      return new Response(JSON.stringify({ error: 'Missing filename', debug }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ error: 'Missing filename', debug }), { 
+        status: 400, 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        } 
+      })
     }
 
     // Create Supabase admin client
@@ -39,11 +63,11 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Upload to guest folder in fuzo-images bucket
+    // Upload to guest folder in guestimages bucket
     const uploadPath = `guest/${filename}`
     debug.push({ step: 'uploading', uploadPath });
     const { data, error } = await supabase.storage
-      .from('fuzo-images')
+      .from('guestimages')
       .upload(uploadPath, file.stream(), {
         contentType: file.type,
         upsert: false,
@@ -51,16 +75,31 @@ Deno.serve(async (req) => {
 
     if (error) {
       debug.push({ step: 'upload_error', message: error.message, details: error });
-      return new Response(JSON.stringify({ error: `Upload error: ${error.message}`, debug }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ error: `Upload error: ${error.message}`, debug }), { 
+        status: 500, 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        } 
+      })
     }
 
     debug.push({ step: 'upload_success', path: data.path });
     return new Response(JSON.stringify({ path: data.path, debug }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
     })
   } catch (err) {
     debug.push({ step: 'caught_error', error: err instanceof Error ? err.message : String(err) });
-    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err), debug }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err), debug }), { 
+      status: 400, 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      } 
+    })
   }
 }) 

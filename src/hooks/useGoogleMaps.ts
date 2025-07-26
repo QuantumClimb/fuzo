@@ -21,22 +21,28 @@ export const useNearbyRestaurants = (location: UserLocation | null, radius: numb
     searchRadius: number = radius,
     type: string = 'restaurant'
   ) => {
+    console.log('useNearbyRestaurants: Starting search with location:', userLocation, 'radius:', searchRadius);
     setLoading(true);
     setError(null);
 
     try {
       // First, get basic restaurant data
+      console.log('useNearbyRestaurants: Calling searchNearbyRestaurants...');
       const basicResults = await searchNearbyRestaurants(userLocation, searchRadius, type);
+      console.log('useNearbyRestaurants: Basic results received:', basicResults.length, 'restaurants');
       
       // Set basic results immediately for faster UI response
       setRestaurants(basicResults);
       
       // Then enhance with photos in the background
+      console.log('useNearbyRestaurants: Enhancing with photos...');
       const enhancedResults = await enhanceRestaurantsWithPhotos(basicResults);
+      console.log('useNearbyRestaurants: Enhanced results:', enhancedResults.length, 'restaurants');
       
       // Update with enhanced results
       setRestaurants(enhancedResults);
     } catch (err) {
+      console.error('useNearbyRestaurants: Error occurred:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch restaurants');
       setRestaurants([]);
     } finally {

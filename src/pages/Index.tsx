@@ -5,14 +5,15 @@ import { User } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
 import SidebarNavigation from '@/components/SidebarNavigation';
 import Feed from '@/components/Feed';
-import RadarWithGoogleMaps from '@/components/RadarWithGoogleMaps';
+import VideoFeed from '@/components/VideoFeedTest';
 import Camera from '@/components/Camera';
 import QuickSearch from '@/components/QuickSearch';
+import Profile from '@/pages/Profile';
 import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<'feed' | 'radar' | 'camera' | 'quicksearch'>('feed');
+  const [activeTab, setActiveTab] = useState<'feed' | 'video' | 'camera' | 'quicksearch' | 'profile'>('feed');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +21,7 @@ const Index = () => {
   // Handle navigation state from profile page
   useEffect(() => {
     if (location.state?.activeTab) {
-      const tab = location.state.activeTab as 'feed' | 'radar' | 'camera' | 'quicksearch';
+      const tab = location.state.activeTab as 'feed' | 'video' | 'camera' | 'quicksearch' | 'profile';
       setActiveTab(tab);
       // Clear the state to prevent it from persisting
       navigate(location.pathname, { replace: true, state: {} });
@@ -31,12 +32,14 @@ const Index = () => {
     switch (activeTab) {
       case 'feed':
         return <Feed />;
-      case 'radar':
-        return <RadarWithGoogleMaps />;
+      case 'video':
+        return <VideoFeed />;
       case 'camera':
         return <Camera />;
       case 'quicksearch':
         return <QuickSearch />;
+      case 'profile':
+        return <Profile />;
       default:
         return <Feed />;
     }
@@ -47,7 +50,7 @@ const Index = () => {
   };
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab as 'feed' | 'radar' | 'camera' | 'quicksearch');
+    setActiveTab(tab as 'feed' | 'video' | 'camera' | 'quicksearch' | 'profile');
   };
 
   return (

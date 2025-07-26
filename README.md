@@ -42,7 +42,7 @@ A modern mobile-first React application that combines social media with location
 1. **Clone the repository**
    ```bash
    git clone https://github.com/QuantumClimb/fuzo.git
-   cd newBuzo
+   cd fuzo
    ```
 
 2. **Install dependencies**

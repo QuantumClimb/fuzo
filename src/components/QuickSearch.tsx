@@ -26,6 +26,16 @@ const QuickSearch: React.FC = () => {
   const activeLocation = selectedLocation || currentLocation;
   const { restaurants, loading: restaurantsLoading, error: restaurantsError } = useNearbyRestaurants(activeLocation);
 
+  // Debug logging
+  console.log('QuickSearch Debug:', {
+    currentLocation,
+    selectedLocation,
+    activeLocation,
+    restaurantsCount: restaurants.length,
+    restaurantsLoading,
+    restaurantsError
+  });
+
   // Location search functionality
   const { results, loading: searchLoading, error: searchError, searchLocations, clearResults } = useLocationSearch();
 
@@ -72,6 +82,7 @@ const QuickSearch: React.FC = () => {
   };
 
   const handleDetectLocation = () => {
+    console.log('Manual location detection requested');
     getCurrentLocation();
     setSelectedLocation(null);
     setLocationName('');
@@ -142,16 +153,16 @@ const QuickSearch: React.FC = () => {
     <div className="flex flex-col space-y-4 lg:pb-0 pb-20">
       {/* iOS Header */}
       <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
-        <div className="flex items-center justify-center mb-4 lg:hidden">
+        <div className="flex items-center justify-start mb-4 lg:hidden">
           <img 
             src="/logo_trans.png" 
             alt="Logo" 
-            className="h-12 w-36"
+            className="h-6 w-18"
           />
         </div>
         
         <p className="text-sm text-muted-foreground text-center mt-1">
-          {activeLocation ? `${restaurants.length} restaurants found${locationName ? ` in ${locationName}` : ' nearby'}` : 'Search for a location to discover restaurants'}
+          {activeLocation ? `${restaurants.length} restaurants found${locationName ? ` in ${locationName}` : ' near your current location'}` : 'Search for a location to discover restaurants'}
         </p>
         
         {/* Selected Location Display */}
@@ -172,16 +183,33 @@ const QuickSearch: React.FC = () => {
           </div>
         )}
         
+        {/* Current Location Display */}
+        {currentLocation && !selectedLocation && (
+          <div className="mt-2 flex items-center justify-center space-x-2">
+            <div className="flex items-center space-x-2 bg-green-500/10 px-3 py-2 rounded-full border border-green-500/20">
+              <Navigation className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium text-foreground">
+                Current Location: {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
+              </span>
+            </div>
+          </div>
+        )}
+        
         {/* Location Detection Button */}
         <div className="mt-4 flex justify-center">
           <Button
             onClick={handleDetectLocation}
             disabled={locationLoading}
-            className="btn-candy flex items-center space-x-2 px-6 py-3 text-white rounded-xl font-cta text-sm font-bold shadow-lg transform transition-all duration-300 hover:scale-105"
+            className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-cta text-sm font-bold shadow-lg transform transition-all duration-300 hover:scale-105 ${
+              currentLocation && !selectedLocation 
+                ? 'bg-green-500 text-white hover:bg-green-600' 
+                : 'btn-candy text-white'
+            }`}
           >
             <Navigation className={`h-4 w-4 ${locationLoading ? 'animate-spin' : ''}`} />
             <span>
-              {locationLoading ? 'Detecting Location...' : 'DETECT MY LOCATION'}
+              {locationLoading ? 'Detecting Location...' : 
+               currentLocation && !selectedLocation ? 'LOCATION DETECTED' : 'DETECT MY LOCATION'}
             </span>
           </Button>
         </div>

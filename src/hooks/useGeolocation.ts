@@ -16,9 +16,11 @@ export const useGeolocation = () => {
   });
 
   const getCurrentLocation = () => {
+    console.log('getCurrentLocation called');
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     if (!navigator.geolocation) {
+      console.error('Geolocation not supported');
       setState(prev => ({
         ...prev,
         loading: false,
@@ -27,9 +29,25 @@ export const useGeolocation = () => {
       return;
     }
 
+    console.log('Requesting location with high accuracy...');
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
+        const { latitude, longitude, accuracy, altitude, heading, speed } = position.coords;
+        // Determine location source based on accuracy
+        const locationSource = accuracy && accuracy < 100 ? 'GPS' : 
+                              accuracy && accuracy < 1000 ? 'Network (WiFi/Cell)' : 
+                              'IP-based (Low accuracy)';
+        
+        console.log('Location obtained successfully:', { 
+          lat: latitude, 
+          lng: longitude,
+          accuracy: accuracy ? `${accuracy}m` : 'unknown',
+          locationSource,
+          altitude: altitude ? `${altitude}m` : 'unknown',
+          heading: heading ? `${heading}°` : 'unknown',
+          speed: speed ? `${speed}m/s` : 'unknown',
+          timestamp: new Date(position.timestamp).toISOString()
+        });
         setState({
           location: { lat: latitude, lng: longitude },
           loading: false,
@@ -38,6 +56,7 @@ export const useGeolocation = () => {
         console.log('Location obtained:', { lat: latitude, lng: longitude });
       },
       (error) => {
+        console.error('Geolocation error:', error);
         let errorMessage = 'Unable to retrieve your location.';
         switch (error.code) {
           case error.PERMISSION_DENIED:
@@ -59,8 +78,8 @@ export const useGeolocation = () => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000, // 5 minutes
+        timeout: 30000, // 30 seconds to allow GPS to acquire
+        maximumAge: 0, // Force fresh location, no caching
       }
     );
   };

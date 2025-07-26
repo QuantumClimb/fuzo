@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Circle, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { supabase } from '@/lib/supabaseClient';
+import { FriendVisit } from '@/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Users, MapPin, Star } from 'lucide-react';
 
 const mapContainerStyle = {
   width: 'calc(100% - 32px)', // 16px padding on each side
@@ -125,6 +131,12 @@ interface RadarState {
   estimatedTime: number;
 }
 
+interface SocialMapState {
+  showFriendsOnly: boolean;
+  friendVisits: FriendVisit[];
+  loadingVisits: boolean;
+}
+
 const RadarWithGoogleMaps: React.FC = () => {
   const { location, loading: locationLoading, error: locationError, getCurrentLocation } = useGeolocation();
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -138,6 +150,12 @@ const RadarWithGoogleMaps: React.FC = () => {
     estimatedTime: 0,
   });
 
+  const [socialMapState, setSocialMapState] = useState<SocialMapState>({
+    showFriendsOnly: false,
+    friendVisits: [],
+    loadingVisits: false,
+  });
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
@@ -145,6 +163,39 @@ const RadarWithGoogleMaps: React.FC = () => {
   useEffect(() => {
     if (!location && !locationLoading) getCurrentLocation();
   }, [location, locationLoading, getCurrentLocation]);
+
+  // Fetch friend visits for social map
+  const fetchFriendVisits = useCallback(async () => {
+    if (!location) return;
+
+    try {
+      setSocialMapState(prev => ({ ...prev, loadingVisits: true }));
+      
+      const { data, error } = await supabase
+        .from('friend_visits')
+        .select('*')
+        .order('visit_date', { ascending: false })
+        .limit(50);
+
+      if (error) {
+        console.error('Error fetching friend visits:', error);
+        return;
+      }
+
+      setSocialMapState(prev => ({ 
+        ...prev, 
+        friendVisits: data || [],
+        loadingVisits: false 
+      }));
+    } catch (error) {
+      console.error('Error fetching friend visits:', error);
+      setSocialMapState(prev => ({ ...prev, loadingVisits: false }));
+    }
+  }, [location]);
+
+  useEffect(() => {
+    fetchFriendVisits();
+  }, [fetchFriendVisits]);
 
   // Initialize DirectionsService when map loads
   useEffect(() => {
@@ -241,15 +292,30 @@ const RadarWithGoogleMaps: React.FC = () => {
     return `${minutes} min`;
   };
 
+  const formatVisitDate = (visitDate: string) => {
+    const now = new Date();
+    const visit = new Date(visitDate);
+    const diffInDays = Math.floor((now.getTime() - visit.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays === 0) return 'Today';
+    if (diffInDays === 1) return 'Yesterday';
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+    return visit.toLocaleDateString();
+  };
+
+  const handleToggleFriendsOnly = () => {
+    setSocialMapState(prev => ({ ...prev, showFriendsOnly: !prev.showFriendsOnly }));
+  };
+
   return (
     <div className="flex flex-col h-full lg:pb-0 pb-20">
       {/* Candy Header with Fuzocube Logo */}
       <div className="candy-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
-        <div className="flex items-center justify-center mb-4 lg:hidden">
+        <div className="flex items-center justify-start mb-4 lg:hidden">
           <img 
             src="/logo_trans.png" 
             alt="Logo" 
-            className="h-12 w-36 candy-bounce"
+            className="h-6 w-18 candy-bounce"
           />
         </div>
         <div className="w-full glass-candy text-center py-3 px-4 font-cta text-base my-3 rounded-2xl border-2 border-white/30">
@@ -259,6 +325,26 @@ const RadarWithGoogleMaps: React.FC = () => {
           }
         </div>
         
+        {/* Social Map Controls */}
+        <div className="flex items-center justify-center gap-4 mt-3">
+          <div className="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
+            <Users className="h-4 w-4 text-white" />
+            <span className="text-white text-sm font-medium">Friends Only</span>
+            <Switch
+              checked={socialMapState.showFriendsOnly}
+              onCheckedChange={handleToggleFriendsOnly}
+              className="data-[state=checked]:bg-white data-[state=unchecked]:bg-white/30"
+            />
+          </div>
+          
+          {socialMapState.loadingVisits && (
+            <div className="flex items-center space-x-2 text-white text-sm">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>Loading visits...</span>
+            </div>
+          )}
+        </div>
+
         {/* Radar controls */}
         {radarState.destination && (
           <div className="flex justify-center gap-3 mt-3">
@@ -378,6 +464,47 @@ const RadarWithGoogleMaps: React.FC = () => {
                     }}
                   />
                 )}
+
+                {/* Friend visit markers */}
+                {socialMapState.friendVisits.map((visit) => (
+                  <Marker
+                    key={visit.id}
+                    position={visit.coordinates}
+                    icon={{
+                      path: google.maps.SymbolPath.CIRCLE,
+                      scale: 8,
+                      fillColor: '#4CAF50',
+                      fillOpacity: 0.8,
+                      strokeColor: '#ffffff',
+                      strokeWeight: 2,
+                    }}
+                    title={`${visit.username} visited ${visit.restaurant_name}`}
+                    onClick={() => {
+                      // Show visit details in info window
+                      const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                          <div style="padding: 8px; max-width: 200px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                              <img src="${visit.avatar}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px;" />
+                              <div>
+                                <div style="font-weight: bold; font-size: 14px;">${visit.username}</div>
+                                <div style="font-size: 12px; color: #666;">${formatVisitDate(visit.visit_date)}</div>
+                              </div>
+                            </div>
+                            <div style="font-size: 13px; margin-bottom: 4px;">
+                              <strong>${visit.restaurant_name}</strong>
+                            </div>
+                            ${visit.rating ? `<div style="font-size: 12px; color: #666;">⭐ ${visit.rating}/5</div>` : ''}
+                            ${visit.review ? `<div style="font-size: 12px; margin-top: 4px;">"${visit.review}"</div>` : ''}
+                            ${visit.emoji_reaction ? `<div style="font-size: 16px; margin-top: 4px;">${visit.emoji_reaction}</div>` : ''}
+                          </div>
+                        `
+                      });
+                      infoWindow.setPosition(visit.coordinates);
+                      infoWindow.open(map);
+                    }}
+                  />
+                ))}
               </GoogleMap>
             </div>
           </div>

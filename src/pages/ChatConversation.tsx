@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Phone, Video } from 'lucide-react';
+import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Phone, Video, MapPin, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlassCard } from '@/components/ui/glass-card';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/lib/supabaseClient';
+import { ChatMessage, Chat as ChatType } from '@/types';
 import SEO from '@/components/SEO';
 
 interface Message {
@@ -18,28 +22,32 @@ interface Message {
   isCurrentUser: boolean;
 }
 
-interface Chat {
-  id: string;
-  title: string;
-  type: 'direct' | 'group';
-  participants: string[];
+interface LocalChat extends ChatType {
   avatar?: string;
 }
+
+
 
 const ChatConversation = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout>();
   
   // Mock chat data
-  const mockChat: Chat = {
+  const mockChat: LocalChat = {
     id: id || '1',
     title: 'Foodie Friends',
     type: 'direct',
     participants: ['user1', 'user2'],
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face'
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face',
+    unread_count: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   // Mock messages data
@@ -94,32 +102,160 @@ const ChatConversation = () => {
     }
   ];
 
+  // Fetch messages from Supabase
+  const fetchMessages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('chat_id', id)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching messages:', error);
+        // Fallback to mock messages
+        setMessages(mockMessages);
+        return;
+      }
+
+      // Convert Supabase messages to local format
+      const convertedMessages: Message[] = (data || []).map(msg => ({
+        id: msg.id,
+        senderId: msg.sender_id,
+        senderName: msg.sender_name,
+        senderAvatar: msg.sender_avatar,
+        text: msg.message_text,
+        timestamp: msg.created_at,
+        isRead: msg.is_read,
+        isCurrentUser: msg.sender_id === 'guest', // Replace with actual user ID
+      }));
+
+      setMessages(convertedMessages);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      setMessages(mockMessages);
+    }
+  };
+
+  // Set up real-time subscription
   useEffect(() => {
-    setMessages(mockMessages);
+    fetchMessages();
+
+    // Subscribe to new messages
+    const subscription = supabase
+      .channel(`chat:${id}`)
+      .on('postgres_changes', 
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'chat_messages',
+          filter: `chat_id=eq.${id}`
+        }, 
+        (payload) => {
+          const newMsg = payload.new as ChatMessage;
+          const message: Message = {
+            id: newMsg.id,
+            senderId: newMsg.sender_id,
+            senderName: newMsg.sender_name,
+            senderAvatar: newMsg.sender_avatar,
+            text: newMsg.message_text,
+            timestamp: newMsg.created_at,
+            isRead: newMsg.is_read,
+            isCurrentUser: newMsg.sender_id === 'guest', // Replace with actual user ID
+          };
+          setMessages(prev => [...prev, message]);
+        }
+      )
+      .on('postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `chat_id=eq.${id}`
+        },
+        (payload) => {
+          const updatedMsg = payload.new as ChatMessage;
+          setMessages(prev => prev.map(msg => 
+            msg.id === updatedMsg.id 
+              ? { ...msg, isRead: updatedMsg.is_read }
+              : msg
+          ));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      const message: Message = {
-        id: `msg_${Date.now()}`,
-        senderId: 'user1',
+      const messageText = newMessage.trim();
+      setNewMessage('');
+
+      // Optimistically add message to UI
+      const optimisticMessage: Message = {
+        id: `temp_${Date.now()}`,
+        senderId: 'guest', // Replace with actual user ID
         senderName: 'You',
-        text: newMessage.trim(),
-        timestamp: new Date().toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        }),
+        text: messageText,
+        timestamp: new Date().toISOString(),
         isRead: false,
         isCurrentUser: true
       };
       
-      setMessages(prev => [...prev, message]);
-      setNewMessage('');
+      setMessages(prev => [...prev, optimisticMessage]);
+
+      try {
+        // Save message to Supabase
+        const { data, error } = await supabase
+          .from('chat_messages')
+          .insert([{
+            chat_id: id,
+            sender_id: 'guest', // Replace with actual user ID
+            sender_name: 'You',
+            message_text: messageText,
+            message_type: 'text',
+            is_read: false
+          }])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error sending message:', error);
+          // Remove optimistic message on error
+          setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+          return;
+        }
+
+        // Update the optimistic message with real data
+        setMessages(prev => prev.map(msg => 
+          msg.id === optimisticMessage.id 
+            ? {
+                ...msg,
+                id: data.id,
+                timestamp: data.created_at
+              }
+            : msg
+        ));
+
+        // Mark other participants' messages as read
+        await supabase
+          .from('chat_messages')
+          .update({ is_read: true })
+          .eq('chat_id', id)
+          .neq('sender_id', 'guest'); // Replace with actual user ID
+
+      } catch (error) {
+        console.error('Error sending message:', error);
+        // Remove optimistic message on error
+        setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+      }
     }
   };
 
@@ -135,7 +271,7 @@ const ChatConversation = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-[#0a0a0a] text-iosText">
       <SEO 
         title={`Chat with ${mockChat.title}`}
         description={`Chat with ${mockChat.title} about food, restaurants, and culinary experiences. Share recommendations and discover new dining spots together.`}
@@ -144,7 +280,7 @@ const ChatConversation = () => {
       />
       
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
+      <div className="bg-white/10 backdrop-blur-md border-b border-white/20 px-4 py-3">
         <div className="flex items-center justify-center mb-4 lg:hidden">
           <img 
             src="/logo_trans.png" 
@@ -207,27 +343,61 @@ const ChatConversation = () => {
                 </Avatar>
               )}
               
-              <Card className={`${message.isCurrentUser 
-                ? 'bg-gradient-to-r from-strawberry to-grape text-white' 
-                : 'bg-white text-gray-800'
-              }`}>
-                <CardContent className="p-3">
+              <GlassCard className={`${message.isCurrentUser 
+                ? 'bg-iosAccent/20 border-iosAccent/30 text-iosText' 
+                : 'bg-white/10 border-white/20 text-iosText'
+              } ${message.id.startsWith('temp_') ? 'opacity-70' : ''}`}>
+                <div className="p-3">
                   <p className="text-sm">{message.text}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.isCurrentUser ? 'text-white/80' : 'text-gray-500'
-                  }`}>
-                    {formatTime(message.timestamp)}
-                  </p>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className={`text-xs ${
+                      message.isCurrentUser ? 'text-white/80' : 'text-gray-500'
+                    }`}>
+                      {formatTime(message.timestamp)}
+                    </p>
+                    {message.isCurrentUser && (
+                      <div className="flex items-center space-x-1">
+                        {message.isRead ? (
+                          <span className="text-xs text-white/60">✓✓</span>
+                        ) : (
+                          <span className="text-xs text-white/60">✓</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </GlassCard>
             </div>
           </div>
         ))}
+        
+        {/* Typing indicator */}
+        {typingUsers.length > 0 && (
+          <div className="flex justify-start">
+            <div className="max-w-xs lg:max-w-md order-1">
+              <GlassCard className="bg-white/10 border-white/20 text-iosText">
+                <div className="p-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+                    </span>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
 
       {/* Message Input */}
-      <div className="bg-white border-t border-gray-200 p-4">
+      <div className="bg-white/10 backdrop-blur-md border-t border-white/20 p-4">
         <div className="flex items-center space-x-2">
           <Button variant="ghost" size="sm" className="p-2">
             <Paperclip size={20} className="text-gray-500" />
@@ -248,7 +418,7 @@ const ChatConversation = () => {
           <Button 
             onClick={handleSendMessage}
             disabled={!newMessage.trim()}
-            className="bg-gradient-to-r from-strawberry to-grape hover:from-strawberry/90 hover:to-grape/90 text-white p-2"
+            className="bg-iosAccent hover:bg-iosAccent/90 text-white p-2"
           >
             <Send size={20} />
           </Button>

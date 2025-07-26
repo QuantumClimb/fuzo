@@ -57,7 +57,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <div className="relative">
+          <div className="relative font-sans text-iosText bg-[#0a0a0a] min-h-screen">
             {showOnboarding ? (
               <div onClick={handleQuickBypass}>
                 <Onboarding onFinish={handleOnboardingFinish} />

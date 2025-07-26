@@ -61,12 +61,31 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// iOS Glassmorphism Colors
+				iosGlass: 'rgba(255, 255, 255, 0.06)',
+				iosBorder: 'rgba(255, 255, 255, 0.2)',
+				iosText: '#f8f8f8',
+				iosAccent: '#0A84FF',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				xl: '1rem',
+				'2xl': '1.5rem',
+				'3xl': '2rem',
+			},
+			backdropBlur: {
+				xs: '2px',
+				sm: '4px',
+				md: '8px',
+				lg: '12px',
+				xl: '20px',
+			},
+			fontFamily: {
+				sans: ['Inter', 'system-ui', 'Helvetica Neue', 'Arial', 'sans-serif'],
+				display: ['SF Pro Display', 'Inter', 'sans-serif'],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -92,5 +111,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [],
 } satisfies Config;
