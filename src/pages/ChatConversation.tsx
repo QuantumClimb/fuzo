@@ -271,7 +271,7 @@ const ChatConversation = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#0a0a0a] text-iosText">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       <SEO 
         title={`Chat with ${mockChat.title}`}
         description={`Chat with ${mockChat.title} about food, restaurants, and culinary experiences. Share recommendations and discover new dining spots together.`}
@@ -279,55 +279,53 @@ const ChatConversation = () => {
         tags={['chat', 'food discussions', 'restaurant recommendations']}
       />
       
-      {/* Header */}
-      <div className="bg-white/10 backdrop-blur-md border-b border-white/20 px-4 py-3">
-        <div className="flex items-center justify-center mb-4 lg:hidden">
+      {/* iOS Header */}
+      <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
+        <div className="flex items-center justify-start mb-4 lg:hidden">
           <img 
             src="/logo_trans.png" 
             alt="Logo" 
-            className="h-12 w-36"
+            className="h-6 w-18"
           />
         </div>
-        <div className="flex items-center space-x-3">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => navigate('/chat')}
-          className="p-2"
-        >
-          <ArrowLeft size={20} />
-        </Button>
         
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={mockChat.avatar} />
-          <AvatarFallback className="bg-gradient-to-br from-strawberry to-grape text-white">
-            {mockChat.title.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-        
-        <div className="flex-1">
-          <h2 className="font-semibold text-lg">{mockChat.title}</h2>
-          <p className="text-sm text-gray-500">
-            {mockChat.type === 'group' ? `${mockChat.participants.length} members` : 'Online'}
-          </p>
-        </div>
-        
-        <div className="flex items-center space-x-1">
-          <Button variant="ghost" size="sm" className="p-2">
-            <Phone size={18} />
-          </Button>
-          <Button variant="ghost" size="sm" className="p-2">
-            <Video size={18} />
-          </Button>
-          <Button variant="ghost" size="sm" className="p-2">
-            <MoreVertical size={18} />
-          </Button>
-        </div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/chat')} className="text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={mockChat.avatar} />
+              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white">
+                {mockChat.title.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1">
+              <h2 className="font-semibold text-lg text-foreground">{mockChat.title}</h2>
+              <p className="text-sm text-muted-foreground">
+                {mockChat.type === 'group' ? `${mockChat.participants.length} members` : 'Online'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-1">
+            <Button variant="ghost" size="sm" className="text-foreground">
+              <Phone className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" className="text-foreground">
+              <Video className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" className="text-foreground">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Main Content */}
+      <div className="flex-1 px-4 lg:max-w-4xl lg:mx-auto lg:w-full overflow-y-auto space-y-4">
         {messages.map((message) => (
           <div 
             key={message.id}
@@ -344,23 +342,23 @@ const ChatConversation = () => {
               )}
               
               <GlassCard className={`${message.isCurrentUser 
-                ? 'bg-iosAccent/20 border-iosAccent/30 text-iosText' 
-                : 'bg-white/10 border-white/20 text-iosText'
+                ? 'bg-primary/10 border-primary/20 text-foreground' 
+                : 'bg-white/80 border-white/20 text-foreground'
               } ${message.id.startsWith('temp_') ? 'opacity-70' : ''}`}>
                 <div className="p-3">
                   <p className="text-sm">{message.text}</p>
                   <div className="flex items-center justify-between mt-1">
                     <p className={`text-xs ${
-                      message.isCurrentUser ? 'text-white/80' : 'text-gray-500'
+                      message.isCurrentUser ? 'text-primary/70' : 'text-muted-foreground'
                     }`}>
                       {formatTime(message.timestamp)}
                     </p>
                     {message.isCurrentUser && (
                       <div className="flex items-center space-x-1">
                         {message.isRead ? (
-                          <span className="text-xs text-white/60">✓✓</span>
+                          <span className="text-xs text-primary/60">✓✓</span>
                         ) : (
-                          <span className="text-xs text-white/60">✓</span>
+                          <span className="text-xs text-primary/60">✓</span>
                         )}
                       </div>
                     )}
@@ -375,15 +373,15 @@ const ChatConversation = () => {
         {typingUsers.length > 0 && (
           <div className="flex justify-start">
             <div className="max-w-xs lg:max-w-md order-1">
-              <GlassCard className="bg-white/10 border-white/20 text-iosText">
+              <GlassCard className="bg-white/80 border-white/20 text-foreground">
                 <div className="p-3">
                   <div className="flex items-center space-x-2">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
                     </span>
                   </div>
@@ -397,10 +395,10 @@ const ChatConversation = () => {
       </div>
 
       {/* Message Input */}
-      <div className="bg-white/10 backdrop-blur-md border-t border-white/20 p-4">
+      <div className="bg-white/80 backdrop-blur-md border-t border-white/20 p-4">
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" className="p-2">
-            <Paperclip size={20} className="text-gray-500" />
+          <Button variant="ghost" size="sm" className="text-muted-foreground">
+            <Paperclip className="h-4 w-4" />
           </Button>
           
           <Input
@@ -411,16 +409,16 @@ const ChatConversation = () => {
             className="flex-1"
           />
           
-          <Button variant="ghost" size="sm" className="p-2">
-            <Smile size={20} className="text-gray-500" />
+          <Button variant="ghost" size="sm" className="text-muted-foreground">
+            <Smile className="h-4 w-4" />
           </Button>
           
           <Button 
             onClick={handleSendMessage}
             disabled={!newMessage.trim()}
-            className="bg-iosAccent hover:bg-iosAccent/90 text-white p-2"
+            className="bg-primary hover:bg-primary/90 text-white"
           >
-            <Send size={20} />
+            <Send className="h-4 w-4" />
           </Button>
         </div>
       </div>

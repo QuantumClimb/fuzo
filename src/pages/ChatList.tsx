@@ -96,7 +96,7 @@ const ChatList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-iosText">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       <SEO 
         title="Messages"
         description="Connect with food lovers, share restaurant recommendations, and join food communities. Chat with friends about your latest culinary discoveries."
@@ -104,53 +104,46 @@ const ChatList = () => {
         tags={['chat', 'messages', 'food communities', 'restaurant recommendations']}
       />
       
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-center mb-4 lg:hidden">
+      {/* iOS Header */}
+      <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
+        <div className="flex items-center justify-start mb-4 lg:hidden">
           <img 
             src="/logo_trans.png" 
             alt="Logo" 
-            className="h-12 w-36"
+            className="h-6 w-18"
           />
         </div>
-        <div className="flex items-center space-x-3">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => navigate('/profile')}
-          className="p-2"
-        >
-          <ArrowLeft size={20} />
-        </Button>
         
-        <div className="flex-1">
-          <h2 className="font-semibold text-lg">Messages</h2>
-          <p className="text-sm text-gray-500">
-            {filteredChats.length} conversations
-          </p>
-        </div>
-        
-        <Button variant="ghost" size="sm" className="p-2">
-          <Plus size={20} />
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/profile')} className="text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold text-foreground">Messages</h1>
+          </div>
+          <Button variant="ghost" size="sm" className="text-foreground">
+            <Plus className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="p-4 bg-white border-b border-gray-200">
-        <div className="relative">
-          <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Search conversations..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+      {/* Main Content */}
+      <div className="px-4 lg:max-w-4xl lg:mx-auto lg:w-full">
+        {/* Search */}
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search conversations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Chat List */}
-      <div className="p-4 space-y-3">
+        {/* Chat List */}
+        <div className="space-y-3">
         {filteredChats.map((chat) => (
           <Card 
             key={chat.id} 
@@ -215,6 +208,7 @@ const ChatList = () => {
             </p>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
