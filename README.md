@@ -122,6 +122,13 @@ supabase/
 - ✅ **Environment Variables**: Properly configured for production
 - ✅ **Build Optimization**: Resolved all build warnings and errors
 
+### **Database & Swipe Foundation**
+- ✅ **User Saved Items Table**: `user_saved_items` for swipe-right functionality
+- ✅ **User Hidden Items Table**: `user_hidden_items` for swipe-left functionality
+- ✅ **Row Level Security**: Secure user data isolation with RLS policies
+- ✅ **Performance Indexes**: Optimized database queries for fast swipe operations
+- ✅ **Migration System**: Proper database versioning and deployment
+
 ### **Camera & Storage System**
 - ✅ **Live Camera Feed**: Real-time video preview before capture
 - ✅ **Edge Function Upload**: Secure image upload via Supabase Edge Function
@@ -144,6 +151,42 @@ supabase/
 - ✅ **CSS Warnings**: Fixed @import statement ordering
 - ✅ **Build Issues**: Eliminated all build warnings
 - ✅ **Code Quality**: Improved error handling and debugging
+
+## 🎯 Current Milestone: Swipe Functionality Implementation
+
+### **📱 Mobile Swipe Gestures (In Progress)**
+- **Swipe Right**: Save restaurant/food item to user's saved items
+- **Swipe Left**: Hide item from user's feed (never show again)
+- **Visual Feedback**: Green overlay for save, red overlay for hide
+- **Gesture Detection**: Touch-based swipe with threshold detection
+- **Database Integration**: Real-time save/hide operations
+- **Feed Filtering**: Automatic removal of hidden items from feed
+
+### **🛠️ Implementation Plan**
+1. **Phase 1: Database Setup** ✅ **COMPLETED**
+   - Created `user_saved_items` and `user_hidden_items` tables
+   - Implemented Row Level Security policies
+   - Added performance indexes for fast queries
+
+2. **Phase 2: Core Swipe Component** 🔄 **IN PROGRESS**
+   - Create `SwipeableCard` component with gesture detection
+   - Implement visual feedback and animations
+   - Add haptic feedback for mobile devices
+
+3. **Phase 3: Backend Integration** 📋 **PLANNED**
+   - Supabase Edge Functions for save/hide operations
+   - Real-time feed updates and filtering
+   - User preference management
+
+4. **Phase 4: Feed Integration** 📋 **PLANNED**
+   - Replace current cards with swipeable versions
+   - Implement feed filtering logic
+   - Add loading states and error handling
+
+5. **Phase 5: User Experience** 📋 **PLANNED**
+   - Settings for swipe sensitivity
+   - Saved items management page
+   - Undo functionality for accidental swipes
 
 ## 🎨 Components Overview
 
@@ -347,6 +390,47 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Lucide](https://lucide.dev/) for the comprehensive icon set
 - [Tailwind CSS](https://tailwindcss.com/) for utility-first styling
 - Toronto restaurant community for inspiration and testing
+
+## 🗄️ Database Schema
+
+### **Swipe Functionality Tables**
+
+#### **user_saved_items**
+Stores items that users save by swiping right:
+```sql
+CREATE TABLE user_saved_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id TEXT NOT NULL,
+    item_id UUID NOT NULL,
+    item_type TEXT NOT NULL CHECK (item_type IN ('restaurant', 'food_post', 'video')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### **user_hidden_items**
+Stores items that users hide by swiping left:
+```sql
+CREATE TABLE user_hidden_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id TEXT NOT NULL,
+    item_id UUID NOT NULL,
+    item_type TEXT NOT NULL CHECK (item_type IN ('restaurant', 'food_post', 'video')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### **Performance Indexes**
+- `idx_user_saved_items_user_id` - Fast user queries
+- `idx_user_saved_items_item_type` - Filter by item type
+- `idx_user_saved_items_user_type` - Composite index for common queries
+- `idx_user_hidden_items_user_id` - Fast user queries
+- `idx_user_hidden_items_item_type` - Filter by item type
+- `idx_user_hidden_items_user_type` - Composite index for common queries
+
+#### **Security**
+- **Row Level Security (RLS)**: Enabled on both tables
+- **User Isolation**: Users can only access their own saved/hidden items
+- **Policy Enforcement**: Automatic filtering based on authenticated user
 
 ## 🔐 Authentication Flow (Updated)
 
