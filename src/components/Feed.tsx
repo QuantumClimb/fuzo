@@ -13,19 +13,65 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 
-// Skeleton loader component
+// Enhanced skeleton loader component
 const FeedSkeleton = () => (
-  <div className="space-y-4">
-    {[...Array(5)].map((_, i) => (
-      <div key={i} className="animate-pulse ios-card p-4 flex space-x-4">
-        <div className="bg-muted h-24 w-24 rounded-lg" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 bg-muted rounded w-3/4" />
-          <div className="h-3 bg-muted rounded w-1/2" />
-          <div className="h-3 bg-muted rounded w-1/3" />
-        </div>
+  <div className="flex flex-col space-y-4 lg:pb-0 pb-20">
+    {/* iOS Header Skeleton */}
+    <div className="ios-header sticky top-0 z-10 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
+      <div className="flex items-center justify-start mb-4 lg:hidden">
+        <div className="h-6 w-18 bg-muted rounded animate-pulse" />
       </div>
-    ))}
+      
+      {/* Info Banner Skeleton */}
+      <div className="glass-candy text-center py-4 px-6 text-sm mb-4 rounded-2xl shadow-md border border-white/30">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <div className="w-6 h-6 bg-muted rounded animate-pulse" />
+          <div className="h-4 bg-muted rounded w-32 animate-pulse" />
+        </div>
+        <div className="h-3 bg-muted rounded w-48 mx-auto animate-pulse" />
+      </div>
+    </div>
+    
+    {/* Content Skeleton */}
+    <div className="px-4 lg:max-w-4xl lg:mx-auto lg:w-full">
+      <div className="space-y-6">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="glass-candy overflow-hidden rounded-2xl animate-pulse">
+            <div className="p-0">
+              {/* Header Skeleton */}
+              <div className="p-4 pb-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-muted rounded-full" />
+                  <div className="flex-1">
+                    <div className="h-4 bg-muted rounded w-24 mb-1" />
+                    <div className="h-3 bg-muted rounded w-16" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Image Skeleton */}
+              <div className="aspect-square bg-muted w-full" />
+              
+              {/* Actions Skeleton */}
+              <div className="p-4 pt-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex space-x-4">
+                    <div className="w-6 h-6 bg-muted rounded" />
+                    <div className="w-6 h-6 bg-muted rounded" />
+                    <div className="w-6 h-6 bg-muted rounded" />
+                  </div>
+                  <div className="w-6 h-6 bg-muted rounded" />
+                </div>
+                <div className="mt-3 space-y-2">
+                  <div className="h-3 bg-muted rounded w-3/4" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   </div>
 );
 
@@ -45,6 +91,7 @@ const Feed: React.FC = () => {
   const [imageFeed, setImageFeed] = useState<ImagePost[]>([]);
   const [imageFeedLoading, setImageFeedLoading] = useState(false);
   const [imageFeedError, setImageFeedError] = useState<string | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadImageFeed();
@@ -53,6 +100,10 @@ const Feed: React.FC = () => {
   const loadImageFeed = async () => {
     setImageFeedLoading(true);
     setImageFeedError(null);
+    setLoadedImages(new Set()); // Reset loaded images
+
+    const startTime = Date.now();
+    const minLoadingTime = 800; // Minimum 800ms loading time
 
     try {
       // List all files in the guest folder of the guestimages bucket
@@ -94,6 +145,12 @@ const Feed: React.FC = () => {
 
       setImageFeed(imagePosts);
       console.log('Loaded images:', imagePosts.length);
+
+      // Ensure minimum loading time
+      const elapsedTime = Date.now() - startTime;
+      if (elapsedTime < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
+      }
     } catch (error) {
       console.error('Error in loadImageFeed:', error);
       setImageFeedError('Failed to load images');
@@ -129,6 +186,10 @@ const Feed: React.FC = () => {
       navigator.clipboard.writeText(post.url);
       toast.success('Image URL copied to clipboard!');
     }
+  };
+
+  const handleImageLoad = (postId: string) => {
+    setLoadedImages(prev => new Set(prev).add(postId));
   };
 
   // Show skeleton loader while loading
@@ -223,14 +284,21 @@ const Feed: React.FC = () => {
                   
                   {/* Image */}
                   <div className="relative aspect-square">
+                    {!loadedImages.has(post.id) && (
+                      <div className="absolute inset-0 bg-muted animate-pulse rounded-none" />
+                    )}
                     <img
                       src={post.url}
                       alt="Community food photo"
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full object-cover transition-opacity duration-300 ${
+                        loadedImages.has(post.id) ? 'opacity-100' : 'opacity-0'
+                      }`}
                       loading="lazy"
+                      onLoad={() => handleImageLoad(post.id)}
                       onError={(e) => {
                         console.error('Failed to load image:', post.url);
                         e.currentTarget.src = '/placeholder.svg';
+                        handleImageLoad(post.id); // Mark as loaded even on error
                       }}
                     />
                   </div>
