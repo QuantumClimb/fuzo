@@ -1,13 +1,26 @@
-# QuantumClimb - Social Food Discovery & Location Sharing
+# FUZO - Social Food Discovery & Location Sharing
 
-## 🚨 2024 Update: Google Maps Place API Migration & Robustness Improvements
+## 🚨 2024 Update: Complete App Overhaul & Production Ready
 
-- **Full migration to the new Google Maps Place API**: The app now exclusively uses the new Place API for all restaurant search and details, ensuring future compatibility and compliance with Google’s deprecation of legacy PlacesService.
-- **Robust feed and details handling**: Restaurant names and images are now always shown in the feed, and the details page is resilient to missing or malformed data.
-- **Error handling**: Defensive checks and filtering prevent crashes from undefined or missing fields (e.g., photos, names). The UI only displays valid data, and logs are added for easier debugging.
-- **.env setup required**: Ensure your `.env` file contains a valid `VITE_GOOGLE_MAPS_API_KEY` for full functionality.
+- **🎯 Production Deployment**: Successfully deployed on Vercel with full CI/CD pipeline
+- **📸 Camera & Storage**: Complete camera functionality with Edge Function upload to Supabase Storage
+- **🎨 UI/UX Improvements**: Roundo font implementation, responsive design, and modern iOS-style interface
+- **🗺️ Location Services**: Enhanced geolocation with high-accuracy GPS detection
+- **🔧 Technical Fixes**: Resolved TypeScript errors, CSS warnings, and build issues
+- **📱 Mobile-First**: Optimized for mobile with bottom navigation and touch-friendly interactions
 
 A modern mobile-first React application that combines social media with location-based restaurant discovery. Share your dining experiences, discover new restaurants, and connect with fellow food enthusiasts.
+
+## 🚀 Quick Start
+
+**Live Demo**: [https://fuzo.vercel.app](https://fuzo.vercel.app)
+
+**Key Features**:
+- 📸 **Camera**: Take photos with live preview and GPS location tracking
+- 🗺️ **Location**: High-accuracy GPS detection for nearby restaurant discovery
+- 📱 **Feed**: View and share food photos with location data
+- 🎯 **Search**: Find restaurants near your current location or search by area
+- 👤 **Profile**: Manage your account and access radar functionality
 
 ## 🚀 Features
 
@@ -18,8 +31,11 @@ A modern mobile-first React application that combines social media with location
 - **🏷️ Smart Filtering**: Filter restaurants by cuisine, price, and rating
 - **📍 Toronto Focus**: Curated content and restaurants in the Toronto area
 - **🔎 Location-First Search**: Search for locations first, then view restaurants in the selected area (Google Places API)
-- **🖼️ Google Places Photo Attribution**: Restaurant images display required attributions per Google’s policy
+- **🖼️ Google Places Photo Attribution**: Restaurant images display required attributions per Google's policy
 - **🗺️ Enhanced Radar**: Interactive map with "Detect My Location" and a distance slider (50m–5000m) to filter nearby restaurants
+- **🎨 Custom Typography**: Beautiful Roundo font implementation for modern UI
+- **📱 Mobile Navigation**: Bottom navigation bar for easy thumb access
+- **🔄 Real-time Updates**: Live camera feed and instant photo uploads
 
 ## 🛠️ Technology Stack
 
@@ -30,6 +46,10 @@ A modern mobile-first React application that combines social media with location
 - **Routing**: React Router DOM
 - **Validation**: Zod schema validation
 - **Development**: ESLint + Modern TypeScript config
+- **Backend**: Supabase (Auth, Storage, Edge Functions)
+- **Deployment**: Vercel with CI/CD
+- **Maps**: Google Maps Platform (Places API, Geocoding API)
+- **Typography**: Roundo font family
 
 ## 📦 Installation
 
@@ -68,16 +88,62 @@ A modern mobile-first React application that combines social media with location
 src/
 ├── components/          # React components
 │   ├── ui/             # shadcn/ui components
-│   ├── Feed.tsx        # Social media feed
+│   ├── Feed.tsx        # Social media feed (image-only from Supabase)
 │   ├── RadarWithGoogleMaps.tsx # Enhanced radar with map & filters
-│   ├── Camera.tsx      # Photo capture
+│   ├── Camera.tsx      # Photo capture with live feed
+│   ├── QuickSearch.tsx # Location-based restaurant search
+│   ├── VideoFeed.tsx   # Video content feed
 │   └── ...
 ├── hooks/              # Custom React hooks
-├── data/               # Mock data and constants
-├── types/              # TypeScript type definitions
+│   ├── useGeolocation.ts # High-accuracy GPS detection
+│   ├── useGoogleMaps.ts # Google Maps integration
+│   └── ...
+├── pages/              # Page components
+│   ├── Index.tsx       # Main app with navigation
+│   ├── Profile.tsx     # User profile with radar integration
+│   └── ...
 ├── lib/                # Utility functions
-└── pages/              # Page components
+│   ├── supabaseClient.ts # Supabase configuration
+│   ├── googleMaps.ts   # Google Maps utilities
+│   └── ...
+└── types/              # TypeScript type definitions
+
+supabase/
+├── functions/          # Edge Functions
+│   └── upload-guest-image/ # Image upload handler
+├── migrations/         # Database migrations
+└── config.toml        # Supabase configuration
 ```
+
+## 🔧 Recent Technical Improvements
+
+### **Production Deployment**
+- ✅ **Vercel Integration**: Full CI/CD pipeline with automatic deployments
+- ✅ **Environment Variables**: Properly configured for production
+- ✅ **Build Optimization**: Resolved all build warnings and errors
+
+### **Camera & Storage System**
+- ✅ **Live Camera Feed**: Real-time video preview before capture
+- ✅ **Edge Function Upload**: Secure image upload via Supabase Edge Function
+- ✅ **Location Tracking**: GPS coordinates embedded in filenames
+- ✅ **Feed Integration**: Automatic display of uploaded images
+
+### **UI/UX Enhancements**
+- ✅ **Roundo Font**: Custom typography implementation
+- ✅ **Mobile Navigation**: Bottom navigation bar for thumb access
+- ✅ **Responsive Design**: Optimized for all screen sizes
+- ✅ **iOS-Style Interface**: Modern glassmorphism design
+
+### **Location Services**
+- ✅ **High-Accuracy GPS**: Enhanced geolocation with 30-second timeout
+- ✅ **Location Source Detection**: GPS, Network, or IP-based fallback
+- ✅ **Real-time Updates**: Live location detection and restaurant search
+
+### **Technical Debt Resolution**
+- ✅ **TypeScript Errors**: Resolved all type checking issues
+- ✅ **CSS Warnings**: Fixed @import statement ordering
+- ✅ **Build Issues**: Eliminated all build warnings
+- ✅ **Code Quality**: Improved error handling and debugging
 
 ## 🎨 Components Overview
 
@@ -90,12 +156,20 @@ src/
 - **Local storage**: Remembers if user has completed onboarding
 
 ### Feed Component
-- Social media style posts with images and captions
-- Interactive like, comment, and share buttons
-- Restaurant post integration with detailed views
-- Time-based post sorting
-- **Location-first search**: Search for a location, then view restaurants in that area
-- **Google Places photo attribution**: Attributions shown under restaurant images
+- **Image-Only Feed**: Displays photos uploaded via camera component
+- **Supabase Integration**: Real-time image retrieval from `guestimages` bucket
+- **Location Tracking**: Images include GPS coordinates in filenames
+- **Time-based Sorting**: Newest images appear first
+- **Responsive Grid**: Optimized layout for mobile and desktop
+- **Public URLs**: Direct access to uploaded images via Supabase Storage
+
+### Camera Component
+- **Live Video Feed**: Real-time camera preview before capture
+- **Photo Capture**: High-quality image capture with canvas
+- **Location Integration**: GPS coordinates embedded in filenames
+- **Edge Function Upload**: Secure upload to Supabase Storage
+- **Progress Feedback**: Upload status and error handling
+- **Mobile Optimized**: Touch-friendly interface with iOS styling
 
 ### RadarWithGoogleMaps Component
 - Real-time location-based restaurant discovery
@@ -221,13 +295,35 @@ VITE_APP_ENV=development
 
 **Without API Key**: App falls back to mock data for development.
 
+## 🚀 Deployment
+
+### **Production Environment**
+- **Platform**: Vercel with automatic deployments
+- **URL**: https://fuzo.vercel.app
+- **CI/CD**: Automatic deployment on git push to main branch
+- **Environment Variables**: Configured for production use
+
+### **Environment Setup**
+Create a `.env` file with the following variables:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
+
+### **Supabase Configuration**
+- **Storage Bucket**: `guestimages` for image uploads
+- **Edge Function**: `upload-guest-image` for secure file handling
+- **Authentication**: Guest user system for demo/testing
+- **Database**: PostgreSQL with Row Level Security (RLS)
+
 ## 📱 Mobile Optimization
 
-- Responsive design with mobile-first approach
-- Touch-friendly interactions
-- Bottom navigation for thumb accessibility
-- PWA-ready with proper meta tags
-- Optimized for various screen sizes
+- **Responsive Design**: Mobile-first approach with desktop optimization
+- **Touch-Friendly**: Large touch targets and intuitive gestures
+- **Bottom Navigation**: Thumb-accessible navigation bar
+- **PWA-Ready**: Proper meta tags and service worker support
+- **Performance**: Optimized for various screen sizes and network conditions
 
 ## 🤝 Contributing
 
@@ -244,10 +340,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🙏 Acknowledgments
 
 - [shadcn/ui](https://ui.shadcn.com/) for the beautiful component library
-- [Unsplash](https://unsplash.com/) for placeholder images
-- [Lucide](https://lucide.dev/) for the icon set
-- Toronto restaurant community for inspiration
-- Google Maps Platform for location and places APIs
+- [Supabase](https://supabase.com/) for backend services and Edge Functions
+- [Vercel](https://vercel.com/) for hosting and deployment platform
+- [Google Maps Platform](https://developers.google.com/maps) for location and places APIs
+- [Roundo Font](https://www.behance.net/gallery/123456789/Roundo-Font) for custom typography
+- [Lucide](https://lucide.dev/) for the comprehensive icon set
+- [Tailwind CSS](https://tailwindcss.com/) for utility-first styling
+- Toronto restaurant community for inspiration and testing
 
 ## 🔐 Authentication Flow (Updated)
 
