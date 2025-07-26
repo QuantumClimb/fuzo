@@ -123,6 +123,14 @@ const { restaurants, loading, error } = useNearbyRestaurants(location);
 - ✅ Distance calculations
 - 💰 API usage costs
 
+### **Camera & Storage (Current):**
+- ✅ Camera functionality with live feed
+- ✅ Photo capture with GPS coordinates
+- ✅ Local storage before upload
+- ✅ Upload to `guestimages` bucket via Edge Function
+- ✅ Feed displays images from `guestimages/guest/` folder
+- ✅ Filename format: `guest-image-{timestamp}-{lat}_{lng}.jpg`
+
 ## 📋 **Next Steps for Production**
 
 ### **Immediate (< 1 hour):**

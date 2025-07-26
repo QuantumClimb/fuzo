@@ -270,33 +270,57 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - All user data is protected with Row Level Security (RLS) policies in Supabase.
 - For now, all data is associated with the guest user or the logged-in user, but the structure is ready for scaling to multiple users.
 
-## Camera Image Upload (Public, Client-Side)
+## Camera Image Upload (Edge Function)
 
-Images captured in the Camera component are now uploaded **directly from the browser** to Supabase Storage using the public client. No Edge Function is required for this workflow.
+Images captured in the Camera component are uploaded to Supabase Storage using the `upload-guest-image` Edge Function.
 
-- **Bucket:** `fuzo-images`
+- **Bucket:** `guestimages`
 - **Folder:** `guest/`
-- **Upload Type:** Public (for testing/demo purposes)
+- **Upload Type:** Edge Function with CORS support
+
+### Camera Functionality Flow
+
+1. **Camera Activation**: User clicks "Start Camera" → Camera stream obtained and video feed displayed
+2. **Photo Capture**: User clicks "Take Photo" → Image captured with canvas and saved to local storage
+3. **Filename Generation**: Creates filename with timestamp and coordinates: `guest-image-{timestamp}-{lat}_{lng}.jpg`
+4. **Upload Process**: User clicks "Upload to Feed" → Image uploaded to `guestimages/guest/` folder via Edge Function
+5. **Feed Display**: Feed component retrieves images from `guestimages/guest/` folder and displays them
 
 ### Example Upload Logic
 ```js
-import { createClient } from '@supabase/supabase-js';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Camera component uploads via Edge Function
+const formData = new FormData();
+formData.append('file', blob, filename);
+formData.append('filename', filename);
 
-// ...
-const { data, error } = await supabase.storage
-  .from('fuzo-images')
-  .upload(`guest/${filename}`, fileBlob, {
-    cacheControl: '3600',
-    upsert: false,
-    contentType: fileBlob.type,
-  });
+const uploadResponse = await fetch(`${supabaseUrl}/functions/v1/upload-guest-image`, {
+  method: 'POST',
+  body: formData,
+  headers: {
+    'Authorization': `Bearer ${supabaseAnonKey}`,
+  },
+});
 ```
 
-- `fileBlob` is a `Blob` or `File` (e.g., from a camera or file input)
-- `filename` is a unique name for the image
+### Feed Component Retrieval
+```js
+// Feed component retrieves from guestimages bucket
+const { data: files, error } = await supabase.storage
+  .from('guestimages')
+  .list('guest', {
+    limit: 100,
+    offset: 0,
+    sortBy: { column: 'created_at', order: 'desc' }
+  });
+
+// Get public URLs
+const { data: urlData } = supabase.storage
+  .from('guestimages')
+  .getPublicUrl(`guest/${file.name}`);
+```
 
 ### Notes
-- The `fuzo-images` bucket must allow public uploads for this to work.
-- This approach is ideal for rapid prototyping and testing.
-- For production, consider using authenticated uploads or Edge Functions for additional security and validation.
+- The `guestimages` bucket must exist in Supabase project
+- Edge Function handles CORS and file upload validation
+- Images are stored in `guestimages/guest/` folder structure
+- Filename includes timestamp and GPS coordinates for location tracking
