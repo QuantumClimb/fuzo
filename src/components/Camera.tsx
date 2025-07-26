@@ -222,14 +222,7 @@ const Camera: React.FC = () => {
     setIsCapturing(false);
   };
 
-  const getPermissionStatusColor = () => {
-    switch (permissionStatus) {
-      case 'granted': return 'text-green-600';
-      case 'denied': return 'text-red-600';
-      case 'prompt': return 'text-yellow-600';
-      default: return 'text-gray-600';
-    }
-  };
+
 
   return (
     <div className="flex flex-col h-full lg:pb-0 pb-20">
@@ -255,16 +248,6 @@ const Camera: React.FC = () => {
       </div>
 
       <div className="flex-1 p-4 lg:max-w-4xl lg:mx-auto lg:w-full">
-        {/* Permission Status */}
-        {permissionStatus !== 'unknown' && (
-          <Alert className={`mb-4 border-gray-200 bg-gray-50`}>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className={`text-sm ${getPermissionStatusColor()}`}>
-              Camera permission: {permissionStatus}
-            </AlertDescription>
-          </Alert>
-        )}
-
         {cameraError && (
           <Alert className="mb-4 border-red-200 bg-red-50">
             <AlertCircle className="h-4 w-4" />
@@ -282,16 +265,6 @@ const Camera: React.FC = () => {
             </AlertDescription>
           </Alert>
         )}
-
-        {/* Debug Info */}
-        <Alert className="mb-4 border-blue-200 bg-blue-50">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-blue-800 text-xs">
-            Debug: isCapturing={isCapturing.toString()}, isLoading={isLoading.toString()}, 
-            hasVideoRef={!!videoRef.current}, hasStream={!!cameraStream}, 
-            location={location ? `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}` : 'null'}
-          </AlertDescription>
-        </Alert>
 
         {!capturedImage ? (
           <div className="space-y-4">
