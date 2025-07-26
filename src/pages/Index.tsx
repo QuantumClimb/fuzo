@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
 import SidebarNavigation from '@/components/SidebarNavigation';
 import Feed from '@/components/Feed';
@@ -45,10 +44,6 @@ const Index = () => {
     }
   };
 
-  const handleProfileClick = () => {
-    navigate('/profile');
-  };
-
   const handleTabChange = (tab: string) => {
     setActiveTab(tab as 'feed' | 'video' | 'camera' | 'quicksearch' | 'profile');
   };
@@ -77,18 +72,6 @@ const Index = () => {
       <div className="lg:ml-64">
         {/* Mobile Layout */}
         <div className="lg:hidden max-w-md mx-auto min-h-screen relative">
-          {/* Profile Button - Fixed at top right (Mobile) */}
-          <div className="fixed top-4 right-4 z-40">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleProfileClick}
-              className="glass-effect hover:shadow-glow shadow-lg rounded-full w-10 h-10 p-0 transition-all duration-300 transform hover:scale-110"
-            >
-              <User className="h-5 w-5 text-foreground" />
-            </Button>
-          </div>
-          
           {renderActiveComponent()}
           <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
